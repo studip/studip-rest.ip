@@ -1,4 +1,4 @@
-# REST.Ip
+# REST.ip
 
 ## Description
 
@@ -7,5 +7,5 @@ implementing authentication by OAuth.
 
 ## Credits
 
-- RESTful state is implemented using [SlimPHP](http://slimframework.com) by [Josh Lockhart](http://github.com/codeguy)
+- RESTful state is implemented using [Trails](https://github.com/luniki/trails)
 - OAuth is implemented using [oauth-php](http://code.google.com/p/oauth-php)

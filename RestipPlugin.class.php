@@ -2,8 +2,6 @@
 /**
  * RestipPlugin.class.php
  *
- * ...
- *
  * @author  Jan-Hendrik Willms <tleilax+studip@gmail.com>
  * @version 0 alpha
  */
