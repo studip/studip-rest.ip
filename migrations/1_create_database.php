@@ -1,4 +1,4 @@
-<? 
+<?
 class CreateDatabase extends DBMigration
 {
     function description() {
@@ -14,6 +14,17 @@ class CreateDatabase extends DBMigration
             $chunk = implode("\n", array_filter(explode("\n", $chunk)));
             DBManager::get()->exec($chunk);
         }
+
+        DBManager::get()->exec("
+            CREATE TABLE IF NOT EXISTS `oauth_mapping` (
+                `oauth_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+                `user_id` char(32) NOT NULL,
+                `mkdate` int(11) unsigned NOT NULL,
+                `access_granted` tinyint(1) unsigned NOT NULL DEFAULT '1',
+                PRIMARY KEY (`oauth_id`),
+                UNIQUE KEY `oauth_id` (`user_id`)
+            ) ENGINE=InnoDB
+        ");
     }
 
     function down() {
