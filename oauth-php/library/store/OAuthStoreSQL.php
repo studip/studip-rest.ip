@@ -1538,6 +1538,8 @@ abstract class OAuthStoreSQL extends OAuthStoreAbstract
 						osr_application_uri		as application_uri,
 						osr_application_title	as application_title,
 						osr_application_descr	as application_descr,
+						osr_application_type	as application_type,
+						osr_application_commercial	as application_commercial,
 						osr_requester_name		as requester_name,
 						osr_requester_email		as requester_email,
 						osr_callback_uri		as callback_uri

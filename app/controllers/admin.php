@@ -3,34 +3,78 @@ class AdminController extends StudipController
 {
     function before_filter(&$action, &$args) {
         parent::before_filter($action, $args);
-        
+
         $GLOBALS['perm']->check('root');
+
         $layout = $GLOBALS['template_factory']->open('layouts/base');
         $this->set_layout($layout);
 
-        $options = array(
-            'dsn'      => 'mysql:host=' . $GLOBALS['DB_STUDIP_HOST']
-                       .       ';dbname=' . $GLOBALS['DB_STUDIP_DATABASE'],
-            'username' => $GLOBALS['DB_STUDIP_USER'],
-            'password' => $GLOBALS['DB_STUDIP_PASSWORD']
+        Navigation::activateItem('/admin/config/oauth');
+
+        $this->store = new OAuthConsumer;
+        $this->types = array(
+            'website' => _('Website'),
+            'program' => _('Herkömmliches Desktopprogramm'),
+            'app'     => _('Mobile App')
         );
-        $this->store = OAuthStore::instance('pdo', $options);
     }
-    
+
     function index_action() {
-        $this->applications = $this->store->listConsumerApplications();
-        
+        $this->consumers = $this->store->getList();
+
         $this->setInfoboxImage('infobox/administration.jpg');
-        
+
         $new = sprintf('<a href="%s">%s</a>',
                        $this->url_for('admin/edit'),
-                       _('Neue Applikation erstellen'));
+                       _('Neue Applikation registrieren'));
         $this->addToInfobox('Aktionen', $new, 'icons/16/black/plus.png');
     }
     
-    function edit_action() {
+    function keys_action($key) {
+        $consumer = $this->store->load($key);
+        
+        $details = array(
+            'Consumer Key = ' . $consumer['consumer_key'],
+            'Consumer Secret = ' . $consumer['consumer_secret'],
+        );
+        
+        if (Request::isXhr()) {
+            $this->render_text(implode('<br>', $details));
+        } else {
+            PageLayout::postMessage(Messagebox::info(_('Die Schlüssel in den Details dieser Meldung sollten vertraulich behandelt werden!'), $details, true));
+            $this->redirect('admin/index#' . $key);
+        }
     }
 
+    function edit_action($key = null) {
+        $this->consumer = $this->store->extractConsumerFromRequest($key);
+
+        if (Request::submitted('store')) {
+            $errors = $this->store->validate($this->consumer);
+
+            if (!empty($errors)) {
+                $message = MessageBox::error(_('Folgende Fehler sind aufgetreten:'), $errors);
+                PageLayout::postMessage($message);
+                return;
+            }
+            
+            $consumer = $this->store->store($this->consumer, Request::int('enabled', 0));
+            
+            PageLayout::postMessage(MessageBox::success(_('Die Applikation wurde erfolgreich gespeichert.')));
+            $this->redirect('admin/index#' . $consumer['consumer_key']);
+            return;
+        }
+
+        $this->set_layout($GLOBALS['template_factory']->open('layouts/base_without_infobox'));
+
+        $this->id = $id;
+    }
+    
+    function delete_action($key) {
+        $this->store->delete($key);
+        PageLayout::postMessage(MessageBox::success(_('Die Applikation wurde erfolgreich gelöscht.')));
+        $this->redirect('admin/index');
+    }
 
     /**
      * Spawns a new infobox variable on this object, if neccessary.

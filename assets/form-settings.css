@@ -1,0 +1,56 @@
+form.settings input[type=text], form.settings select, form.settings textarea {
+  width: 97.5%; }
+form.settings fieldset {
+  border: 0;
+  margin: 0 0 1em;
+  padding: 0; }
+  form.settings fieldset legend {
+    background: #d1d1d1;
+    border-bottom: 1px solid #aaaaaa;
+    display: block;
+    font-weight: bold;
+    padding: 4px;
+    text-align: center;
+    width: 100%; }
+  form.settings fieldset > div {
+    padding: 0.5em 0.5em 0.5em 50%;
+    background: #f3f5f8;
+    border-bottom: 1px dotted #444444;
+    overflow: hidden;
+    position: relative; }
+    form.settings fieldset > div:nth-child(2n + 1) {
+      background: #e7ebf1; }
+    form.settings fieldset > div:hover label {
+      background-color: #ffffee; }
+    form.settings fieldset > div.centered {
+      background-color: inherit;
+      padding: 1em 0.5em !important;
+      text-align: center; }
+    form.settings fieldset > div.type-text, form.settings fieldset > div.type-checkbox, form.settings fieldset > div.type-select {
+      zoom: 1; }
+    form.settings fieldset > div label {
+      background: white;
+      bottom: 0;
+      left: 0;
+      padding: 0.7em 0.5em 1em;
+      right: 51%;
+      position: absolute;
+      text-align: right;
+      top: 0; }
+      form.settings fieldset > div label small {
+        color: #444444;
+        display: none; }
+form.settings .type-button {
+  text-align: center; }
+form.settings.horizontal fieldset {
+  display: inline-block;
+  position: relative;
+  vertical-align: top;
+  width: 49%; }
+  form.settings.horizontal fieldset > div {
+    padding-left: 25%;
+    width: 75%; }
+    form.settings.horizontal fieldset > div.centered {
+      width: auto; }
+  form.settings.horizontal fieldset label {
+    right: 77.5%; }

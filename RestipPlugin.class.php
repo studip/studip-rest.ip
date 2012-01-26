@@ -12,12 +12,25 @@ class RestipPlugin extends StudIPPlugin implements SystemPlugin {
         parent::__construct();
         
         global $perm;
+        
+        if ($perm->have_perm('autor')) {
+            $navigation = new AutoNavigation(_('OAuth Client'));
+            $navigation->setURL(PluginEngine::getLink($this, array(), 'client'));
+            $navigation->setImage('blank.gif');
+            Navigation::addItem('/oauth', $navigation);
+        }
+        
         if ($perm->have_perm('root')) {
             $navigation = new AutoNavigation(_('OAuth'));
             $navigation->setURL(PluginEngine::getLink($this, array(), 'admin'));
             $navigation->setImage('blank.gif');
-            Navigation::addItem('/oauth', $navigation);
+            Navigation::addItem('/admin/config/oauth', $navigation);
         }
+    }
+    
+    public function initialize() {
+        PageLayout::addStylesheet($this->getPluginURL() . '/assets/form-settings.css');
+        PageLayout::addScript($this->getPluginURL() . '/assets/oauth.js');
     }
 
     function perform ($unconsumed_path) {
