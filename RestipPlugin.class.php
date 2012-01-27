@@ -15,6 +15,10 @@ class RestipPlugin extends StudIPPlugin implements SystemPlugin {
         $navigation->setURL(PluginEngine::getLink($this, array(), 'client'));
         $navigation->setImage('blank.gif');
         Navigation::addItem('/oauth', $navigation);
+
+        $navigation = new AutoNavigation(_('Cache leeren'));
+        $navigation->setURL(PluginEngine::getLink($this, array(), 'client/clear_cache'));
+        Navigation::addItem('/oauth/clear_cache', $navigation);
         
         if ($GLOBALS['perm']->have_perm('autor')) {
             $navigation = new AutoNavigation(_('Apps'));

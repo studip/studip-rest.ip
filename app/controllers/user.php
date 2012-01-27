@@ -22,11 +22,19 @@ class UserController extends StudipController
     }
 
     function index_action() {
+        $this->consumers = OAuthUser::getConsumers($GLOBALS['user']->id);
+
         $this->setInfoboxImage('infobox/administration.jpg');
         $new = sprintf('<a href="%s">%s</a>',
                        $this->url_for('admin/edit'),
                        _('Neue Applikation registrieren'));
         $this->addToInfobox('Aktionen', $new, 'icons/16/black/plus.png');
+    }
+
+    function revoke_action($consumer_key) {
+        OAuthUser::revokeToken($GLOBALS['user']->id, $consumer_key);
+        PageLayout::postMessage(MessageBox::success(_('Der Applikation wurde der Zugriff auf Ihre Daten untersagt.')));
+        $this->redirect('user/index');
     }
 
     /**

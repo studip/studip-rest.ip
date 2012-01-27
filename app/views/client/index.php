@@ -12,14 +12,19 @@
         </div>
         
         <div class="type-select">
-            <label for="mode"><?= _('Format') ?></label>
-            <select id="mode" name="mode">
-            <? foreach (words('csv json php xml') as $mode): ?>
-                <option value="<?= $mode ?>" <?= Request::option('mode', 'php') === $mode ? 'selected' : '' ?>>
-                    <?= $mode ?>
+            <label for="format"><?= _('Format') ?></label>
+            <select id="format" name="format">
+            <? foreach (words('csv json php xml') as $format): ?>
+                <option value="<?= $format ?>" <?= Request::option('format', 'php') === $format ? 'selected' : '' ?>>
+                    <?= $format ?>
                 </option>
             <? endforeach; ?>
             </select>
+        </div>
+        
+        <div class="type-checkbox">
+            <label for="raw"><?= _('Rückgabe nicht umwandeln') ?></label>
+            <input type="checkbox" id="raw" name="raw" value="1" <?= Request::int('raw') ? 'checked' : '' ?>>
         </div>
 
         <div class="type-select">
@@ -47,5 +52,5 @@
 <? if (isset($result)): ?>
 <h2><?= _('Zurückgeliefertes Ergebnis') ?></h2>
 <p>MD5: <?= md5(serialize($result)) ?></p>
-<pre style="border: 1px solid #888; background: #ccc; padding: .5em"><? var_dump($result); ?></pre>
+<pre style="border: 1px solid #888; background: #ccc; padding: .5em; overflow-x: auto"><?= is_array($result) ? print_r($result, true) : htmlReady($result); ?></pre>
 <? endif; ?>
