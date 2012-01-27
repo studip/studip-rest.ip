@@ -88,12 +88,12 @@ class OAuthConsumer
     }
 
     function store($consumer, $enabled) {
-        $consumer['consumer_key'] = $this->store->updateConsumer($consumer, null, true);
+        $key = $this->store->updateConsumer($consumer, null, true);
         DBManager::get()
             ->prepare("UPDATE oauth_server_registry SET osr_enabled = ? WHERE osr_consumer_key = ?")
             ->execute(array((int)!empty($enabled), $consumer['consumer_key']));
 
-        return $consumer;
+        return $this->load($key);
     }
     
     function delete($key) {

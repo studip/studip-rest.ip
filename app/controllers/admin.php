@@ -10,6 +10,7 @@ class AdminController extends StudipController
         $this->set_layout($layout);
 
         Navigation::activateItem('/admin/config/oauth');
+        PageLayout::setTitle(_('OAuth Administration'));
 
         $this->store = new OAuthConsumer;
         $this->types = array(
@@ -29,14 +30,20 @@ class AdminController extends StudipController
                        _('Neue Applikation registrieren'));
         $this->addToInfobox('Aktionen', $new, 'icons/16/black/plus.png');
     }
-    
-    function keys_action($key) {
-        $consumer = $this->store->load($key);
+
+    function render_keys($key, $consumer = null) {
+        if ($consumer === null) {
+            $consumer = $this->store->load($key);
+        }
         
-        $details = array(
+        return array(
             'Consumer Key = ' . $consumer['consumer_key'],
             'Consumer Secret = ' . $consumer['consumer_secret'],
         );
+    }
+    
+    function keys_action($key) {
+        $details = $this->render_keys($key);
         
         if (Request::isXhr()) {
             $this->render_text(implode('<br>', $details));
@@ -60,7 +67,13 @@ class AdminController extends StudipController
             
             $consumer = $this->store->store($this->consumer, Request::int('enabled', 0));
             
-            PageLayout::postMessage(MessageBox::success(_('Die Applikation wurde erfolgreich gespeichert.')));
+            if ($key) {
+                $message = MessageBox::success(_('Die Applikation wurde erfolgreich gespeichert.'));
+            } else {
+                $details  = $this->render_keys($key, $consumer);
+                $message = MessageBox::success(_('Die Applikation wurde erfolgreich erstellt, die Schlüssel finden Sie in den Details dieser Meldung.'), $details, true);
+            }
+            PageLayout::postMessage($message);
             $this->redirect('admin/index#' . $consumer['consumer_key']);
             return;
         }

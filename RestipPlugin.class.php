@@ -11,19 +11,20 @@ class RestipPlugin extends StudIPPlugin implements SystemPlugin {
     function __construct() {
         parent::__construct();
         
-        global $perm;
+        $navigation = new AutoNavigation(_('OAuth Client'));
+        $navigation->setURL(PluginEngine::getLink($this, array(), 'client'));
+        $navigation->setImage('blank.gif');
+        Navigation::addItem('/oauth', $navigation);
         
-        if ($perm->have_perm('autor')) {
-            $navigation = new AutoNavigation(_('OAuth Client'));
-            $navigation->setURL(PluginEngine::getLink($this, array(), 'client'));
-            $navigation->setImage('blank.gif');
-            Navigation::addItem('/oauth', $navigation);
+        if ($GLOBALS['perm']->have_perm('autor')) {
+            $navigation = new AutoNavigation(_('Apps'));
+            $navigation->setURL(PluginEngine::getLink($this, array(), 'user'));
+            Navigation::addItem('/links/settings/oauth', $navigation);
         }
         
-        if ($perm->have_perm('root')) {
+        if ($GLOBALS['perm']->have_perm('root')) {
             $navigation = new AutoNavigation(_('OAuth'));
             $navigation->setURL(PluginEngine::getLink($this, array(), 'admin'));
-            $navigation->setImage('blank.gif');
             Navigation::addItem('/admin/config/oauth', $navigation);
         }
     }
@@ -34,6 +35,7 @@ class RestipPlugin extends StudIPPlugin implements SystemPlugin {
     }
 
     function perform ($unconsumed_path) {
+/*
         global $auth;
         
         $auth->login_if($auth->auth['uid'] == 'nobody'); 
@@ -44,7 +46,7 @@ class RestipPlugin extends StudIPPlugin implements SystemPlugin {
             header('Location: ' . $url);
             die;
         }
-
+*/
         $dispatcher = new Trails_Dispatcher(
             $this->getPluginPath() . DIRECTORY_SEPARATOR . 'app',
             rtrim(PluginEngine::getLink($this, array(), null), '/'),

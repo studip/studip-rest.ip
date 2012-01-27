@@ -1,6 +1,8 @@
 <?
-class OAuthController extends Trails_Controller
+class OAuthedController extends Trails_Controller
 {
+    private $user_id = false;
+
     function before_filter(&$action, &$args) {
         parent::before_filter($action, $args);
 
@@ -10,14 +12,10 @@ class OAuthController extends Trails_Controller
             'username' => $GLOBALS['DB_STUDIP_USER'],
             'password' => $GLOBALS['DB_STUDIP_PASSWORD']
         );
-        $this->store = OAuthStore::instance('pdo', $options);
+        OAuthStore::instance('pdo', $options);
     }
     
-    function checkSigned() {
-        if (!OAuthRequestVerifier::requestIsSigned()) {
-            return;
-        }
-        
+    function isAuthorized() {
         try {
             $req = new OAuthRequestVerifier();
             $this->user_id = $req->verify();
@@ -28,9 +26,11 @@ class OAuthController extends Trails_Controller
 
             throw new Exception($e->getMessage());
         }        
+        return $this;
     }
     
     function rescue($exception) {
-        $this->render_text($exception->getMessage());
+        return new Trails_Response($exception->getMessage(), array(), 401,
+                                    $exception->getMessage());
     }
 }
