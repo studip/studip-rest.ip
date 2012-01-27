@@ -1,6 +1,4 @@
 <?php
-require_once 'vendor/tmhOAuth/tmhOAuth.php';
-require_once 'vendor/tmhOAuth/tmhUtilities.php';
 
 class ClientController extends StudipController
 {
