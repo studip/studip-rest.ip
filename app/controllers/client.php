@@ -26,7 +26,9 @@ class ClientController extends StudipController
     function index_action() {
         $resource = Request::get('resource');
         if ($resource) {
-            $this->result = $this->request($resource, Request::option('format'), Request::option('method'), Request::int('raw'));
+            $this->result = $this->request($resource, Request::option('format'), 
+                                           Request::option('method'), Request::int('signed'),
+                                           Request::int('raw'));
         }
         
         $clear_cache = sprintf('<a href="%s">%s</a>',
@@ -46,50 +48,58 @@ class ClientController extends StudipController
         $this->redirect('client');
     }
     
-    private function request($resource, $format = 'php', $method = 'GET', $raw = false) {
-        $options = array(
-                'callbackUrl'    => 'http://127.0.0.1' . $_SERVER['REQUEST_URI'],
-                'siteUrl'        => 'http://127.0.0.1/~tleilax/studip/trunk/public/plugins.php/restipplugin/oauth',
-                'consumerKey'    => self::CONSUMER_KEY,
-                'consumerSecret' => self::CONSUMER_SECRET,
-        );
-        $consumer = new Zend\OAuth\Consumer($options);
+    private function request($resource, $format = 'php', $method = 'GET', $signed = false, $raw = false) {
+        if ($signed) {
+            $options = array(
+                    'callbackUrl'    => 'http://127.0.0.1' . $_SERVER['REQUEST_URI'],
+                    'siteUrl'        => 'http://127.0.0.1/~tleilax/studip/trunk/public/plugins.php/restipplugin/oauth',
+                    'consumerKey'    => self::CONSUMER_KEY,
+                    'consumerSecret' => self::CONSUMER_SECRET,
+            );
+            $consumer = new Zend\OAuth\Consumer($options);
         
         
-        $cache = StudipCacheFactory::getCache();
-        $access_token = $cache->read(self::ACCESS_TOKEN . $GLOBALS['user']->id);
+            $cache = StudipCacheFactory::getCache();
+            $access_token = $cache->read(self::ACCESS_TOKEN . $GLOBALS['user']->id);
 
-        if (!$access_token) {
-            $request_token = $cache->read(self::REQUEST_TOKEN . $GLOBALS['user']->id);
-            if (!$request_token) {
-                $token = $consumer->getRequestToken();
-                $cache->write(self::REQUEST_TOKEN . $GLOBALS['user']->id, serialize($token));
-                $consumer->redirect();
-            } else {
-                try {
-                    $token = $consumer->getAccessToken($_GET, unserialize($request_token));
-                    $access_token = serialize($token);
-                    $cache->write(self::ACCESS_TOKEN . $GLOBALS['user']->id, $access_token);
-                    $cache->expire(self::REQUEST_TOKEN . $GLOBALS['user']->id);
-                    PageLayout::postMessage(MessageBox::success(_('Zugriff erlaubt.')));
-                } catch (Exception $e) {
-                    $cache->expire(self::REQUEST_TOKEN . $GLOBALS['user']->id);
-                    PageLayout::postMessage(MessageBox::error(_('Zugriff verweigert.')));
+            if (!$access_token) {
+                $request_token = $cache->read(self::REQUEST_TOKEN . $GLOBALS['user']->id);
+                if (!$request_token) {
+                    $token = $consumer->getRequestToken();
+                    $cache->write(self::REQUEST_TOKEN . $GLOBALS['user']->id, serialize($token));
+                    $consumer->redirect();
+                } else {
+                    try {
+                        $token = $consumer->getAccessToken($_GET, unserialize($request_token));
+                        $access_token = serialize($token);
+                        $cache->write(self::ACCESS_TOKEN . $GLOBALS['user']->id, $access_token);
+                        $cache->expire(self::REQUEST_TOKEN . $GLOBALS['user']->id);
+                        PageLayout::postMessage(MessageBox::success(_('Zugriff erlaubt.')));
+                    } catch (Exception $e) {
+                        $cache->expire(self::REQUEST_TOKEN . $GLOBALS['user']->id);
+                        PageLayout::postMessage(MessageBox::error(_('Zugriff verweigert.')));
+                    }
                 }
             }
+
+            if ($access_token) {
+                $token = unserialize($access_token);
+                $client = $token->getHttpClient($options);
+            }        
+        } else {
+            $client = new Zend\Http\Client;
         }
 
-        if ($access_token) {
-            $token = unserialize($access_token);
-            $client = $token->getHttpClient($options);
-            
+        if ($client) {
             $uri  = 'http://127.0.0.1/~tleilax/studip/trunk/public/plugins.php/restipplugin/api/';
             $uri .= $resource . '.' . $format;
             $client->setUri($uri);
             $client->setMethod($method);
             $response = $client->send();
-            return $this->consumeResult($response->getBody(), $raw ?: $format);
-        }        
+            return $raw
+                ? $response->headers()->toString() . "\n" . $response->getBody()
+                : $this->consumeResult($response->getBody(), $format);
+        }
     }
     
     private function consumeResult($result, $format) {

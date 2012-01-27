@@ -52,9 +52,10 @@ class OauthController extends OAuthedController {
                 // When there was a oauth_callback then this will redirect to the consumer
                 $server->authorizeFinish($authorized, $user_id);
 
+                PageLayout::postMessage(Messagebox::success(_('Sie haben der Applikation Zugriff auf Ihre Daten gewährt.')));
+                $this->redirect('user#' . $rs['consumer_key']);
                 // No oauth_callback, show the user the result of the authorization
                 // ** your code here **
-                die('foo1');
            }
         }
         catch (OAuthException $e)
