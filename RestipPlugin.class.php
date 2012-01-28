@@ -10,16 +10,17 @@ class RestipPlugin extends StudIPPlugin implements SystemPlugin {
 
     function __construct() {
         parent::__construct();
-        
+
+        $config = Config::getInstance();
+        if (!$config['OAUTH_ENABLED']) {
+            return;
+        }
+
         $navigation = new AutoNavigation(_('OAuth Client'));
         $navigation->setURL(PluginEngine::getLink($this, array(), 'client'));
         $navigation->setImage('blank.gif');
         Navigation::addItem('/oauth', $navigation);
 
-        $navigation = new AutoNavigation(_('Cache leeren'));
-        $navigation->setURL(PluginEngine::getLink($this, array(), 'client/clear_cache'));
-        Navigation::addItem('/oauth/clear_cache', $navigation);
-        
         if ($GLOBALS['perm']->have_perm('autor')) {
             $navigation = new AutoNavigation(_('Apps'));
             $navigation->setURL(PluginEngine::getLink($this, array(), 'user'));
@@ -39,18 +40,8 @@ class RestipPlugin extends StudIPPlugin implements SystemPlugin {
     }
 
     function perform ($unconsumed_path) {
-/*
-        global $auth;
-        
-        $auth->login_if($auth->auth['uid'] == 'nobody'); 
+        $unconsumed_path = preg_replace('~^api/(\w+)(\.(?:csv|json|php|xml))~', 'api/$1/index$2', $unconsumed_path);
 
-        if ($unconsumed_path == 'auth/login') {
-            $url  = $GLOBALS['ABSOLUTE_URI_STUDIP'];
-            $url .= '/plugins_packages/UOL/restipplugin/api.php/auth/register';
-            header('Location: ' . $url);
-            die;
-        }
-*/
         $dispatcher = new Trails_Dispatcher(
             $this->getPluginPath() . DIRECTORY_SEPARATOR . 'app',
             rtrim(PluginEngine::getLink($this, array(), null), '/'),

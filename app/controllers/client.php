@@ -26,9 +26,15 @@ class ClientController extends StudipController
     function index_action() {
         $resource = Request::get('resource');
         if ($resource) {
-            $this->result = $this->request($resource, Request::option('format'), 
-                                           Request::option('method'), Request::int('signed'),
-                                           Request::int('raw'));
+            try {
+                $this->result = $this->request($resource, Request::option('format'), 
+                                               Request::option('method'), Request::int('signed'),
+                                               !Request::int('consume'));
+            } catch (Exception $e) {
+                $details = array(nl2br($e->getMessage()));
+                $message = MessageBox::error(_('Fehler!'), $details);
+                PageLayout::postMessage($message);
+            }
         }
         
         $clear_cache = sprintf('<a href="%s">%s</a>',
@@ -96,9 +102,19 @@ class ClientController extends StudipController
             $client->setUri($uri);
             $client->setMethod($method);
             $response = $client->send();
-            return $raw
-                ? $response->headers()->toString() . "\n" . $response->getBody()
-                : $this->consumeResult($response->getBody(), $format);
+            
+            if ($raw or $response->isClientError()) {
+                $result = sprintf("URL: %s\nStatus: %u %s\n%s\n%s", 
+                                  $client->getUri(),
+                                  $response->getStatusCode(), $response->getReasonPhrase(),
+                                  $response->headers()->toString(), $response->getBody());
+            } else {
+                $result = $this->consumeResult($response->getBody(), $format);
+            }
+            if ($response->isClientError()) {
+                throw new Exception($result, $response->getStatusCode());
+            }
+            return $result;
         }
     }
     

@@ -4,21 +4,35 @@ class ApiController extends OAuthedController
     function before_filter(&$action, &$args) {
         parent::before_filter($action, $args);
 
-        $range = array_shift($args);        
-        list($range_id, $output_type) = explode('.', $range);
-        array_unshift($args, $range_id);
+        if (empty($action) and $GLOBALS['user']->id !== 'nobody') {
+            $action = $GLOBALS['user']->id;
+        }
+
+        list($action, $output_type) = explode('.', $action);
+        if (!$output_type) {
+            if (strpos($_SERVER['HTTP_ACCEPT'], 'csv') !== false) {
+                $output_type = 'csv';
+            } elseif (strpos($_SERVER['HTTP_ACCEPT'], 'php') !== false) {
+                $output_type = 'php';
+            } elseif (strpos($_SERVER['HTTP_ACCEPT'], 'xml') !== false) {
+                $output_type = 'xml';
+            } else {
+                $output_type = 'json';
+            }
+        }
         
+        $method = $_SERVER['REQUEST_METHOD'];
+
+        if (!is_callable(array($this, $action . '_' . $method . '_action'))) {
+            array_unshift($args, $action);
+            $action = 'index';
+        }
+
+        $action = $action . '_' . $method;
+
         $this->output_type = $output_type;
         $this->action      = $action;
         $this->args        = $args;
-    }
-    
-    function news_action($range_id) {
-        $range_id === 'studip' || $this->isAuthorized();
-        
-        require_once 'lib/classes/StudipNews.class.php';
-
-        $this->data = StudipNews::GetNewsByRange($range_id);
     }
     
     function rescue($exception) {
@@ -72,9 +86,17 @@ class ApiController extends OAuthedController
         $xml = $dom->asXML();
         $xml = str_replace(array('&lt;![CDATA[', ']]&gt;'), array('<![CDATA[', ']]>'), $xml);
 
+        // Pretty print, "inspired" by from http://gdatatips.blogspot.com/2008/11/xml-php-pretty-printer.html
         if ($pretty_print) {
-
-            // Pretty print, "inspired" by from http://gdatatips.blogspot.com/2008/11/xml-php-pretty-printer.html
+            // Fix empty tag bug
+            preg_match_all('/<(\w+)(?:\s[^>\/]*)?><\/\\1>/', $xml, $matches);
+            $empty_tags = array();
+            foreach ($matches as $index => $match) {
+                $index = '<EMPTY_TAG_' . md5($index) . '/>'; 
+                $empty_tags[$index] = $match[0];
+            }
+            $xml = str_replace(array_values($empty_tags), array_keys($empty_tags), $xml);
+            
             $level = 1;
             $indent = 0;
             $pretty = array();
@@ -86,7 +108,7 @@ class ApiController extends OAuthedController
             }
 
             foreach ($xml as $node) {
-                if (preg_match('/^<[\w]+[^>\/]*>$/U', $node)) {
+                if (preg_match('/^<[\w]+[^>]*[^\/]>$/U', $node)) {
                     array_push($pretty, str_repeat("\t", $indent) . $node);
                     $indent += $level;
                 } else {
@@ -102,6 +124,8 @@ class ApiController extends OAuthedController
                 }
             }
             $xml = implode("\n", $pretty);
+            
+            $xml = str_replace(array_keys($empty_tags), array_values($empty_tags), $xml);
         }
         return $xml;
     }

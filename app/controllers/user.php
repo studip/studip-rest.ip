@@ -23,12 +23,14 @@ class UserController extends StudipController
 
     function index_action() {
         $this->consumers = OAuthUser::getConsumers($GLOBALS['user']->id);
+        $this->types = array(
+            'website' => _('Website'),
+            'program' => _('Herkömmliches Desktopprogramm'),
+            'app'     => _('Mobile App')
+        );
 
         $this->setInfoboxImage('infobox/administration.jpg');
-        $new = sprintf('<a href="%s">%s</a>',
-                       $this->url_for('admin/edit'),
-                       _('Neue Applikation registrieren'));
-        $this->addToInfobox('Aktionen', $new, 'icons/16/black/plus.png');
+        $this->addToInfobox('Informationen', _('Dies sind die Apps, die Zugriff auf Ihren Account haben.'), 'icons/16/black/info-circle.png');
     }
 
     function revoke_action($consumer_key) {

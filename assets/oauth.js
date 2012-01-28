@@ -18,9 +18,10 @@ jQuery(function($) {
     return event.preventDefault();
   });
   return $('[data-behaviour~=confirm]').live('click', function(event) {
-    var message;
-    message = 'Wollen Sie die folgende Aktion wirklich ausfÃ¼hren?'.toLocaleString();
-    message += "\n\n\"" + $(this).attr('title') + "\"";
+    var message, title;
+    title = $(this).attr('title') || $(this).val() || $(this).text();
+    message = 'Wollen Sie die folgende Aktion wirklich ausführen?'.toLocaleString();
+    message += "\n\n\"" + title + "\"";
     if (!confirm(message)) return event.preventDefault();
   });
 });

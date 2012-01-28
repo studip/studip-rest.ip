@@ -25,6 +25,14 @@ class CreateDatabase extends DBMigration
                 UNIQUE KEY `oauth_id` (`user_id`)
             ) ENGINE=InnoDB
         ");
+        
+        $config = Config::GetInstance();
+        $config->create('OAUTH_ENABLED', array(
+            'description' => 'Schaltet die OAuth-Schnittstelle ein',
+            'section'     => 'global',
+            'type'        => 'boolean',
+            'value'       => '1'
+        ));
     }
 
     function down() {
@@ -35,5 +43,8 @@ class CreateDatabase extends DBMigration
         foreach ($tables as $table) {
             DBManager::get()->exec("DROP TABLE " . $table);
         }
+
+        $config = Config::GetInstance();
+        $config->delete('OAUTH_ENABLED');
     }
 }

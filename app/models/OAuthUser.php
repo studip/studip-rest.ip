@@ -37,13 +37,15 @@ class OAuthUser
                         osr_status              as status,
                         osr_application_uri     as application_uri,
                         osr_application_title   as application_title,
-                        osr_application_descr   as application_descr
+                        osr_application_descr   as application_descr,
+                        osr_application_type    as type,
+                        MIN(ost_timestamp)      AS timestamp
                 FROM oauth_server_registry
-                    JOIN oauth_server_token
-                    ON ost_osr_id_ref = osr_id
+                    JOIN oauth_server_token ON ost_osr_id_ref = osr_id
                 WHERE ost_usa_id_ref = ?
                   AND ost_token_ttl  >= NOW()
                   AND ost_authorized = 1
+                GROUP BY osr_consumer_key
                 ORDER BY osr_application_title";
         $statement = DBManager::get()->prepare($query);
         $statement->execute(array($user_id));

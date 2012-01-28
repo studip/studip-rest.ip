@@ -14,6 +14,7 @@ jQuery ($) ->
         event.preventDefault()
         
     $('[data-behaviour~=confirm]').live 'click', (event) ->
-        message = 'Wollen Sie die folgende Aktion wirklich ausfÃ¼hren?'.toLocaleString()
-        message += "\n\n\"" + $(@).attr('title') + "\""
+        title = $(@).attr('title') || $(@).val() || $(@).text()
+        message = 'Wollen Sie die folgende Aktion wirklich ausführen?'.toLocaleString()
+        message += "\n\n\"" + title + "\""
         event.preventDefault() unless confirm(message)
