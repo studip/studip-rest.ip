@@ -159,7 +159,8 @@ class ClientController extends StudipController
      *
      * @param String $image Image to display, path is relative to :assets:/images
      **/
-    function setInfoBoxImage($image) {
+    function setInfoBoxImage($image)
+    {
         $this->populateInfobox();
 
         $this->infobox['picture'] = $image;
@@ -177,7 +178,8 @@ class ClientController extends StudipController
      * @param String $icon Icon to display in front the item, path is
      * relative to :assets:/images
      **/
-    function addToInfobox($category, $text, $icon = 'blank.gif') {
+    function addToInfobox($category, $text, $icon = 'blank.gif')
+    {
         $this->populateInfobox();
 
         $infobox = $this->infobox;
