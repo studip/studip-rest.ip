@@ -16,6 +16,15 @@ class RestipPlugin extends StudIPPlugin implements SystemPlugin {
             return;
         }
 
+        if (!$this->checkEnvironment()) {
+            $message   = _('Das OAuth-Plugin ist aktiviert, aber nicht für die Rolle "Nobody" freigegeben.');
+            $details   = array();
+            $details[] = _('Dies behindert die Kommunikation externer Applikationen mit dem System.');
+            $details[] = sprintf(_('Klicken Sie <a href="%s">hier</a>, um die Rollenzuweisung zu bearbeiten.'),
+                               URLHelper::getLink('dispatch.php/admin/role/assign_plugin_role/' . $this->getPluginId()));
+            PageLayout::postMessage(Messagebox::info($message, $details));
+        }
+
         $navigation = new AutoNavigation(_('OAuth Client'));
         $navigation->setURL(PluginEngine::getLink($this, array(), 'client'));
         $navigation->setImage('blank.gif');
@@ -34,12 +43,14 @@ class RestipPlugin extends StudIPPlugin implements SystemPlugin {
         }
     }
 
-    public function initialize() {
+    function initialize()
+    {
         PageLayout::addStylesheet($this->getPluginURL() . '/assets/form-settings.css');
         PageLayout::addScript($this->getPluginURL() . '/assets/oauth.js');
     }
 
-    function perform ($unconsumed_path) {
+    function perform ($unconsumed_path)
+    {
         $unconsumed_path = preg_replace('~^api/(\w+)(\.(?:csv|json|php|xml))~', 'api/$1/index$2', $unconsumed_path);
 
         $dispatcher = new Trails_Dispatcher(
@@ -57,7 +68,6 @@ class RestipPlugin extends StudIPPlugin implements SystemPlugin {
         require_once dirname(__FILE__) . '/vendor/pimple/lib/Pimple.php';
         $container = new Pimple();
 
-
         $container['CONSUMER_KEY'] = '1d918110489350d4ff682c48f247a34804f2268ef';
         $container['CONSUMER_SECRET'] = '07d9acf83e15069f54476fb2f6e13583';
 
@@ -69,8 +79,15 @@ class RestipPlugin extends StudIPPlugin implements SystemPlugin {
 
         $container['CONSUMER_URL'] = PluginEngine::getURL($this, array(), 'client');
 
-
-
         return $container;
+    }
+
+    function checkEnvironment() {
+        # TODO performance - use cache on success ?
+        $role_persistence = new RolePersistence;
+        $plugin_roles     = $role_persistence->getAssignedPluginRoles($this->getPluginId());
+        $role_names       = array_map(function ($role) { return $role->getRolename(); }, $plugin_roles);
+
+        return in_array('Nobody', $role_names);
     }
 }
