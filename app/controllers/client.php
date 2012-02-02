@@ -9,11 +9,6 @@ spl_autoload_register(function ($name) {
 
 class ClientController extends StudipController
 {
-    const CONSUMER_KEY    = '1d918110489350d4ff682c48f247a34804f2268ef';
-    const CONSUMER_SECRET = '07d9acf83e15069f54476fb2f6e13583';
-
-    const API_URL = 'http://127.0.0.1/~tleilax/studip/trunk/public/plugins.php/restipplugin';
-
 
     function before_filter(&$action, &$args) {
         parent::before_filter($action, $args);
@@ -21,6 +16,9 @@ class ClientController extends StudipController
         $this->set_layout($GLOBALS['template_factory']->open('layouts/base'));
         Navigation::activateItem('/oauth');
         PageLayout::setTitle(_('OAuth Client'));
+
+        # make container even more accessible
+        $this->container = $this->dispatcher->container;
     }
 
     function index_action() {
@@ -62,8 +60,7 @@ class ClientController extends StudipController
         }
 
         if ($client) {
-            $uri  = 'http://127.0.0.1/~tleilax/studip/trunk/public/plugins.php/restipplugin/api/';
-            $uri .= $resource . '.' . $format;
+            $uri  = $this->container['API_URL'] . "/$resource.$format";
             $client->setUri($uri);
             $client->setMethod($method);
             $response = $client->send();
@@ -87,10 +84,10 @@ class ClientController extends StudipController
     private function signed()
     {
         $options = array(
-            'callbackUrl'    => 'http://127.0.0.1' . $_SERVER['REQUEST_URI'],
-            'siteUrl'        => 'http://127.0.0.1/~tleilax/studip/trunk/public/plugins.php/restipplugin/oauth',
-            'consumerKey'    => self::CONSUMER_KEY,
-            'consumerSecret' => self::CONSUMER_SECRET,
+            'callbackUrl'    => $this->container['CONSUMER_URL'] . '?' . $_SERVER['QUERY_STRING'],
+            'siteUrl'        => $this->container['PROVIDER_URL'],
+            'consumerKey'    => $this->container['CONSUMER_KEY'],
+            'consumerSecret' => $this->container['CONSUMER_SECRET'],
         );
         $consumer = new Zend\OAuth\Consumer($options);
 
