@@ -12,7 +12,7 @@ class OAuthedController extends Trails_Controller
             'username' => $GLOBALS['DB_STUDIP_USER'],
             'password' => $GLOBALS['DB_STUDIP_PASSWORD']
         );
-        OAuthStore::instance('pdo', $options);
+        OAuthStore::instance('PDO', $options);
     }
     
     function isAuthorized() {

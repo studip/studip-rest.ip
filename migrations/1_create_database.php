@@ -6,7 +6,7 @@ class CreateDatabase extends DBMigration
     }
 
     function up () {
-        $sql = file_get_contents(dirname(__FILE__) . '/../oauth-php/library/store/mysql/mysql.sql');
+        $sql = file_get_contents(dirname(__FILE__) . '/../vendor/oauth-php/library/store/mysql/mysql.sql');
         $chunks = explode('#--SPLIT--', $sql);
         $chunks = array_filter($chunks);
         foreach ($chunks as $chunk) {
