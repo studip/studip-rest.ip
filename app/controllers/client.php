@@ -11,23 +11,23 @@ class ClientController extends StudipController
 {
     const CONSUMER_KEY    = '1d918110489350d4ff682c48f247a34804f2268ef';
     const CONSUMER_SECRET = '07d9acf83e15069f54476fb2f6e13583';
-    
+
     const API_URL = 'http://127.0.0.1/~tleilax/studip/trunk/public/plugins.php/restipplugin';
 
-    
+
     function before_filter(&$action, &$args) {
         parent::before_filter($action, $args);
-        
+
         $this->set_layout($GLOBALS['template_factory']->open('layouts/base'));
         Navigation::activateItem('/oauth');
         PageLayout::setTitle(_('OAuth Client'));
     }
-    
+
     function index_action() {
         $resource = Request::get('resource');
         if ($resource) {
             try {
-                $this->result = $this->request($resource, Request::option('format'), 
+                $this->result = $this->request($resource, Request::option('format'),
                                                Request::option('method'), Request::int('signed'),
                                                !Request::int('consume'));
             } catch (Exception $e) {
@@ -36,13 +36,13 @@ class ClientController extends StudipController
                 PageLayout::postMessage($message);
             }
         }
-        
+
         $clear_cache = sprintf('<a href="%s">%s</a>',
                                $this->url_for('client/clear_cache'), _('Cache leeren'));
         $this->setInfoboxImage('infobox/administration.jpg');
         $this->addToInfobox('Aktionen', $clear_cache, 'icons/16/black/refresh.png');
     }
-    
+
     const REQUEST_TOKEN = '/oauth/request_token/';
     const ACCESS_TOKEN = '/oauth/access_token/';
 
@@ -53,45 +53,10 @@ class ClientController extends StudipController
         PageLayout::postMessage(MessageBox::success(_('Der Cache wurde geleert.')));
         $this->redirect('client');
     }
-    
+
     private function request($resource, $format = 'php', $method = 'GET', $signed = false, $raw = false) {
         if ($signed) {
-            $options = array(
-                    'callbackUrl'    => 'http://127.0.0.1' . $_SERVER['REQUEST_URI'],
-                    'siteUrl'        => 'http://127.0.0.1/~tleilax/studip/trunk/public/plugins.php/restipplugin/oauth',
-                    'consumerKey'    => self::CONSUMER_KEY,
-                    'consumerSecret' => self::CONSUMER_SECRET,
-            );
-            $consumer = new Zend\OAuth\Consumer($options);
-        
-        
-            $cache = StudipCacheFactory::getCache();
-            $access_token = $cache->read(self::ACCESS_TOKEN . $GLOBALS['user']->id);
-
-            if (!$access_token) {
-                $request_token = $cache->read(self::REQUEST_TOKEN . $GLOBALS['user']->id);
-                if (!$request_token) {
-                    $token = $consumer->getRequestToken();
-                    $cache->write(self::REQUEST_TOKEN . $GLOBALS['user']->id, serialize($token));
-                    $consumer->redirect();
-                } else {
-                    try {
-                        $token = $consumer->getAccessToken($_GET, unserialize($request_token));
-                        $access_token = serialize($token);
-                        $cache->write(self::ACCESS_TOKEN . $GLOBALS['user']->id, $access_token);
-                        $cache->expire(self::REQUEST_TOKEN . $GLOBALS['user']->id);
-                        PageLayout::postMessage(MessageBox::success(_('Zugriff erlaubt.')));
-                    } catch (Exception $e) {
-                        $cache->expire(self::REQUEST_TOKEN . $GLOBALS['user']->id);
-                        PageLayout::postMessage(MessageBox::error(_('Zugriff verweigert.')));
-                    }
-                }
-            }
-
-            if ($access_token) {
-                $token = unserialize($access_token);
-                $client = $token->getHttpClient($options);
-            }        
+            $client = $this->signed();
         } else {
             $client = new Zend\Http\Client;
         }
@@ -102,9 +67,9 @@ class ClientController extends StudipController
             $client->setUri($uri);
             $client->setMethod($method);
             $response = $client->send();
-            
+
             if ($raw or $response->isClientError()) {
-                $result = sprintf("URL: %s\nStatus: %u %s\n%s\n%s", 
+                $result = sprintf("URL: %s\nStatus: %u %s\n%s\n%s",
                                   $client->getUri(),
                                   $response->getStatusCode(), $response->getReasonPhrase(),
                                   $response->headers()->toString(), $response->getBody());
@@ -117,13 +82,56 @@ class ClientController extends StudipController
             return $result;
         }
     }
-    
+
+
+    private function signed()
+    {
+        $options = array(
+            'callbackUrl'    => 'http://127.0.0.1' . $_SERVER['REQUEST_URI'],
+            'siteUrl'        => 'http://127.0.0.1/~tleilax/studip/trunk/public/plugins.php/restipplugin/oauth',
+            'consumerKey'    => self::CONSUMER_KEY,
+            'consumerSecret' => self::CONSUMER_SECRET,
+        );
+        $consumer = new Zend\OAuth\Consumer($options);
+
+
+        $cache = StudipCacheFactory::getCache();
+        $access_token = $cache->read(self::ACCESS_TOKEN . $GLOBALS['user']->id);
+
+        if (!$access_token) {
+            $request_token = $cache->read(self::REQUEST_TOKEN . $GLOBALS['user']->id);
+            if (!$request_token) {
+                $token = $consumer->getRequestToken();
+                $cache->write(self::REQUEST_TOKEN . $GLOBALS['user']->id, serialize($token));
+                $consumer->redirect();
+            } else {
+                try {
+                    $token = $consumer->getAccessToken($_GET, unserialize($request_token));
+                    $access_token = serialize($token);
+                    $cache->write(self::ACCESS_TOKEN . $GLOBALS['user']->id, $access_token);
+                    $cache->expire(self::REQUEST_TOKEN . $GLOBALS['user']->id);
+                    PageLayout::postMessage(MessageBox::success(_('Zugriff erlaubt.')));
+                } catch (Exception $e) {
+                    $cache->expire(self::REQUEST_TOKEN . $GLOBALS['user']->id);
+                    PageLayout::postMessage(MessageBox::error(_('Zugriff verweigert.')));
+                }
+            }
+        }
+
+        if ($access_token) {
+            $token = unserialize($access_token);
+            $client = $token->getHttpClient($options);
+        }
+
+        return $client;
+    }
+
     private function consumeResult($result, $format) {
         if ($format === 'csv') {
             $temp = explode("\n", $result);
             $temp = array_filter($temp);
             $rows = array_map(function ($row) { return str_getcsv($row, ';'); }, $temp);
-            
+
             $header = array_shift($rows);
             $result = array();
             foreach ($rows as $row) {
@@ -137,10 +145,10 @@ class ClientController extends StudipController
         } elseif ($format === 'xml') {
             $result = json_decode(json_encode(simplexml_load_string($result)), true);
         }
-        
+
         return $result;
     }
-    
+
     /**
      * Spawns a new infobox variable on this object, if neccessary.
      **/
