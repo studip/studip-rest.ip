@@ -24,7 +24,7 @@ class OAuthUser
             'username' => $GLOBALS['DB_STUDIP_USER'],
             'password' => $GLOBALS['DB_STUDIP_PASSWORD']
         );
-        return OAuthStore::instance('pdo', $options);
+        return OAuthStore::instance('PDO', $options);
     }
     
     // Fetch all consumers registered by the given user

@@ -10,7 +10,7 @@ class OAuthConsumer
             'username' => $GLOBALS['DB_STUDIP_USER'],
             'password' => $GLOBALS['DB_STUDIP_PASSWORD']
         );
-        $this->store = OAuthStore::instance('pdo', $options);
+        $this->store = OAuthStore::instance('PDO', $options);
     }
 
     static function spawn() {
