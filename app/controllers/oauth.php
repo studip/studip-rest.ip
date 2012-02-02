@@ -1,13 +1,5 @@
 <?
 class OauthController extends OAuthedController {
-    function login_action() {
-        if ($unconsumed_path == 'auth/login') {
-            $url  = $GLOBALS['ABSOLUTE_URI_STUDIP'];
-            $url .= '/plugins_packages/UOL/restipplugin/api.php/oauth/register';
-            header('Location: ' . $url);
-            die;
-        }
-    }
 
     function before_filter(&$action, &$args) {
         parent::before_filter($action, $args);        
