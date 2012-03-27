@@ -55,7 +55,7 @@ class ApiController
                     var_dump($data);
                     break;
             }
-            header('X-SERVER-TIMESTAMP: ' . time());
+            header('X-Server-Timestamp: ' . time());
             die;
         }, 1);
     
