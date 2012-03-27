@@ -9,10 +9,9 @@ jQuery ($) ->
                 width: 500
                 buttons:
                     'Schliessen': ->
-                        $(@).dialog('close');
-        
+                        $(@).dialog('close')
         event.preventDefault()
-        
+
     $('[data-behaviour~=confirm]').live 'click', (event) ->
         title = $(@).attr('title') || $(@).val() || $(@).text()
         message = 'Wollen Sie die folgende Aktion wirklich ausführen?'.toLocaleString()

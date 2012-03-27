@@ -1,8 +1,8 @@
 <?
-class OauthController extends OAuthedController {
+class OauthController extends Trails_Controller {
 
     function before_filter(&$action, &$args) {
-        parent::before_filter($action, $args);        
+        parent::before_filter($action, $args);
         $this->set_layout(null);
     }
     
@@ -36,7 +36,7 @@ class OauthController extends OAuthedController {
             // Returns an array with the consumer key, consumer secret, token, token secret and token type.
             $rs = $server->authorizeVerify();
 
-            if ($_SERVER['REQUEST_METHOD'] == 'POST')
+            if (isset($_POST['allow']))
             {
                 // See if the user clicked the 'allow' submit button (or whatever you choose)
                 $authorized = array_key_exists('allow', $_POST);
@@ -57,7 +57,8 @@ class OauthController extends OAuthedController {
             die('invalid');
         }
 
-        $this->set_layout($GLOBALS['template_factory']->open('layouts/base'));
+        PageLayout::disableHeader();
+        $this->set_layout($GLOBALS['template_factory']->open('layouts/base_without_infobox'));
         $this->rs = $rs;
     }
     
