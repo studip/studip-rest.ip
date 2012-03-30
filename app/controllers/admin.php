@@ -18,17 +18,31 @@ class AdminController extends StudipController
             'program' => _('Herkömmliches Desktopprogramm'),
             'app'     => _('Mobile App')
         );
-    }
 
-    function index_action() {
-        $this->consumers = $this->store->getList();
-
+        // Infobox
         $this->setInfoboxImage('infobox/administration.jpg');
+
+        if ($action !== 'index') {
+            $back = sprintf('<a href="%s">%s</a>',
+                           $this->url_for('admin'),
+                           _('Zurück zur Übersicht'));
+            $this->addToInfobox('Aktionen', $back, 'icons/16/black/arr_1left');            
+        }
 
         $new = sprintf('<a href="%s">%s</a>',
                        $this->url_for('admin/edit'),
                        _('Neue Applikation registrieren'));
-        $this->addToInfobox('Aktionen', $new, 'icons/16/black/plus.png');
+        $this->addToInfobox('Aktionen', $new, 'icons/16/black/plus');
+
+        $new = sprintf('<a href="%s">%s</a>',
+                       $this->url_for('admin/permissions'),
+                       _('Globale Zugriffseinstellungen'));
+        $this->addToInfobox('Aktionen', $new, 'icons/16/black/admin');
+    }
+
+    function index_action() {
+        $this->consumers = $this->store->getList();
+        $this->routes    = RestIP\Router::getInstance()->getRoutes();
     }
 
     function render_keys($key, $consumer = null) {
@@ -88,56 +102,32 @@ class AdminController extends StudipController
         PageLayout::postMessage(MessageBox::success(_('Die Applikation wurde erfolgreich gelöscht.')));
         $this->redirect('admin/index');
     }
+    
+    function permissions_action($consumer_key = null) {
+        if (Request::submitted('store')) {
+            $perms = $_POST['permission'];
+            
+            $permissions = RestIP\Router::getInstance($consumer_key ?: null)->getPermissions();
+            foreach ($_POST['permission'] as $route => $methods) {
+                foreach ($methods as $method => $granted) {
+                    $permissions->set(urldecode($route), urldecode($method), (bool)$granted);
+                }
+            }
 
-    /**
-     * Spawns a new infobox variable on this object, if neccessary.
-     **/
-    private function populateInfobox()
-    {
-        if (!isset($this->infobox)) {
-            $this->infobox = array(
-                'picture' => 'blank.gif',
-                'content' => array()
-            );
+            PageLayout::postMessage(MessageBox::success(_('Die Zugriffsberechtigungen wurden erfolgreich gespeichert')));
+            $this->redirect($consumer_key ? 'admin' : 'admin/permissions');
+            return;
         }
-    }
-
-    /**
-     * Sets the header image for the infobox.
-     *
-     * @param String $image Image to display, path is relative to :assets:/images
-     **/
-    function setInfoBoxImage($image) {
-        $this->populateInfobox();
-
-        $this->infobox['picture'] = $image;
-    }
-
-    /**
-     * Adds an item to a certain category section of the infobox. Categories
-     * are created in the order this method is invoked. Multiple occurences of
-     * a category will add items to the category.
-     *
-     * @param String $category The item's category title used as the header
-     * above displayed category - write spoken not
-     * tech language ^^
-     * @param String $text The content of the item, may contain html
-     * @param String $icon Icon to display in front the item, path is
-     * relative to :assets:/images
-     **/
-    function addToInfobox($category, $text, $icon = 'blank.gif') {
-        $this->populateInfobox();
-
-        $infobox = $this->infobox;
-
-        if (!isset($infobox['content'][$category])) {
-            $infobox['content'][$category] = array(
-                'kategorie' => $category,
-                'eintrag' => array(),
-            );
-        }
-        $infobox['content'][$category]['eintrag'][] = compact('icon', 'text');
-
-        $this->infobox = $infobox;
+        
+        $title = $consumer_key ? 'Zugriffsberechtigungen' : 'Globale Zugriffsberechtigungen';
+        $title .= ' - ' . PageLayout::getTitle();
+        PageLayout::setTitle($title);
+        
+        $this->consumer_key = $consumer_key;
+        $this->router       = RestIP\Router::getInstance($consumer_key);
+        $this->routes       = $this->router->getRoutes();
+        $this->descriptions = $this->router->getDescriptions();
+        $this->permissions  = $this->router->getPermissions();
+        $this->global       = $consumer_key ? RestIP\Router::getInstance()->getPermissions() : false;
     }
 }

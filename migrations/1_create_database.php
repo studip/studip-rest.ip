@@ -25,6 +25,16 @@ class CreateDatabase extends DBMigration
                 UNIQUE KEY `oauth_id` (`user_id`)
             ) ENGINE=InnoDB
         ");
+
+        DBManager::get()->exec("
+            CREATE TABLE IF NOT EXISTS `oauth_api_permissions` (
+              `route_id` char(32) NOT NULL,
+              `consumer_key` varchar(64) DEFAULT NULL,
+              `method` char(6) NOT NULL,
+              `granted` tinyint(1) unsigned NOT NULL DEFAULT '0',
+              UNIQUE KEY `route_id` (`route_id`,`consumer_key`,`method`)
+            )
+        ");
 /*        
         $config = Config::GetInstance();
         $config->create('OAUTH_ENABLED', array(

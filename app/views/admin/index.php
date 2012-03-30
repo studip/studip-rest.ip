@@ -15,7 +15,7 @@
     <tbody>
 <? foreach ($consumers as $consumer): ?>
         <tr class="<?= TextHelper::cycle('cycle_even', 'cycle_odd') ?>">
-            <td><input type="checkbox" disabled <?= $consumer['enabled'] ? 'checked' : '' ?>></td>
+            <td><?= Assets::img('icons/16/blue/checkbox-' . ($consumer['enabled'] ? '' : 'un') . 'checked') ?></td>
             <td>
             <? if ($consumer['application_uri']): ?>
                 <a href="<?= $consumer['application_uri'] ?>" target="_blank">
@@ -31,18 +31,21 @@
                     <?= htmlReady($consumer['requester_name']) ?>
                 </a>
             </td>
-            <td><input type="checkbox" disabled <?= $consumer['application_commercial'] ? 'checked' : '' ?>></td>
+            <td><?= Assets::img('icons/16/blue/checkbox-' . ($consumer['application_commercial'] ? '' : 'un') . 'checked') ?></td>
             <td align="right">
                 <a href="<?= $controller->url_for('admin/keys', $consumer['consumer_key']) ?>"
                    data-behaviour="modal"
                    title="<?= htmlReady(sprintf(_('Schlüssel anzeigen für Applikation "%s"'), $consumer['application_title'])) ?>">
                     <?= Assets::img('icons/16/blue/info-circle.png') ?>
                 </a>
-                <a href="<?= $controller->url_for('admin/edit', $consumer['consumer_key']) ?>">
+                <a href="<?= $controller->url_for('admin/edit', $consumer['consumer_key']) ?>" title="<?= _('Applikation bearbeiten') ?>">
                     <?= Assets::img('icons/16/blue/edit.png') ?>
                 </a>
+                <a href="<?= $controller->url_for('admin/permissions', $consumer['consumer_key']) ?>" title="<?= _('Zugriffsberechtigungen verwalten') ?>">
+                    <?= Assets::img('icons/16/blue/admin.png') ?>
+                </a>
                 <a data-behaviour="confirm" href="<?= $controller->url_for('admin/delete', $consumer['consumer_key']) ?>"
-                   title="<?= htmlReady(sprintf(_('Applikation "%s" entfernen"'), $consumer['application_title'])) ?>">
+                   title="<?= htmlReady(sprintf(_('Applikation "%s" entfernen'), $consumer['application_title'])) ?>">
                     <?= Assets::img('icons/16/blue/trash.png') ?>
                 </a>
             </td>

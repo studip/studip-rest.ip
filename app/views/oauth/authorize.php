@@ -1,5 +1,6 @@
 <? use Studip\Button, Studip\LinkButton; ?>
-<p style="text-align: center;">
+
+<p>
     <?= sprintf(_('Die Applikation <strong>%s</strong> möchte auf Ihre Daten zugreifen.'), 
                 htmlReady($rs['application_title'])) ?>
 </p>

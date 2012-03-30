@@ -7,12 +7,12 @@ require_once 'bootstrap.php';
  * @author  Jan-Hendrik Willms <tleilax+studip@gmail.com>
  * @version 0 alpha
  */
-class RestipPlugin extends StudIPPlugin implements SystemPlugin, HomepagePlugin, APIPlugin
+class RestipPlugin extends StudIPPlugin implements SystemPlugin, HomepagePlugin
 {
 
     function __construct() {
         parent::__construct();
-
+        
         $config = Config::getInstance();
         if (!$config['OAUTH_ENABLED']) {
             return;
@@ -68,11 +68,5 @@ class RestipPlugin extends StudIPPlugin implements SystemPlugin, HomepagePlugin,
     
     public function getHomepageTemplate($user_id) {
         return null;
-    }
-    
-    public function routes(&$router) {
-
-        Routes::setRoutes($router);
-
     }
 }

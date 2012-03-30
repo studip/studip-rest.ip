@@ -2,15 +2,18 @@
 
 class OAuth
 {
+    public static $consumer_key = null;
+    
     public static function verify()
     {
         try {
             $req = new OAuthRequestVerifier();
-            $id = $req->verify('access');
+            $result = $req->verifyExtended('access');
+            self::$consumer_key = $result['consumer_key'];
             
             $query = "SELECT user_id FROM oauth_mapping WHERE oauth_id = ?";
             $statement = DBManager::get()->prepare($query);
-            $statement->execute(array($id));
+            $statement->execute(array($result['user_id']));
             $user_id = $statement->fetchColumn();
             
             if (!$user_id) {

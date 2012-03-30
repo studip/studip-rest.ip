@@ -2,5 +2,6 @@
 
 interface APIPlugin
 {
+    function describeRoutes();
     function routes(&$router);
 }

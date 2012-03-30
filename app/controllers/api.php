@@ -2,7 +2,7 @@
 class ApiController
 {
     function perform($unconsumed) {
-        error_reporting(E_ALL ^ E_NOTICE);
+        error_reporting(0);
     
         if (preg_match('/\.(csv|json|php|xml)$/', $unconsumed, $match)) {
             $format = $match[1];
@@ -14,18 +14,12 @@ class ApiController
         // Yes, this is indeed a pretty nasty hack
         // Kids, don't try this at home!
         $_SERVER['PATH_INFO'] = '/' . $unconsumed;
-
-        $router = new Slim();
         
-        // Unfortunately, PluginEngine::sendMessage() discards the reference
-        // to the router somewhere along the way so we need to iterate manually
-        foreach (PluginManager::getInstance()->getPlugins('APIPlugin') as $plugin) {
-            $plugin->routes($router);
-        }
+        $router = RestIP\Router::getInstance(OAuth::$consumer_key);
         
         // Hook into slim to convert raw data into requested data format 
         $router->hook('slim.after.router', function () use ($router, $format) {
-            $data   = $router->data['data'];
+            $data = $router->value();
             switch ($format) {
                 case 'csv':
                     header('Content-Type: text/csv;charset=windows-1252');
@@ -55,7 +49,7 @@ class ApiController
                     var_dump($data);
                     break;
             }
-            header('X-Server-Timestamp: ' . time());
+            header('X-SERVER-TIMESTAMP: ' . time());
             die;
         }, 1);
     
