@@ -4,4 +4,4 @@ origin=UOL
 version=0.5
 description=This plugin is supposed to be a working example of a RESTful webservice implementing authentication by OAuth.
 homepage=http://github.com/tleilax/studip-mobile-webservices
-studipMinVersion=2.0
+studipMinVersion=2.3
