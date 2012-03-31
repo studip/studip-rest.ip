@@ -43,6 +43,7 @@ class RestipPlugin extends StudIPPlugin implements SystemPlugin, HomepagePlugin
     function initialize()
     {
         PageLayout::addStylesheet($this->getPluginURL() . '/assets/form-settings.css');
+        PageLayout::addStylesheet($this->getPluginURL() . '/assets/oauth.css');
         PageLayout::addScript($this->getPluginURL() . '/assets/oauth.js');
     }
 
