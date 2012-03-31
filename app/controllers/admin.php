@@ -1,7 +1,15 @@
-<?
+<?php
+
+/**
+ *
+ **/
 class AdminController extends StudipController
 {
-    function before_filter(&$action, &$args) {
+    /**
+     *
+     **/
+    public function before_filter(&$action, &$args)
+    {
         parent::before_filter($action, $args);
 
         $GLOBALS['perm']->check('root');
@@ -40,12 +48,20 @@ class AdminController extends StudipController
         $this->addToInfobox('Aktionen', $new, 'icons/16/black/admin');
     }
 
-    function index_action() {
+    /**
+     *
+     **/
+    public function index_action()
+    {
         $this->consumers = $this->store->getList();
         $this->routes    = RestIP\Router::getInstance()->getRoutes();
     }
 
-    function render_keys($key, $consumer = null) {
+    /**
+     *
+     **/
+    public function render_keys($key, $consumer = null)
+    {
         if ($consumer === null) {
             $consumer = $this->store->load($key);
         }
@@ -56,7 +72,11 @@ class AdminController extends StudipController
         );
     }
     
-    function keys_action($key) {
+    /**
+     *
+     **/
+    public function keys_action($key)
+    {
         $details = $this->render_keys($key);
         
         if (Request::isXhr()) {
@@ -67,7 +87,11 @@ class AdminController extends StudipController
         }
     }
 
-    function edit_action($key = null) {
+    /**
+     *
+     **/
+    public function edit_action($key = null)
+    {
         $this->consumer = $this->store->extractConsumerFromRequest($key);
 
         if (Request::submitted('store')) {
@@ -97,13 +121,21 @@ class AdminController extends StudipController
         $this->id = $id;
     }
     
-    function delete_action($key) {
+    /**
+     *
+     **/
+    public function delete_action($key)
+    {
         $this->store->delete($key);
         PageLayout::postMessage(MessageBox::success(_('Die Applikation wurde erfolgreich gelöscht.')));
         $this->redirect('admin/index');
     }
     
-    function permissions_action($consumer_key = null) {
+    /**
+     *
+     **/
+    public function permissions_action($consumer_key = null)
+    {
         if (Request::submitted('store')) {
             $perms = $_POST['permission'];
             

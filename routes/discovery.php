@@ -1,6 +1,13 @@
 <?php
+
+/**
+ *
+ **/
 class DiscoveryRoute implements APIPlugin
 {
+    /**
+     *
+     **/
     public function describeRoutes()
     {
         return array(
@@ -8,6 +15,9 @@ class DiscoveryRoute implements APIPlugin
         );
     }
     
+    /**
+     *
+     **/
     public function routes(&$router)
     {
         $router->get('/discovery', function () use (&$router)

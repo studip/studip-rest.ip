@@ -1,6 +1,13 @@
-<?
+<?php
+
+/**
+ *
+ **/
 class UserRoute implements APIPlugin
 {
+    /**
+     *
+     **/
     public function describeRoutes()
     {
         return array(
@@ -9,6 +16,9 @@ class UserRoute implements APIPlugin
         );
     }
     
+    /**
+     *
+     **/
     public function routes(&$router)
     {
         $router->get('/user/courses(/:user_id)', function ($user_id = null) use ($router)

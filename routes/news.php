@@ -1,6 +1,13 @@
-<?
+<?php
+
+/**
+ *
+ **/
 class NewsRoute implements APIPlugin
 {
+    /**
+     *
+     **/
     public function describeRoutes()
     {
         return array(
@@ -8,6 +15,9 @@ class NewsRoute implements APIPlugin
         );
     }
     
+    /**
+     *
+     **/
     public function routes(&$router)
     {
         $router->get('/news(/:range_id)', function ($range_id = false) use ($router)

@@ -1,11 +1,23 @@
-<?
+<?php
+
+/**
+ *
+ **/
 class CreateDatabase extends DBMigration
 {
-    function description() {
+    /**
+     *
+     **/
+    public function description()
+    {
         return _('Erstellt die notwendigen Datenbanktabellen');
     }
 
-    function up () {
+    /**
+     *
+     **/
+    public function up ()
+    {
         $sql = file_get_contents(dirname(__FILE__) . '/../vendor/oauth-php/library/store/mysql/mysql.sql');
         $chunks = explode('#--SPLIT--', $sql);
         $chunks = array_filter($chunks);
@@ -46,7 +58,11 @@ class CreateDatabase extends DBMigration
 */
     }
 
-    function down() {
+    /**
+     *
+     **/
+    public function down()
+    {
         $tables = DBManager::get()
             ->query("SHOW TABLES LIKE 'oauth_%'")
             ->fetchAll(PDO::FETCH_COLUMN);

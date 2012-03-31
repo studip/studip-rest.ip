@@ -1,9 +1,17 @@
-<?
+<?php
+
+/**
+ *
+ **/
 class OAuthConsumer
 {
     private $store;
 
-    function __construct() {
+    /**
+     *
+     **/
+    public function __construct()
+    {
         $options = array(
             'dsn'      => 'mysql:host=' . $GLOBALS['DB_STUDIP_HOST']
                        .       ';dbname=' . $GLOBALS['DB_STUDIP_DATABASE'],
@@ -13,7 +21,11 @@ class OAuthConsumer
         $this->store = OAuthStore::instance('PDO', $options);
     }
 
-    static function spawn() {
+    /**
+     *
+     **/
+    public static function spawn()
+    {
         return array(
             'enabled'                => 1,
             'consumer_key'           => '',
@@ -30,11 +42,19 @@ class OAuthConsumer
         );
     }
 
-    function getList() {
+    /**
+     *
+     **/
+    public function getList()
+    {
         return $this->store->listConsumers(null);
     }
 
-    function load($key) {
+    /**
+     *
+     **/
+    public function load($key)
+    {
         try {
             $consumer = $this->store->getConsumer($key, null, true);
         } catch (OAuthException2 $e) {
@@ -44,7 +64,11 @@ class OAuthConsumer
         return $consumer;
     }
 
-    function extractConsumerFromRequest($key) {
+    /**
+     *
+     **/
+    public function extractConsumerFromRequest($key)
+    {
         $key = Request::option('consumer_key', $key);
         $consumer = self::load($key);
 
@@ -63,7 +87,11 @@ class OAuthConsumer
         return $consumer;
     }
 
-    function validate($consumer) {
+    /**
+     *
+     **/
+    public function validate($consumer)
+    {
         $errors = array();
 
         if (empty($consumer['requester_name'])) {
@@ -87,7 +115,11 @@ class OAuthConsumer
         return $errors;
     }
 
-    function store($consumer, $enabled) {
+    /**
+     *
+     **/
+    public function store($consumer, $enabled)
+    {
         $key = $this->store->updateConsumer($consumer, null, true);
         DBManager::get()
             ->prepare("UPDATE oauth_server_registry SET osr_enabled = ? WHERE osr_consumer_key = ?")
@@ -95,8 +127,12 @@ class OAuthConsumer
 
         return $this->load($key);
     }
-    
-    function delete($key) {
+
+    /**
+     *
+     **/
+    public function delete($key)
+    {
         $this->store->deleteConsumer($key, null, true);
     }
 }

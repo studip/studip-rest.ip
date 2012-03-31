@@ -1,11 +1,18 @@
-<?
+<?php
+
 namespace RestIP;
 
+/**
+ *
+ **/
 class Permissions
 {
     private $consumer_key;
     private $permissions = array();
-    
+
+    /**
+     *
+     **/
     public function __construct($consumer_key = null, $user_id = null)
     {
         $this->consumer_key = $consumer_key;
@@ -32,6 +39,9 @@ class Permissions
         }
     }
 
+    /**
+     *
+     **/
     private function loadPermissions($consumer_key)
     {
         $query = "SELECT route_id, method, granted FROM oauth_api_permissions WHERE consumer_key = IFNULL(?, 'global')";
@@ -40,6 +50,9 @@ class Permissions
         return $statement->fetchAll(\PDO::FETCH_ASSOC);
     }
 
+    /**
+     *
+     **/
     public function check($route, $method)
     {
         $route_id = md5($route);
@@ -48,11 +61,14 @@ class Permissions
             && $this->permissions[$route_id][$method];
     }
 
+    /**
+     *
+     **/
     public function set($route, $method, $granted)
     {
         $query = "INSERT INTO oauth_api_permissions (route_id, consumer_key, method, granted) "
                . "VALUES (?, IFNULL(?, 'global'), ?, ?) ON DUPLICATE KEY UPDATE granted = VALUES(granted)";
-        
+
         \DBManager::get()
             ->prepare($query)
             ->execute(array(md5($route), $this->consumer_key, $method, $granted));

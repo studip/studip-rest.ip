@@ -1,9 +1,15 @@
 <?php
 namespace RestIP;
 
+/**
+ *
+ **/
 class Helper
 {
-    static function arrayToXML($data, $parameters = array(), $pretty_print = true)
+    /**
+     *
+     **/
+    public static function arrayToXML($data, $parameters = array(), $pretty_print = true)
     {
         $dom = null;
         self::array_to_xml($data, $dom, $parameters);
@@ -54,7 +60,10 @@ class Helper
         return $xml;
     }
 
-    static function array_to_xml($array, &$node, $parameters)
+    /**
+     *
+     **/
+    public static function array_to_xml($array, &$node, $parameters)
     {
         if ($node === null) {
             $root_node = $parameters['root_node'] ?: 'root';
@@ -83,5 +92,4 @@ class Helper
             }
         }
     }
-    
 }

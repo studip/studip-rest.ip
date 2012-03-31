@@ -1,7 +1,10 @@
 <?php
 
+/**
+ *
+ **/
 interface APIPlugin
 {
-    function describeRoutes();
-    function routes(&$router);
+    public function describeRoutes();
+    public function routes(&$router);
 }

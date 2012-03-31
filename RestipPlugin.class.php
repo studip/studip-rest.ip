@@ -7,10 +7,13 @@ require_once 'bootstrap.php';
  * @author  Jan-Hendrik Willms <tleilax+studip@gmail.com>
  * @version 0 alpha
  */
-class RestipPlugin extends StudIPPlugin implements SystemPlugin, HomepagePlugin
+class RestipPlugin extends StudIPPlugin implements SystemPlugin
 {
-
-    function __construct() {
+    /**
+     *
+     **/
+    public function __construct()
+    {
         parent::__construct();
         
         $config = Config::getInstance();
@@ -40,14 +43,20 @@ class RestipPlugin extends StudIPPlugin implements SystemPlugin, HomepagePlugin
         }
     }
 
-    function initialize()
+    /**
+     *
+     **/
+    public function initialize()
     {
         PageLayout::addStylesheet($this->getPluginURL() . '/assets/form-settings.css');
         PageLayout::addStylesheet($this->getPluginURL() . '/assets/oauth.css');
         PageLayout::addScript($this->getPluginURL() . '/assets/oauth.js');
     }
 
-    function perform ($unconsumed_path)
+    /**
+     *
+     **/
+    public function perform ($unconsumed_path)
     {
         $dispatcher = new Trails_Dispatcher(
             $this->getPluginPath() . DIRECTORY_SEPARATOR . 'app',
@@ -58,16 +67,16 @@ class RestipPlugin extends StudIPPlugin implements SystemPlugin, HomepagePlugin
         $dispatcher->dispatch($unconsumed_path);
     }
 
-    function checkEnvironment() {
+    /**
+     *
+     **/
+    public function checkEnvironment()
+    {
         # TODO performance - use cache on success ?
         $role_persistence = new RolePersistence;
         $plugin_roles     = $role_persistence->getAssignedPluginRoles($this->getPluginId());
         $role_names       = array_map(function ($role) { return $role->getRolename(); }, $plugin_roles);
 
         return in_array('Nobody', $role_names);
-    }
-    
-    public function getHomepageTemplate($user_id) {
-        return null;
     }
 }
