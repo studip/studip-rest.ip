@@ -27,7 +27,7 @@ class UserRoute implements APIPlugin
                 return false;
             };
 
-            $query = "SELECT sem.Seminar_id, start_time, Name, Untertitel "
+            $query = "SELECT sem.Seminar_id, IF(sem.status=99, su.mkdate, start_time) AS start_time, Name, Untertitel "
                    . "FROM seminar_user AS su "
                    . "JOIN seminare AS sem ON su.seminar_id = sem.Seminar_id "
                    . "WHERE user_id = ?";
@@ -40,21 +40,22 @@ class UserRoute implements APIPlugin
                 $semester = $getSemester($seminar['start_time']);
                 if (!isset($temp[$semester['semester_id']])) {
                     $temp[$semester['semester_id']] = array(
-                        'name'     => $semester['name'],
-                        'begin'    => $semester['beginn'],
-                        'end'      => $semester['ende'],
-                        'seminars' => array(),
-                        'seminar_start' => $semester['vorles_beginn'],
-                        'seminar_ende'  => $semester['vorles_ende'],
+                        'name'              => $semester['name'],
+                        'semester_id'       => $semester['semester_id'],
+                        'semester_begin'    => $semester['beginn'],
+                        'semester_end'      => $semester['ende'],
+                        'seminars_begin'    => $semester['vorles_beginn'],
+                        'seminars_end'      => $semester['vorles_ende'],
+                        'seminars'          => array(),
                     );
                 }
-                $temp[$semester['semester_id']]['seminars'][$seminar['Seminar_id']] = array(
+                $temp[$semester['semester_id']]['seminars'][] = array(
                     'seminar_id' => $seminar['Seminar_id'],
                     'title'      => $seminar['Name'],
                     'subtitle'   => $seminar['Untertitel'],
                 );
             }
-            $semesters = $temp;
+            $semesters = array_values($temp);
             
             $router->value(compact('semesters'));
         });
