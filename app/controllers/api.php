@@ -4,7 +4,7 @@ class ApiController
     function perform($unconsumed) {
         error_reporting(0);
     
-        if (preg_match('/\.(csv|json|php|xml)$/', $unconsumed, $match)) {
+        if (preg_match('/\.(json|php|xml)$/', $unconsumed, $match)) {
             $format = $match[1];
             $unconsumed = substr($unconsumed, 0, - strlen($match[0]));
         }
@@ -21,13 +21,6 @@ class ApiController
         $router->hook('slim.after.router', function () use ($router, $format) {
             $data = $router->value();
             switch ($format) {
-                case 'csv':
-                    header('Content-Type: text/csv;charset=windows-1252');
-                    echo RestIP\Helper::csvEncode(array_keys($data)) . "\n";
-                    foreach ($data as $row) {
-                        echo RestIP\Helper::csvEncode($row) . "\n";
-                    }
-                    break;
                 case 'json':
                     $data = array_map_recursive('studip_utf8encode', $data);
                     
@@ -45,9 +38,7 @@ class ApiController
                     ));
                     break;
                 default:
-                    echo '<pre>';
-                    var_dump($data);
-                    break;
+                    $router->halt(501, 'Not implemented');
             }
             header('X-SERVER-TIMESTAMP: ' . time());
             die;

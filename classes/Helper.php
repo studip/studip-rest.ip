@@ -3,13 +3,6 @@ namespace RestIP;
 
 class Helper
 {
-    static function csvEncode($item, $delimiter = ';', $quote = '"') {
-        if (is_array($item)) {
-            return implode($delimiter, array_map('self::csvEncode', $item));
-        }
-        return $quote . str_replace($quote, $quote . $quote, $item) . $quote;
-    }
-
     static function arrayToXML($data, $parameters = array(), $pretty_print = true)
     {
         $dom = null;
