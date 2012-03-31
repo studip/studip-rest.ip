@@ -17,9 +17,9 @@ $error_reporting = error_reporting();
 require 'vendor/Slim/Slim/Slim.php';
 error_reporting($error_reporting);
 
+require_once 'classes/APIPlugin.php';
 require_once 'classes/Router.php';
 require_once 'classes/Helper.php';
-require_once 'classes/APIPlugin.php';
 require_once 'classes/OAuth.php';
 require_once 'app/models/OAuthUser.php';
 require_once 'app/models/OAuthConsumer.php';

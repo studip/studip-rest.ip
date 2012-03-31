@@ -7,7 +7,7 @@ require_once 'bootstrap.php';
  * @author  Jan-Hendrik Willms <tleilax+studip@gmail.com>
  * @version 0 alpha
  */
-class RestipPlugin extends StudIPPlugin implements SystemPlugin
+class RestipPlugin extends StudIPPlugin implements SystemPlugin, HomepagePlugin
 {
     /**
      *
@@ -78,5 +78,13 @@ class RestipPlugin extends StudIPPlugin implements SystemPlugin
         $role_names       = array_map(function ($role) { return $role->getRolename(); }, $plugin_roles);
 
         return in_array('Nobody', $role_names);
+    }
+    
+    /**
+     * Fake homepage plugin to ensure plugin gets loaded first
+     */
+    public function getHomepageTemplate($user_id)
+    {
+        return null;
     }
 }
