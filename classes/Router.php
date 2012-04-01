@@ -53,11 +53,16 @@ class Router
     }
 
     /**
+     * Returns a list of all available routes
      *
+     * @return array List of all available routes as an associative array (key = route, value = list of methods).
+     *               The list is sorted by routes.
      **/
     public function getRoutes()
     {
-        return $this->routes;
+        $routes = $this->routes;
+        ksort($routes);
+        return $routes;
     }
 
     /**
