@@ -41,7 +41,7 @@ class OauthController extends Trails_Controller
      **/
     public function authorize_action()
     {
-        global $user;
+        global $user, $auth;
 
         $auth->login_if($user->id == "nobody");
 
