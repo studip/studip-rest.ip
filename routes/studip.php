@@ -1,20 +1,24 @@
 <?php
+
 /**
- * 
+ *
  **/
 class StudipRoute implements APIPlugin
 {
     /**
      *
      **/
-    function describeRoutes()
+    public function describeRoutes()
     {
         return array(
             '/studip/settings' => _('Grundlegende Systemeinstellungen'),
         );
     }
-    
-    function routes(&$router)
+
+    /**
+     *
+     **/
+    public function routes(&$router)
     {
         $router->get('/studip/settings', function () use (&$router) {
             $router->value(array(
