@@ -10,20 +10,19 @@ class ApiController extends Trails_Controller
      **/
     public function perform($unconsumed)
     {
-        error_reporting(0);
-
         if (preg_match('/\.(json|php|xml)$/', $unconsumed, $match)) {
             $format = $match[1];
             $unconsumed = substr($unconsumed, 0, - strlen($match[0]));
         }
 
-        $GLOBALS['user']->id = OAuth::verify();
-
         // Yes, this is indeed a pretty nasty hack
         // Kids, don't try this at home!
         $_SERVER['PATH_INFO'] = '/' . $unconsumed;
 
+        $GLOBALS['user']->id = OAuth::verify();
+
         $router = RestIP\Router::getInstance(OAuth::$consumer_key);
+        $router->handleErrors();
 
         // Hook into slim to convert raw data into requested data format
         $router->hook('slim.after.router', function () use ($router, $format) {

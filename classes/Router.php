@@ -31,6 +31,8 @@ class Router
     private function __construct($consumer_key)
     {
         $this->router = new \Slim();
+        restore_error_handler(); // @see handleErrors()
+        
         $this->permissions = new Permissions($consumer_key);
 
         // Get routes from plugins, default routes are also defined as fake plugins
@@ -51,6 +53,15 @@ class Router
             $plugin->routes($this);
             $this->descriptions = array_merge($this->descriptions, $plugin->describeRoutes());
         }
+    }
+
+    /**
+     * Usually, Slim sets this error handler on instanciation. But we don't want that and want to
+     * be able to set the error handler on our own and only for the api.
+     **/
+    public function handleErrors()
+    {
+        set_error_handler(array('Slim', 'handleErrors'));
     }
 
     /**

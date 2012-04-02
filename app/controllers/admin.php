@@ -5,8 +5,6 @@
  **/
 class AdminController extends StudipController
 {
-    private static $error_reporting;
-
     /**
      *
      **/
@@ -15,7 +13,6 @@ class AdminController extends StudipController
         parent::before_filter($action, $args);
 
         $GLOBALS['perm']->check('root');
-        self::$error_reporting = error_reporting(0); // Otherwise Slim messes with simple errors
 
         $layout = $GLOBALS['template_factory']->open('layouts/base');
         $this->set_layout($layout);
@@ -49,14 +46,6 @@ class AdminController extends StudipController
                        $this->url_for('admin/permissions'),
                        _('Globale Zugriffseinstellungen'));
         $this->addToInfobox('Aktionen', $new, 'icons/16/black/admin');
-    }
-
-    /**
-     *
-     */
-    public function after_filter($action, $args)
-    {
-        error_reporting(self::$error_reporting); // Restore error reporting
     }
 
     /**
