@@ -23,6 +23,7 @@ class ApiController extends Trails_Controller
 
         $router = RestIP\Router::getInstance(OAuth::$consumer_key);
         $router->handleErrors();
+        error_reporting(0);
 
         // Hook into slim to convert raw data into requested data format
         $router->hook('slim.after.router', function () use ($router, $format) {
