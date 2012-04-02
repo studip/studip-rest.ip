@@ -10,7 +10,7 @@ class CreateDatabase extends DBMigration
      **/
     public function description()
     {
-        return _('Erstellt die notwendigen Datenbanktabellen');
+        return _('Erstellt die notwendigen Datenbanktabellen und Konfigurationseinträge für OAuth');
     }
 
     /**
@@ -47,15 +47,18 @@ class CreateDatabase extends DBMigration
               UNIQUE KEY `route_id` (`route_id`,`consumer_key`,`method`)
             )
         ");
-/*        
-        $config = Config::GetInstance();
-        $config->create('OAUTH_ENABLED', array(
-            'description' => 'Schaltet die OAuth-Schnittstelle ein',
-            'section'     => 'global',
-            'type'        => 'boolean',
-            'value'       => '1'
-        ));
-*/
+
+        // Create config entry
+        DBManager::get()
+            ->prepare("
+                INSERT INTO config (config_id, field, value, is_default, type, `range`, section, mkdate, chdate, description)
+                VALUES (MD5(?), ?, '1', 1, 'boolean', 'global', 'global', UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), ?)
+            ")
+            ->execute(array(
+                'OAUTH_ENABLED',
+                'OAUTH_ENABLED',
+                'Schaltet die OAuth-Schnittstelle ein',
+            ));
     }
 
     /**
@@ -63,6 +66,7 @@ class CreateDatabase extends DBMigration
      **/
     public function down()
     {
+        // Delete all tables that belong to oauth
         $tables = DBManager::get()
             ->query("SHOW TABLES LIKE 'oauth_%'")
             ->fetchAll(PDO::FETCH_COLUMN);
@@ -71,7 +75,7 @@ class CreateDatabase extends DBMigration
             DBManager::get()->exec("DROP TABLE " . $table);
         }
 
-        $config = Config::GetInstance();
-        $config->delete('OAUTH_ENABLED');
+        // Delete config entry
+        DBManager::get()->exec("DELETE FROM config WHERE field = 'OAUTH_ENABLED'");
     }
 }
