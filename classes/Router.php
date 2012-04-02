@@ -101,7 +101,7 @@ class Router
         if (in_array($method, words('delete get post put'))) {
             $backtrace = debug_backtrace();
             while ($trace = array_shift($backtrace) and $trace['class'] == __CLASS__);
-            $caller = ($trace and is_a($trace['class'], StudIPPlugin)) ? $trace['class'] : false;
+            $caller = ($trace and is_a($trace['class'], 'StudIPPlugin')) ? $trace['class'] : false;
 
             $route = reset($arguments);
 
