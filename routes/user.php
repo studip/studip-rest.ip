@@ -15,12 +15,13 @@ class UserRoute implements APIPlugin
             '/user(/:user_id)'         => _('Nutzerdaten'),
         );
     }
-    
+
     /**
      *
      **/
     public function routes(&$router)
     {
+        //
         $router->get('/user/courses(/:user_id)', function ($user_id = null) use ($router)
         {
             $user_id = $user_id ?: $GLOBALS['user']->id;
@@ -30,14 +31,14 @@ class UserRoute implements APIPlugin
             $getSemester = function ($timestamp) use ($semesters) {
                 foreach ($semesters as $semester) {
                     if ($timestamp >= $semester['beginn'] and $timestamp <= $semester['ende']) {
-                        return $semester;
+                        return $semester['semester_id'];
                     }
                 }
 
                 return false;
             };
 
-            $query = "SELECT sem.Seminar_id, IF(sem.status=99, su.mkdate, start_time) AS start_time, Name, Untertitel, sem.status "
+            $query = "SELECT sem.Seminar_id, IF(sem.status=99, su.mkdate, start_time) AS start_time "
                    . "FROM seminar_user AS su "
                    . "JOIN seminare AS sem ON su.seminar_id = sem.Seminar_id "
                    . "WHERE user_id = ?";
@@ -47,37 +48,30 @@ class UserRoute implements APIPlugin
             
             $temp = array();
             foreach ($seminars as $seminar) {
-                $semester = $getSemester($seminar['start_time']);
-                if (!isset($temp[$semester['semester_id']])) {
-                    $temp[$semester['semester_id']] = array(
-                        'semester_id'    => $semester['semester_id'],
-                        'title'          => $semester['name'],
-                        'begin'          => $semester['beginn'],
-                        'end'            => $semester['ende'],
-                        'seminars_begin' => $semester['vorles_beginn'],
-                        'seminars_end'   => $semester['vorles_ende'],
-                        'seminars'       => array(),
-                    );
+                $semester_id = $getSemester($seminar['start_time']);
+                if (!isset($temp[$semester_id])) {
+                    $semester = $router->dispatch('get', '/semester/:semester_id', $semester_id);
+                    $semester['seminars'] = array();
+                    
+                    $temp[$semester_id] = $semester;
                 }
-                $temp[$semester['semester_id']]['seminars'][] = array(
-                    'seminar_id' => $seminar['Seminar_id'],
-                    'title'      => $seminar['Name'],
-                    'subtitle'   => $seminar['Untertitel'],
-                    'type'       => $seminar['status'],
-                );
+
+                $seminar = $router->dispatch('get', '/seminar/:seminar_id', $seminar['Seminar_id']);
+                $temp[$semester['semester_id']]['seminars'][] = $seminar;
             }
             $semesters = array_values($temp);
             
             $router->value(compact('semesters'));
         });
         
+        //
         $router->get('/user(/:user_id)', function ($user_id) use ($router)
         {
             $user_id = $user_id ?: $GLOBALS['user']->id;
 
             $user = User::find($user_id);
             if (!$user) {
-                $router->data['data'] = array('user' => false);
+                $router->halt(404, 'Not found');
                 return;
             }
             
