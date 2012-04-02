@@ -15,7 +15,11 @@
     <tbody>
 <? foreach ($consumers as $consumer): ?>
         <tr class="<?= TextHelper::cycle('cycle_even', 'cycle_odd') ?>">
-            <td><?= Assets::img('icons/16/blue/checkbox-' . ($consumer['enabled'] ? '' : 'un') . 'checked') ?></td>
+            <td>
+                <a href="<?= $controller->url_for('admin/toggle', $consumer['consumer_key'], $consumer['enabled'] ? 'off' : 'on') ?>">
+                    <?= Assets::img('icons/16/blue/checkbox-' . ($consumer['enabled'] ? '' : 'un') . 'checked') ?>
+                </a>
+            </td>
             <td>
             <? if ($consumer['application_uri']): ?>
                 <a href="<?= $consumer['application_uri'] ?>" target="_blank">

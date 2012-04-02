@@ -135,6 +135,27 @@ class AdminController extends StudipController
     /**
      *
      **/
+    public function toggle_action($key, $state = null)
+    {
+        $consumer = $this->store->extractConsumerFromRequest($key);
+
+        $state = $state === null
+               ? !$consumer['enabled']
+               : $state === 'on';
+        
+        $consumer = $this->store->store($consumer, $state);
+        
+        $message = $state
+                 ? _('Die Applikation wurde erfolgreich aktiviert.')
+                 : _('Die Applikation wurde erfolgreich deaktiviert.');
+        
+        PageLayout::postMessage(MessageBox::success($message));
+        $this->redirect('admin/index#' . $consumer['consumer_key']);
+    }
+    
+    /**
+     *
+     **/
     public function delete_action($key)
     {
         $this->store->delete($key);
