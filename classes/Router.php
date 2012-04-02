@@ -20,7 +20,8 @@ class Router
     }
 
     protected $router;
-    protected $routes = array();
+    protected $routes = array();  // Contains routes, their methods and the source of the definition
+    protected $_routes = array(); // Contains routes, their methods and the actual callable handler
     protected $descriptions = array();
     protected $permissions;
 
@@ -93,6 +94,22 @@ class Router
             $value = $val;
         }
     }
+    
+    public function dispatch($method, $route)
+    {
+        if (!isset($this->_routes[$route][$method])) {
+            throw new Exception('Tried to dispatch unknown route');
+        }
+
+        $arguments = array_slice(func_get_args(), 2);
+        
+        call_user_func_array($this->_routes[$route][$method], $arguments);
+        
+        $result = $this->value();
+        $this->value(null);
+        
+        return $result;
+    }
 
     /**
      *
@@ -116,6 +133,7 @@ class Router
                     $router->halt(403, 'Forbidden');
                 }));
             }
+            $this->_routes[$route][$method] = $arguments[1];
         }
 
         call_user_func_array(array($this->router, $method), $arguments);
