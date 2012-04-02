@@ -6,7 +6,7 @@
 class AdminController extends StudipController
 {
     private static $error_reporting;
-    
+
     /**
      *
      **/
@@ -37,7 +37,7 @@ class AdminController extends StudipController
             $back = sprintf('<a href="%s">%s</a>',
                            $this->url_for('admin'),
                            _('Zurück zur Übersicht'));
-            $this->addToInfobox('Aktionen', $back, 'icons/16/black/arr_1left');            
+            $this->addToInfobox('Aktionen', $back, 'icons/16/black/arr_1left');
         }
 
         $new = sprintf('<a href="%s">%s</a>',
@@ -76,20 +76,20 @@ class AdminController extends StudipController
         if ($consumer === null) {
             $consumer = $this->store->load($key);
         }
-        
+
         return array(
             'Consumer Key = ' . $consumer['consumer_key'],
             'Consumer Secret = ' . $consumer['consumer_secret'],
         );
     }
-    
+
     /**
      *
      **/
     public function keys_action($key)
     {
         $details = $this->render_keys($key);
-        
+
         if (Request::isXhr()) {
             $this->render_text(implode('<br>', $details));
         } else {
@@ -113,9 +113,9 @@ class AdminController extends StudipController
                 PageLayout::postMessage($message);
                 return;
             }
-            
+
             $consumer = $this->store->store($this->consumer, Request::int('enabled', 0));
-            
+
             if ($key) {
                 $message = MessageBox::success(_('Die Applikation wurde erfolgreich gespeichert.'));
             } else {
@@ -131,7 +131,7 @@ class AdminController extends StudipController
 
         $this->id = $id;
     }
-    
+
     /**
      *
      **/
@@ -142,17 +142,17 @@ class AdminController extends StudipController
         $state = $state === null
                ? !$consumer['enabled']
                : $state === 'on';
-        
+
         $consumer = $this->store->store($consumer, $state);
-        
+
         $message = $state
                  ? _('Die Applikation wurde erfolgreich aktiviert.')
                  : _('Die Applikation wurde erfolgreich deaktiviert.');
-        
+
         PageLayout::postMessage(MessageBox::success($message));
         $this->redirect('admin/index#' . $consumer['consumer_key']);
     }
-    
+
     /**
      *
      **/
@@ -162,7 +162,7 @@ class AdminController extends StudipController
         PageLayout::postMessage(MessageBox::success(_('Die Applikation wurde erfolgreich gelöscht.')));
         $this->redirect('admin/index');
     }
-    
+
     /**
      *
      **/
@@ -170,7 +170,7 @@ class AdminController extends StudipController
     {
         if (Request::submitted('store')) {
             $perms = $_POST['permission'];
-            
+
             $permissions = RestIP\Router::getInstance($consumer_key ?: null)->getPermissions();
             foreach ($_POST['permission'] as $route => $methods) {
                 foreach ($methods as $method => $granted) {
@@ -182,11 +182,11 @@ class AdminController extends StudipController
             $this->redirect($consumer_key ? 'admin' : 'admin/permissions');
             return;
         }
-        
+
         $title = $consumer_key ? 'Zugriffsberechtigungen' : 'Globale Zugriffsberechtigungen';
         $title .= ' - ' . PageLayout::getTitle();
         PageLayout::setTitle($title);
-        
+
         $this->consumer_key = $consumer_key;
         $this->router       = RestIP\Router::getInstance($consumer_key);
         $this->routes       = $this->router->getRoutes();
