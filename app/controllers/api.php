@@ -3,7 +3,7 @@
 /**
  *
  **/
-class ApiController extends Trails_Controller
+class ApiController extends StudipController
 {
     /**
      *

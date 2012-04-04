@@ -9,6 +9,21 @@ class Helper
     /**
      *
      **/
+    public static function getUserData()
+    {
+        static $user_data;
+        if (!is_array($user_data)) {
+            $query = "SELECT val FROM user_data WHERE sid = ?";
+            $statement = \DBManager::get()->prepare($query);
+            $statement->execute(array($GLOBALS['user']->id));
+            $user_data = unserialize($statement->fetchColumn() ?: 'a:0:{}');
+        }
+        return $user_data;
+    }
+    
+    /**
+     *
+     **/
     public static function arrayToXML($data, $parameters = array(), $pretty_print = true)
     {
         $dom = null;
