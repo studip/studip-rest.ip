@@ -11,8 +11,10 @@
     </thead>
     <tbody>
 <? foreach ($routes as $route => $methods): ?>
-    <? $i = 0; foreach ($methods as $method => $source): ?>
-        <tr class="<?= TextHelper::cycle('cycle_even', 'cycle_odd') ?>">
+    <? $class = TextHelper::cycle('cycle_even', 'cycle_odd'); ?>
+    <? $i = 0; ?>
+    <? foreach ($methods as $method => $source): ?>
+        <tr class="<?= $class ?>" style="vertical-align: top;">
         <? if (!$i++): ?>
             <td rowspan="<?= count($methods) ?>"><?= htmlReady($route) ?></td>
             <td rowspan="<?= count($methods) ?>"><?= htmlReady($descriptions[$route]) ?></td>
