@@ -154,6 +154,6 @@ class Router
             $this->_routes[$route][$method] = $arguments[1];
         }
 
-        call_user_func_array(array($this->router, $method), $arguments);
+        return call_user_func_array(array($this->router, $method), $arguments);
     }
 }
