@@ -31,9 +31,9 @@ class Router
     private function __construct($consumer_key)
     {
         \Slim_Route::setDefaultConditions(array(
-            'message_id' => '^[0-9a-f]{32}$',
-            'range_id'   => '^[0-9a-f]{32}$',
-            'user_id'    => '^[0-9a-f]{32}$',
+            'message_id' => '[0-9a-f]{32}',
+            'range_id'   => '[0-9a-f]{32}',
+            'user_id'    => '[0-9a-f]{32}',
         ));
 
         $this->router = new \Slim();
