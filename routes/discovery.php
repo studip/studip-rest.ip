@@ -1,9 +1,11 @@
 <?php
 
+namespace RestIP;
+
 /**
  *
  **/
-class DiscoveryRoute implements APIPlugin
+class DiscoveryRoute implements \APIPlugin
 {
     /**
      *

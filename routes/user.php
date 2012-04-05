@@ -1,5 +1,8 @@
 <?php
 
+namespace RestIP;
+use \APIPlugin, \Avatar, \SemesterData, \DBManager, \PDO, \User;
+
 /**
  *
  **/
@@ -22,7 +25,7 @@ class UserRoute implements APIPlugin
     public function routes(&$router)
     {
         //
-        $router->get('/user/courses(/:user_id)', function ($user_id = null) use ($router)
+        $router->get('/user/courses(/:user_id)', function ($user_id = null) use (&$router)
         {
             $user_id = $user_id ?: $GLOBALS['user']->id;
             
@@ -65,13 +68,13 @@ class UserRoute implements APIPlugin
         });
         
         //
-        $router->get('/user(/:user_id)', function ($user_id) use ($router)
+        $router->get('/user(/:user_id)', function ($user_id) use (&$router)
         {
             $user_id = $user_id ?: $GLOBALS['user']->id;
 
             $user = User::find($user_id);
             if (!$user) {
-                $router->halt(404, 'Not found');
+                $router->halt(404, sprintf('User %s not found', $user_id));
                 return;
             }
             

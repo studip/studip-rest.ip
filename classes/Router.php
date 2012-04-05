@@ -45,7 +45,7 @@ class Router
         // Get routes from plugins, default routes are also defined as fake plugins
         $default_routes = glob(dirname(__FILE__) . '/../routes/*.php');
         foreach ($default_routes as $route) {
-            $class_name = ucfirst(basename($route, '.php')) . 'Route';
+            $class_name = 'RestIP\\' . ucfirst(basename($route, '.php')) . 'Route';
 
             require_once $route;
 

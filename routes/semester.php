@@ -1,9 +1,11 @@
 <?php
 
+namespace RestIP;
+
 /**
  * 
  **/
-class SemesterRoute implements APIPlugin
+class SemesterRoute implements \APIPlugin
 {
     /**
      * 
@@ -21,7 +23,7 @@ class SemesterRoute implements APIPlugin
     public function routes(&$router)
     {
         $router->get('/semester/:semester_id', function ($semester_id) use (&$router) {
-            $temp = SemesterData::getInstance()->getSemesterData($semester_id);
+            $temp = \SemesterData::getInstance()->getSemesterData($semester_id);
             
             $semester = array(
                 'semester_id'    => $temp['semester_id'],

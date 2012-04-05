@@ -1,9 +1,11 @@
 <?php
 
+namespace RestIP;
+
 /**
  *
  **/
-class StudipRoute implements APIPlugin
+class StudipRoute implements \APIPlugin
 {
     /**
      *

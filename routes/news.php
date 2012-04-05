@@ -1,9 +1,11 @@
 <?php
 
+namespace RestIP;
+
 /**
  *
  **/
-class NewsRoute implements APIPlugin
+class NewsRoute implements \APIPlugin
 {
     /**
      *
@@ -26,7 +28,7 @@ class NewsRoute implements APIPlugin
 
             require_once 'lib/classes/StudipNews.class.php';
 
-            $data = StudipNews::GetNewsByRange($range_id);
+            $data = \StudipNews::GetNewsByRange($range_id);
 
             // Adjust data
             array_walk($data, function (&$item) {
