@@ -11,13 +11,19 @@
     </thead>
     <tbody>
 <? foreach ($routes as $route => $methods): ?>
-    <? $class = TextHelper::cycle('cycle_even', 'cycle_odd'); ?>
-    <? $i = 0; ?>
+
+<?
+        $class = TextHelper::cycle('cycle_even', 'cycle_odd');
+        $i = 0;
+?>
+
     <? foreach ($methods as $method => $source): ?>
         <tr class="<?= $class ?>" style="vertical-align: top;">
-        <? if (!$i++): ?>
-            <td rowspan="<?= count($methods) ?>"><?= htmlReady($route) ?></td>
-            <td rowspan="<?= count($methods) ?>"><?= htmlReady($descriptions[$route]) ?></td>
+        <? if ($i++): ?>
+            <td colspan="2">&nbsp;</td>
+        <? else: ?>
+            <td><?= htmlReady($route) ?></td>
+            <td><?= htmlReady($descriptions[$route]) ?></td>
         <? endif; ?>
             <td><?= htmlReady($method) ?></td>
             <td><?= htmlReady($source ? "Plugin: ${source}" : _('System')) ?></td>
