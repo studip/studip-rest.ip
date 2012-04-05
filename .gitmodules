@@ -1,0 +1,3 @@
+[submodule "vendor/Slim"]
+	path = vendor/Slim
+	url = git://github.com/codeguy/Slim.git
