@@ -48,7 +48,7 @@ class ApiController extends StudipController
                 default:
                     $router->halt(501, 'Not implemented');
             }
-            header('X-SERVER-TIMESTAMP: ' . time());
+            header('X-Server-Timestamp: ' . time());
             die;
         }, 1);
 
