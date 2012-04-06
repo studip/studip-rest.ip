@@ -19,7 +19,7 @@ class ApiController extends StudipController
         // Kids, don't try this at home!
         $_SERVER['PATH_INFO'] = '/' . $unconsumed;
 
-        $GLOBALS['user']->id = OAuth::verify();
+        $GLOBALS['user'] = new Seminar_User(OAuth::verify());
 
         $router = RestIP\Router::getInstance(OAuth::$consumer_key);
         $router->handleErrors();
