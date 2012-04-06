@@ -37,9 +37,9 @@ class Router
         ));
 
         $this->router = new \Slim();
-        
+
         restore_error_handler(); // @see handleErrors()
-        
+
         $this->permissions = new Permissions($consumer_key);
 
         // Get routes from plugins, default routes are also defined as fake plugins
@@ -112,20 +112,20 @@ class Router
             $value = $val;
         }
     }
-    
+
     public function dispatch($method, $route)
     {
         if (!isset($this->_routes[$route][$method])) {
-            throw new Exception('Tried to dispatch unknown route');
+            $this->halt(500, 'Tried to dispatch unknown route');
         }
 
         $arguments = array_slice(func_get_args(), 2);
-        
+
         call_user_func_array($this->_routes[$route][$method], $arguments);
-        
+
         $result = $this->value();
         $this->value(null);
-        
+
         return $result;
     }
 

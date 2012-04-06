@@ -19,7 +19,7 @@ class OauthController extends Trails_Controller
      **/
     public function index_action()
     {
-        $this->render_text('foo');
+        $this->render_text('TODO');
     }
 
     /**
