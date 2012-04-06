@@ -34,7 +34,7 @@ class ApiController extends StudipController
                         $data = array_map_recursive('studip_utf8encode', $data);
 
                         header('Content-Type: application/json');
-                        echo json_encode($data);
+                        echo indent(json_encode($data));
                         break;
                     case 'xml':
                         header('Content-Type: text/xml;charset=windows-1252');
