@@ -10,7 +10,7 @@ class ApiController extends StudipController
      **/
     public function perform($unconsumed)
     {
-        if (preg_match('/\.(json|php|xml)$/', $unconsumed, $match)) {
+        if (preg_match('/\.(json|xml)$/', $unconsumed, $match)) {
             $format = $match[1];
             $unconsumed = substr($unconsumed, 0, - strlen($match[0]));
         }
@@ -35,10 +35,6 @@ class ApiController extends StudipController
 
                         header('Content-Type: application/json');
                         echo json_encode($data);
-                        break;
-                    case 'php':
-                        header('Content-Type: text/plain;charset=windows-1252');
-                        echo serialize($data);
                         break;
                     case 'xml':
                         header('Content-Type: text/xml;charset=windows-1252');
