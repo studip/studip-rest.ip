@@ -9,6 +9,25 @@ class Helper
     /**
      *
      **/
+    public static function getSemester($timestamp)
+    {
+        static $semesters;
+        if (!isset($semesters)) {
+            $semesters = \SemesterData::GetSemesterArray();
+        }
+
+        foreach ($semesters as $semester) {
+            if ($timestamp >= $semester['beginn'] && $timestamp <= $semester['ende']) {
+                return $semester['semester_id'];
+            }
+        }
+
+        return false;
+    }
+    
+    /**
+     *
+     **/
     public static function getUserData()
     {
         static $user_data;
