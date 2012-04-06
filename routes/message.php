@@ -3,15 +3,21 @@ namespace RestIP;
 
 require_once 'lib/messaging.inc.php';
 
-use \DBManager, \PDO, \APIPlugin, \messaging;
+use \DBManager, \PDO, \messaging;
 
 /**
+ * Message route for Rest.IP
  *
+ * @author     Jan-Hendrik Willms <tleilax+studip@gmail.com>
+ * @version    1.0
+ * @package    Stud.IP
+ * @subpackage Rest.IP
+ * @license    GPL
  **/
-class MessageRoute implements APIPlugin
+class MessageRoute implements \APIPlugin
 {
     /**
-     *
+     * Return human readable descriptions of all routes
      **/
     public function describeRoutes()
     {
@@ -26,7 +32,9 @@ class MessageRoute implements APIPlugin
     }
 
     /**
+     * Define routes on router
      *
+     * @param Slim Slim instance as router
      **/
     public function routes(&$router)
     {
@@ -44,9 +52,9 @@ class MessageRoute implements APIPlugin
 
             $router->value(compact('folders'));
         })->conditions(array('box' => '(in|out)'));
-        
+
         // Create new folder
-        $router->post('/message/:box', function ($box) use (&$router) {
+        $router->post('/messages/:box', function ($box) use (&$router) {
             $folder = trim($_POST['folder'] ?: '');
             $val = Helper::getUserData();
 
@@ -81,17 +89,20 @@ class MessageRoute implements APIPlugin
 
             $ids      = Message::folder($box == 'in' ? 'rec' : 'snd', $folder);
             $messages = Message::load($ids);
-            
+
             $users    = array();
-            array_walk($messages, function (&$message) use (&$router, &$users) {
-                if (!isset($users[$message['autor_id']])) {
-                    $users[$message['autor_id']] = $router->dispatch('get', '/user(/:user_id)', $message['autor_id']);
+            foreach ($messages as $message) {
+                if (!isset($users[$message['sender_id']])) {
+                    $users[$message['sender_id']] = $router->dispatch('get', '/user(/:user_id)', $message['sender_id']);
                 }
-            });
+                if (!isset($users[$message['receiver_id']])) {
+                    $users[$message['receiver_id']] = $router->dispatch('get', '/user(/:user_id)', $message['receiver_id']);
+                }
+            }
 
             $router->value(compact('messages', 'users'));
         })->conditions((array('box' => '(in|out)', array('folder' => '\d+'))));
-        
+
     // Direct access to messages
         // Create a message
         $router->post('/messages', function () use ($router) {
@@ -119,11 +130,11 @@ class MessageRoute implements APIPlugin
 
             $messaging = new messaging;
             $r = $messaging->insert_message($message, $usernames, '', '', $message_id, '', '', $subject);
-            
+
             if (!$r) {
                 $this->halt(500, 'Could not create message');
             }
-            
+
             $router->val($router->dispatch('get', '/message(/:message_id)', $message_id));
         });
 
@@ -135,7 +146,7 @@ class MessageRoute implements APIPlugin
             }
             $router->value($message);
         });
-        
+
         // Destroy a message
         $router->delete('/messages/:message_id', function ($message_id) use (&$router) {
             $message = Message::load($message_id, array('dont_delete'));
@@ -148,7 +159,7 @@ class MessageRoute implements APIPlugin
 
             $messaging = new messaging;
             $messaging->delete_message($message_id);
-            
+
             $router->halt(204);
         });
 
@@ -194,16 +205,18 @@ class Message
 
         $additional_fields = implode(',', $additional_fields);
 
-        $query = "SELECT m.message_id, autor_id, subject, message, m.mkdate, priority, 1 - mu.readed AS unread
-                 {$additional_fields}
+        $query = "SELECT m.message_id, autor_id AS sender_id, mu2.user_id AS receiver_id, subject,
+                         message, m.mkdate, priority, 1 - mu.readed AS unread
+                        {$additional_fields}
                   FROM message AS m
-                  LEFT JOIN message_user AS mu USING(message_id)
-                  WHERE user_id = ? AND message_id IN (?) AND deleted = 0";
+                  INNER JOIN message_user AS mu ON (m.message_id = mu.message_id AND mu.user_id = ?)
+                  INNER JOIN message_user AS mu2 ON (mu.message_id = mu2.message_id AND mu.user_id != mu2.user_id) 
+                  WHERE m.message_id IN (?) AND mu.deleted = 0";
         if (is_array($ids) and count($ids) > 1) {
-            $query .= "ORDER BY m.mkdate DESC";
+            $query .= " ORDER BY m.mkdate DESC";
         }
         $statement = DBManager::get()->prepare($query);
-        $statement->execute(array($GLOBALS['user']->id, $ids, $trash));
+        $statement->execute(array($GLOBALS['user']->id, $ids));
         $messages = $statement->fetchAll(PDO::FETCH_ASSOC);
 
         array_walk($messages, function (&$message) {
@@ -224,9 +237,9 @@ class Message
             $folder,
             $GLOBALS['user']->id,
         ));
-        return $statement->fetchAll(PDO::FETCH_COLUMN);        
+        return $statement->fetchAll(PDO::FETCH_COLUMN);
     }
-    
+
     static function move($message_id, $folder)
     {
         $query = "UPDATE message_user SET folder = ? WHERE message_id = ? AND user_id = ?";
@@ -234,5 +247,5 @@ class Message
         $statement->execute(array($folder, $message_id, $GLOBALS['user']->id));
         return $statement->rowCount() > 0;
     }
-    
+
 }
