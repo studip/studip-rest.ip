@@ -20,7 +20,19 @@ class Helper
         }
         return $user_data;
     }
-    
+
+    /**
+     *
+     **/
+    public static function setUserData($user_data)
+    {
+        $query = "INSERT INTO user_data (sid, val, chdate)
+                  VALUES (?, ?, UNIX_TIMESTAMP())
+                  ON DUPLICATE KEY UPDATE val = VALUES(val), chate = UNIX_TIMESTAMP()";
+        $statement = \DBManager::get()->prepare($query);
+        $statement->execute(array($GLOBALS['user']->id, serialize($user_data)));
+    }
+
     /**
      *
      **/
