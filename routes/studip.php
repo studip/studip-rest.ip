@@ -22,8 +22,8 @@ class StudipRoute implements \APIPlugin
      **/
     public function routes(&$router)
     {
-        $router->get('/studip/settings', function () use (&$router) {
-            $router->value(array(
+        $router->get('/studip/settings', function () use ($router) {
+            $router->render(array(
                 'ALLOW_CHANGE_USERNAME' => $GLOBALS['ALLOW_CHANGE_USERNAME'],
                 'ALLOW_CHANGE_EMAIL'    => $GLOBALS['ALLOW_CHANGE_EMAIL'],
                 'ALLOW_CHANGE_NAME'     => $GLOBALS['ALLOW_CHANGE_NAME'],

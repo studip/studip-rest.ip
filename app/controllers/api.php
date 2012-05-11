@@ -21,34 +21,20 @@ class ApiController extends StudipController
 
         $GLOBALS['user'] = new Seminar_User(OAuth::verify());
 
-        $router = RestIP\Router::getInstance(OAuth::$consumer_key);
+        \Slim_Route::setDefaultConditions(array(
+            'course_id'   => '[0-9a-f]{32}',
+            'message_id'  => '[0-9a-f]{32}',
+            'range_id'    => '[0-9a-f]{32}',
+            'semester_id' => '[0-9a-f]{32}',
+            'user_id'     => '[0-9a-f]{32}',
+        ));
+        
+        $template_factory = new Flexi_TemplateFactory($this->dispatcher->plugin->getPluginPath());
+        $template =  $template_factory->open('app/views/api/' . $format . '.php');
+
+        $router = RestIP\Router::getInstance(OAuth::$consumer_key, $template);
         $router->handleErrors();
         error_reporting(0);
-
-        // Hook into slim to convert raw data into requested data format
-        $router->hook('slim.after.router', function () use ($router, $format) {
-            $data = $router->value();
-            if (isset($data)) {
-                switch ($format) {
-                    case 'json':
-                        $data = array_map_recursive('studip_utf8encode', $data);
-
-                        header('Content-Type: application/json');
-                        echo indent(json_encode($data));
-                        break;
-                    case 'xml':
-                        header('Content-Type: text/xml;charset=windows-1252');
-                        echo RestIP\Helper::arrayToXML(reset($data), array(
-                            'root_node' => key($data),
-                        ));
-                        break;
-                    default:
-                        $router->halt(501, 'Not implemented');
-                }
-            }
-            header('X-Server-Timestamp: ' . time());
-            die;
-        }, 1);
 
         $router->run();
     }

@@ -1,12 +1,12 @@
 <?php
 
 namespace RestIP;
-use \APIPlugin, \Avatar, \SemesterData, \DBManager, \PDO, \User;
+use \Avatar, \DBManager, \PDO, \User;
 
 /**
  *
  **/
-class UserRoute implements APIPlugin
+class UserRoute implements \APIPlugin
 {
     /**
      *
@@ -14,7 +14,6 @@ class UserRoute implements APIPlugin
     public function describeRoutes()
     {
         return array(
-            '/user/courses(/:user_id)' => _('Veranstaltungen eines Nutzers'),
             '/user(/:user_id)'         => _('Nutzerdaten'),
         );
     }
@@ -25,50 +24,7 @@ class UserRoute implements APIPlugin
     public function routes(&$router)
     {
         //
-        $router->get('/user/courses(/:user_id)', function ($user_id = null) use (&$router)
-        {
-            $user_id = $user_id ?: $GLOBALS['user']->id;
-            
-            $semesters = SemesterData::GetSemesterArray();
-
-            $getSemester = function ($timestamp) use ($semesters) {
-                foreach ($semesters as $semester) {
-                    if ($timestamp >= $semester['beginn'] and $timestamp <= $semester['ende']) {
-                        return $semester['semester_id'];
-                    }
-                }
-
-                return false;
-            };
-
-            $query = "SELECT sem.Seminar_id, IF(sem.status=99, su.mkdate, start_time) AS start_time "
-                   . "FROM seminar_user AS su "
-                   . "JOIN seminare AS sem ON su.seminar_id = sem.Seminar_id "
-                   . "WHERE user_id = ?";
-            $statement = DBManager::get()->prepare($query);
-            $statement->execute(array($user_id));
-            $seminars = $statement->fetchAll(PDO::FETCH_ASSOC);
-            
-            $temp = array();
-            foreach ($seminars as $seminar) {
-                $semester_id = $getSemester($seminar['start_time']);
-                if (!isset($temp[$semester_id])) {
-                    $semester = $router->dispatch('get', '/semester/:semester_id', $semester_id);
-                    $semester['seminars'] = array();
-                    
-                    $temp[$semester_id] = $semester;
-                }
-
-                $seminar = $router->dispatch('get', '/seminar/:seminar_id', $seminar['Seminar_id']);
-                $temp[$semester['semester_id']]['seminars'][] = $seminar;
-            }
-            $semesters = array_values($temp);
-            
-            $router->value(compact('semesters'));
-        });
-        
-        //
-        $router->get('/user(/:user_id)', function ($user_id) use (&$router)
+        $router->get('/user(/:user_id)', function ($user_id) use ($router)
         {
             $user_id = $user_id ?: $GLOBALS['user']->id;
 
@@ -120,7 +76,7 @@ class UserRoute implements APIPlugin
                 'privadr'       => $get_field('privadr', 'privadr'),
             );
 
-            $router->value(compact('user'));
+            $router->render(compact('user'));
         });
     }
 }

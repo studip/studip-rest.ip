@@ -40,7 +40,7 @@ class MessageRoute implements \APIPlugin
     {
     // Inbox and outbox
         // List folders
-        $router->get('/messages/:box', function ($box) use (&$router) {
+        $router->get('/messages/:box', function ($box) use ($router) {
             $val = Helper::getUserData();
             $settings = $val['my_messaging_settings'] ?: array();
             $folders = $settings['folder'];
@@ -50,11 +50,11 @@ class MessageRoute implements \APIPlugin
 
             $folders = $folders[$box];
 
-            $router->value(compact('folders'));
+            $router->render(compact('folders'));
         })->conditions(array('box' => '(in|out)'));
 
         // Create new folder
-        $router->post('/messages/:box', function ($box) use (&$router) {
+        $router->post('/messages/:box', function ($box) use ($router) {
             $folder = trim($_POST['folder'] ?: '');
             $val = Helper::getUserData();
 
@@ -79,7 +79,7 @@ class MessageRoute implements \APIPlugin
 
     // Folders
         // List messages
-        $router->get('/messages/:box/:folder', function ($box, $folder) use (&$router) {
+        $router->get('/messages/:box/:folder', function ($box, $folder) use ($router) {
             $val = Helper::getUserData();
             $settings = $val['my_messaging_settings'] ?: array();
 
@@ -93,14 +93,14 @@ class MessageRoute implements \APIPlugin
             $users    = array();
             foreach ($messages as $message) {
                 if (!isset($users[$message['sender_id']])) {
-                    $users[$message['sender_id']] = $router->dispatch('get', '/user(/:user_id)', $message['sender_id']);
+                    $users[$message['sender_id']] = reset($router->dispatch('get', '/user(/:user_id)', $message['sender_id']));
                 }
                 if (!isset($users[$message['receiver_id']])) {
-                    $users[$message['receiver_id']] = $router->dispatch('get', '/user(/:user_id)', $message['receiver_id']);
+                    $users[$message['receiver_id']] = reset($router->dispatch('get', '/user(/:user_id)', $message['receiver_id']));
                 }
             }
 
-            $router->value(compact('messages', 'users'));
+            $router->render(compact('messages', 'users'));
         })->conditions((array('box' => '(in|out)', array('folder' => '\d+'))));
 
     // Direct access to messages
@@ -139,16 +139,16 @@ class MessageRoute implements \APIPlugin
         });
 
         // Load a message
-        $router->get('/messages/:message_id', function ($message_id) use (&$router) {
+        $router->get('/messages/:message_id', function ($message_id) use ($router) {
             $message = Message::load($message_id);
             if (!$message) {
                 $router->halt(404, sprintf('Message %s not found', $message_id));
             }
-            $router->value($message);
+            $router->render($message);
         });
 
         // Destroy a message
-        $router->delete('/messages/:message_id', function ($message_id) use (&$router) {
+        $router->delete('/messages/:message_id', function ($message_id) use ($router) {
             $message = Message::load($message_id, array('dont_delete'));
             if (!$message) {
                 $router->halt(404, sprintf('Message %s not found', $message_id));
@@ -164,19 +164,19 @@ class MessageRoute implements \APIPlugin
         });
 
         // Read (load and update read flag) a message
-        $router->post('/messages/:message_id/read', function ($message_id) use (&$router) {
+        $router->post('/messages/:message_id/read', function ($message_id) use ($router) {
             $message = Message::load($message_id);
             if (!$message) {
                 $router->halt(404, sprintf('Message %s not found', $message_id));
             }
-            $router->value($message);
+            $router->render($message);
 
             $messaging = new messaging;
             $messaging->set_read_message($message_id);
         });
 
         // Move message
-        $router->post('/messages/:message_id/move/:folder', function ($folder, $message_id) use (&$router) {
+        $router->post('/messages/:message_id/move/:folder', function ($folder, $message_id) use ($router) {
             $val = Helper::getUserData();
             $settings = $val['my_messaging_settings'] ?: array();
 

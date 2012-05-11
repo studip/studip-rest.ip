@@ -11,10 +11,10 @@ class Router
     /**
      *
      **/
-    public static function getInstance($consumer_key = null)
+    public static function getInstance($consumer_key, $template)
     {
         if (!isset(self::$instances[$consumer_key])) {
-            self::$instances[$consumer_key] = new self($consumer_key);
+            self::$instances[$consumer_key] = new self($consumer_key, $template);
         }
         return self::$instances[$consumer_key];
     }
@@ -24,18 +24,15 @@ class Router
     protected $_routes = array(); // Contains routes, their methods and the actual callable handler
     protected $descriptions = array();
     protected $permissions;
+    protected $template;
 
     /**
      *
      **/
-    private function __construct($consumer_key)
+    private function __construct($consumer_key, $template)
     {
-        \Slim_Route::setDefaultConditions(array(
-            'message_id' => '[0-9a-f]{32}',
-            'range_id'   => '[0-9a-f]{32}',
-            'user_id'    => '[0-9a-f]{32}',
-        ));
-
+        $this->template = $template;
+        
         $this->router = new \Slim();
 
         restore_error_handler(); // @see handleErrors()
@@ -113,10 +110,13 @@ class Router
         }
     }
 
+    /**
+     * 
+     */
     public function dispatch($method, $route)
     {
         if (!isset($this->_routes[$route][$method])) {
-            $this->halt(500, 'Tried to dispatch unknown route');
+            $this->halt(500, sprintf('Tried to dispatch unknown route %s:%s', $method, $route));
         }
 
         $arguments = array_slice(func_get_args(), 2);
@@ -127,6 +127,19 @@ class Router
         $this->value(null);
 
         return $result;
+    }
+
+    /**
+     * 
+     */
+    function render($data = array())
+    {
+        header('X-Server-Timestamp: ' . time());
+        header_remove('x-powered-by');
+        header_remove('set-cookie');
+
+        $this->template->data = $data;
+        echo $this->template->render();
     }
 
     /**
