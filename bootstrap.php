@@ -66,6 +66,7 @@ function indent($json) {
 
     return $result;
 }
+
 // Global includes
 require_once 'vendor/trails/trails.php';
 require_once 'app/controllers/studip_controller.php';

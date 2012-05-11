@@ -43,7 +43,7 @@ class OauthController extends Trails_Controller
     {
         global $user, $auth;
 
-        $auth->login_if($user->id == "nobody");
+        $auth->login_if($user->id == 'nobody');
 
         $user_id = OAuthUser::getMappedId($user->id);
 
