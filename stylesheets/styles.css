@@ -209,6 +209,19 @@ footer {
     text-align: center;
 }
 
+p.todo { 
+    background: #ccc;
+}
+p.todo:before,p.todo:after {
+    background: -moz-repeating-linear-gradient(top left -45deg, black, black 10px, yellow 10px, yellow 20px);	
+    background: -webkit-repeating-linear-gradient(top left -45deg, black, black 10px, yellow 10px, yellow 20px);	
+    background: repeating-linear-gradient(top left -45deg, black, black 10px, yellow 10px, yellow 20px);
+    content: " ";
+    display: block;
+    height: 0.5em;
+    width: 100%;
+}
+
 pre[type="application/json"] {
     max-height: 200px;
     overflow-y: auto;
