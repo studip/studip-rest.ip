@@ -209,6 +209,10 @@ footer {
     text-align: center;
 }
 
+script[type="text/json"] {
+    display: block;
+}
+
 @media print, screen and (max-width: 960px) {
   
   div.wrapper {

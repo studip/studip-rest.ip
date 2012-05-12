@@ -1,3 +1,5 @@
+---
+---
 <!doctype html>
 <html>
   <head>
@@ -90,11 +92,16 @@
                 in Schritt autorierte Token.
             </li>
         </ol>
+        <p class="todo">
+            Autorisierung ausführlicher beschreiben. consumer_key, consumer_secret
+        </p>
 
         <h4 id="api-discovery">/api/discovery - Informationen über die API</h4>
         <p>
-            Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+            Liefert Informationen über die in der Instanz unterstützten Routen,
+            ihrer Methoden und den jeweiligen Zugriffsberechtigungen zurück.
         </p>
+        <pre type="text/json">{% include discovery.json %}</pre>
 
         <h4 id="api-courses">/api/courses - Veranstaltungen</h4>
         <p>
