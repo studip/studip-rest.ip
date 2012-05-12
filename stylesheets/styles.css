@@ -159,9 +159,35 @@ header ul a strong {
   color:#222;
 }
 
+header dl:after {
+    clear: both;
+    content: "";
+    display: inline-block;
+    height: 0;
+    width: 0;
+}
+header dt {
+    clear: both;
+    float: left;
+}
+header dt a {
+    font-weight: bold;
+}
+header dd {
+    float: right;
+    margin-left: 0;
+}
+header dl a, header h2 a {
+    color: inherit;
+}
+header dl a:hover {
+    color: #39c;
+    text-decoration: underline;
+}
+
 section {
   width:500px;
-  float:right;
+  margin-left: 360px;
   padding-bottom:50px;
 }
 
@@ -177,10 +203,7 @@ hr {
 }
 
 footer {
-  width:270px;
-  float:left;
-  position:fixed;
-  bottom:50px;
+    text-align: center;
 }
 
 @media print, screen and (max-width: 960px) {

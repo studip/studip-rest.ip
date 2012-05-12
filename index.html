@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Studip-rest.ip by studip</title>
+    <title>Stud.IP: Rest.IP API Dokumentation</title>
 
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
@@ -12,50 +12,109 @@
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
   </head>
-  <body>
+  <body id="top">
     <div class="wrapper">
       <header>
         <h1>Stud.IP: Rest.IP</h1>
-        <p>An alternative, RESTful approach to web services for Stud.IP implementing OAuth</p>
-        <p class="view"><a href="https://github.com/studip/studip-rest.ip">View the Project on GitHub <small>studip/studip-rest.ip</small></a></p>
+        <p>Ein alternativer, "RESTful" Ansatz für Webservices basierend auf OAuth</p>
+        <p class="view"><a href="https://github.com/studip/studip-rest.ip">Projekt auf GitHub anzeigen <small>studip/studip-rest.ip</small></a></p>
         <ul>
-          <li><a href="https://github.com/studip/studip-rest.ip/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/studip/studip-rest.ip/zipball/master">Download <strong>ZIP Datei</strong></a></li>
           <li><a href="https://github.com/studip/studip-rest.ip/tarball/master">Download <strong>TAR Ball</strong></a></li>
-          <li><a href="https://github.com/studip/studip-rest.ip">View On <strong>GitHub</strong></a></li>
+          <li><a href="https://github.com/studip/studip-rest.ip">Anzeigen auf <strong>GitHub</strong></a></li>
         </ul>
-        <h2>API Documentation</h2>
+        <h2><a href="#top">API Dokumentation</a></h2>
         <dl>
-            <dt>/api/courses</dt>
-            <dd>Courses</dd>
+            <dt><a href="#oauth">/oauth</a></dt>
+            <dd><a href="#oauth">Authentifizierung</a></dd>
+            <dt><a href="#api-discovery">/api/discovery</a></dt>
+            <dd><a href="#api-discovery">Informationen über die API</a></dd>
+            <dt><a href="#api-courses">/api/courses</a></dt>
+            <dd><a href="#api-courses">Veranstaltungen</a></dd>
+            <dt><a href="#api-documents">/api/documents</a></dt>
+            <dd><a href="#api-documents">Dateien</a></dd>
+            <dt><a href="#api-message">/api/message</a></dt>
+            <dd><a href="#api-message">Nachrichten</a></dd>
+            <dt><a href="#api-news">/api/news</a></dt>
+            <dd><a href="#api-news">Ankündigungen</a></dd>
+            <dt><a href="#api-semester">/api/semester</a></dt>
+            <dd><a href="#api-semester">Semester</a></dd>
+            <dt><a href="#api-studip">/api/studip</a></dt>
+            <dd><a href="#api-studip">Globale Einstellungen</a></dd>
+            <dt><a href="#api-user">/api/user</a></dt>
+            <dd><a href="#api-user">Nutzer</a></dd>
         </dl>
       </header>
       <section>
-        <h3>Welcome to GitHub Pages.</h3>
+        <h3>Rest.IP</h3>
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
+        <h3>API-Dokumentation</h3>
+        <h4>Allgemeines</h4>
+        <p>
+            Bei jedem Request sendet die API den HTTP-Header <strong>X-Server-Timestamp</strong>
+            ihren aktuellen Unix-Zeitstempel mit.
+        </p>
 
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
-</code></pre>
+        <h4>Authentifizierung</h4>
+        <p>
+            Die Authentifizierung erfolgt mittels sogenanntem <strong>2-legged OAuth</strong>.
+            Weitere Details finden Sie in der Dokumentation unter <a href="#oauth">/oauth</a>.
 
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
+        <h4>Rückgabeformate</h4>
+        <p>
+            Die Rückgabe kann entweder im <strong>JSON</strong>- oder <strong>XML</strong>-Format erfolgen.
+            Das jeweilige Format wird durch die Dateiendung der angeforderten Ressource
+            bestimmt. Ein Zugriff auf <em>/api/news.<strong>json</strong></em> liefert die Ankündigungen
+            eines Nutzers im <strong>JSON</strong>-Format zügig, während <em>/api/news.<strong>xml</strong></em>
+            die Ankündigungen im <strong>XML</strong>-Format zurückgeben würde.
+        </p>
 
-<h3>Designer Templates</h3>
+        <h3>Die Routen im Detail</h3>
+        <h4 id="oauth">/oauth - Authentifizierung</h4>
+        <p>
+            Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+        </p>
 
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
+        <h4 id="api-discovery">/api/discovery - Informationen über die API</h4>
+        <p>
+            Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+        </p>
 
-<h3>Rather Drive Stick?</h3>
+        <h4 id="api-courses">/api/courses - Veranstaltungen</h4>
+        <p>
+            Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+        </p>
 
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
+        <h4 id="api-documents">/api/documents - Dateien</h4>
+        <p>
+            Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+        </p>
 
-<h3>Authors and Contributors</h3>
+        <h4 id="api-message">/api/messages - Nachrichten</h4>
+        <p>
+            Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+        </p>
 
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
+        <h4 id="api-news">/api/news - Ankündigungen</h4>
+        <p>
+            Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+        </p>
 
-<h3>Support or Contact</h3>
+        <h4 id="api-semester">/api/semester - Semester</h4>
+        <p>
+            Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+        </p>
 
-<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
+        <h4 id="api-studip">/api/studip - Globale Einstellungen</h4>
+        <p>
+            Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+        </p>
+
+        <h4 id="api-user">/api/user - Nutzer</h4>
+        <p>
+            Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+        </p>
+        
       </section>
       <footer>
         <p>This project is maintained by <a href="https://github.com/studip">studip</a></p>
