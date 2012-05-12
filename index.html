@@ -29,8 +29,8 @@
             <dd><a href="#api-courses">Veranstaltungen</a></dd>
             <dt><a href="#api-documents">/api/documents</a></dt>
             <dd><a href="#api-documents">Dateien</a></dd>
-            <dt><s><a href="#api-message">/api/message</a></s></dt>
-            <dd><s><a href="#api-message">Nachrichten</a></s></dd>
+            <dt><a href="#api-message">/api/message</a></dt>
+            <dd><a href="#api-message">Nachrichten</a></dd>
             <dt><a href="#api-news">/api/news</a></dt>
             <dd><a href="#api-news">Ankündigungen</a></dd>
             <dt><a href="#api-semesters">/api/semesters</a></dt>
@@ -54,6 +54,11 @@
         <p>
             Bei jedem Request sendet die API den HTTP-Header <strong>X-Server-Timestamp</strong>
             ihren aktuellen Unix-Zeitstempel mit.
+        </p>
+        <p class="attention">
+            Zu beachten ist, dass bei sämtlichen Nutzerrückgabe auch der Nutzer mit der Id
+            <code>____%system%____</code> vorkommen kann. Dies sind system-interne Vorgänge
+            bzw. Benachrichtigungen und sollten als diese gekennzeichnet werden.
         </p>
 
         <h4>Autorisierung</h4>
@@ -118,8 +123,11 @@
                 in Schritt autorierte Token.
             </li>
         </ol>
-        <p class="todo">
-            Autorisierung ausführlicher beschreiben. consumer_key, consumer_secret
+        <p>
+            Für die Autorisierung werden weiterhin die beiden Schlüssel
+            <code>consumer_key</code> und <code>consumer_secret</code>
+            benötigt, welche vom Betreiber der jeweiligen Stud.IP-Instanz
+            vergeben werden.
         </p>
 
         <h4 id="api-discovery">/api/discovery - Informationen über die API</h4>
@@ -189,8 +197,32 @@
         </p>
         <pre type="application/json">{% include documents-range_id-folder.json %}</pre>
 
-        <h4 id="api-message">/api/messages - Nachrichten</h4>
-        <p class="todo">TODO</p>
+        <h4 id="api-message">/api/messages/<em>:box</em> - Nachrichtenordner auslesen</h4>
+        <h5>GET</h5>
+        <p>
+            Liefert die vorhandenen Nachrichtenordner des autorisierten Nutzers zurück. Der Parameter
+            bestimmt je nach Wert, auf welchen Bereich zugegriffen werden soll:
+        </p>
+        <ul>
+            <li><h5>in</h5>Nachrichteneingang</li>
+            <li><h5>out</h5>Nachrichtenausgang</li>
+        </ul>
+        <pre type="application/json">{% include messages-box.json %}</pre>
+
+        <h4 id="api-message">/api/messages/<em>:message_id</em> - Daten einer Nachricht</h4>
+        <h5>GET</h5>
+        <p>
+            Liefert die Daten einer Nachricht zurück.
+        </p>
+        <pre type="application/json">{% include messages-message_id.json %}</pre>
+
+        <h4 id="api-message">/api/messages/<em>:box</em>/<em>:folder</em> - Nachrichten eines Ordners auslesen</h4>
+        <h5>GET</h5>
+        <p>
+            Liefert die vorhandenen Nachrichten eines Ordners des autorisierten Nutzers
+            zurück.
+        </p>
+        <pre type="application/json">{% include messages-box-folder.json %}</pre>
 
         <h4 id="api-news">/api/news - Ankündigungen des Nutzers</h4>
         <p>
