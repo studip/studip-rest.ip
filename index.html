@@ -33,14 +33,14 @@
             <dd><a href="#api-discovery">Informationen über die API</a></dd>
             <dt><a href="#api-courses">/api/courses</a></dt>
             <dd><a href="#api-courses">Veranstaltungen</a></dd>
-            <dt><a href="#api-documents">/api/documents</a></dt>
-            <dd><a href="#api-documents">Dateien</a></dd>
-            <dt><a href="#api-message">/api/message</a></dt>
-            <dd><a href="#api-message">Nachrichten</a></dd>
+            <dt><s><a href="#api-documents">/api/documents</a></s></dt>
+            <dd><s><a href="#api-documents">Dateien</a></s></dd>
+            <dt><s><a href="#api-message">/api/message</a></s></dt>
+            <dd><s><a href="#api-message">Nachrichten</a></s></dd>
             <dt><a href="#api-news">/api/news</a></dt>
             <dd><a href="#api-news">Ankündigungen</a></dd>
-            <dt><a href="#api-semester">/api/semester</a></dt>
-            <dd><a href="#api-semester">Semester</a></dd>
+            <dt><s><a href="#api-semester">/api/semester</a></s></dt>
+            <dd><s><a href="#api-semester">Semester</a></s></dd>
             <dt><a href="#api-studip">/api/studip</a></dt>
             <dd><a href="#api-studip">Globale Einstellungen</a></dd>
             <dt><a href="#api-user">/api/user</a></dt>
@@ -61,6 +61,33 @@
         <p>
             Die Autorisierung erfolgt mittels sogenanntem <strong>2-legged OAuth</strong>.
             Weitere Details finden Sie in der Dokumentation unter <a href="#oauth">/oauth</a>.
+        </p>
+        
+        <h4>Aufbau der Rückgabe</h4>
+        <p>
+            Die API unterscheidet <ins>zukünftig</ins> zwei verschiedene Modi, die den Aufbau der Rückgabe steuern:
+        </p>
+        <ul>
+            <li>
+                <h5>"compact"</h5>
+                Die Rückgabe enthält lediglich die angeforderten Ressourcen des angeforderten Typs.
+                Anhängige Ressourcen anderen Typs sind durch ihre eindeutige Id vermerkt.
+            </li>
+            <li>
+                <h5>"complete" <small>(Standard)</small></h5>
+                Die Rückgabe enthält die angeforderten Ressourcen des angeforderten Typs und
+                zusätzlich auch die eventuell anhängigen Ressourcen eines oder mehreren anderen
+                Typs.<br>
+                Zur Verdeutlichung: Veranstaltungsdaten enthalten zusätzlich auch die vollständigen
+                Nutzerdaten der Lehrenden und Teilnehmer sowie die vollständigen Semesterdaten der
+                verbundenen Semester.
+            </li>
+        </ul>
+        <p>
+            <strong>Bitte beachten:</strong> Obwohl <code>complete</code> der Standardwert ist, bezieht
+            sich diese Dokumentation in ihren Beispiel aus offensichtlichen Gründen auf den Modus
+            <code>compact</code>.
+        </p>
 
         <h4>Rückgabeformate</h4>
         <p>
@@ -97,46 +124,96 @@
         </p>
 
         <h4 id="api-discovery">/api/discovery - Informationen über die API</h4>
+        <h5>GET</h5>
         <p>
             Liefert Informationen über die in der Instanz unterstützten Routen,
             ihrer Methoden und den jeweiligen Zugriffsberechtigungen zurück.
         </p>
-        <pre type="text/json">{% include discovery.json %}</pre>
-
-        <h4 id="api-courses">/api/courses - Veranstaltungen</h4>
+        <pre type="application/json">{% include discovery.json %}</pre>
         <p>
-            Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+            In dem obigen Beispiel sind alle Routen erlaubt bis auf <code>/api/courses</code>,
+            also der Zugriff auf die Veranstaltungen.
         </p>
+        <p class="todo">
+            Routen nutzen sich untereinander, um Informationen abzurufen. Ist der Zugriff
+            auf ein davon untersagt, schlägt die gesamte Anfrage fehl.
+        </p>
+
+        <h4 id="api-courses">/api/courses - Belegte Veranstaltungen</h4>
+        <h5>GET</h5>
+        <p>
+            Liefert die Veranstaltungen zurück, in die der Nutzer eingetragen ist.
+        </p>
+        <pre type="application/json">{% include courses.json %}</pre>
+
+        <h4>/api/courses/<em>:course_id</em> - Daten einer Veranstaltung</h4>
+        <h5>GET</h5>
+        <p>
+            Liefert die Daten der übergebenen Veranstaltung zurück.
+        </p>
+        <pre type="application/json">{% include courses-course_id.json %}</pre>
+        
+        <h4>/api/courses/semester - Belegte Semester</h4>
+        <h5>GET</h5>
+        <p>
+            Liefert alle Semester zurück, in denen der Nutzer in mindestens eine
+            Veranstaltung eingetragen ist. 
+        </p>
+        <pre type="application/json">{% include courses-semester.json %}</pre>
+
+        <h4>/api/courses/semester/<em>:semester_id</em> - Belegte Veranstaltungen eines Semesters</h4>
+        <h5>GET</h5>
+        <p>
+            Liefert die Veranstaltungen zurück, in die der Nutzer in dem angegebenen
+            Semester eingetragen ist.
+        </p>
+        <pre type="application/json">{% include courses-semester-semester_id.json %}</pre>
 
         <h4 id="api-documents">/api/documents - Dateien</h4>
-        <p>
-            Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
-        </p>
+        <p>TODO</p>
 
         <h4 id="api-message">/api/messages - Nachrichten</h4>
-        <p>
-            Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
-        </p>
+        <p>TODO</p>
 
-        <h4 id="api-news">/api/news - Ankündigungen</h4>
+        <h4 id="api-news">/api/news - Ankündigungen des Nutzers</h4>
         <p>
-            Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+            Liefert die Ankündigungen des autorisierten Nutzers zurück.
         </p>
+        <pre type="application/json">{% include news.json %}</pre>
+        
+        <h4>/api/news/<em>:news_id</em> - Daten einer Ankündigung</h4>
+        <p>
+            Liefert die Daten der übergebenen Ankündigung zurück.
+        </p>
+        <pre type="application/json">{% include news-news_id.json %}</pre>
+
+        <h4>/api/news/range/<em>:range_id</em> - Ankündigungen einer <em>Range</em></h4>
+        <p>
+            Liefert die Ankündigungen der übergebenen <em>Range</em> zurück. Eine <em>Range</em>
+            kann hierbei die Id eines Nutzers, einer Veranstaltung/Studiengruppe, eines Instituts
+            oder <code>studip</code> für globale Ankündigungen sein.
+        </p>
+        <pre type="application/json">{% include news-news_id.json %}</pre>
 
         <h4 id="api-semester">/api/semester - Semester</h4>
-        <p>
-            Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
-        </p>
+        <p>TODO</p>
 
-        <h4 id="api-studip">/api/studip - Globale Einstellungen</h4>
+        <h4 id="api-studip">/api/studip/settings - Globale Einstellungen</h4>
         <p>
-            Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+            Liefert lokale Einstellungswerte Stud.IP-interner Konfigurationen
+            zurück.<br>
+            Diese Werte dienen dazu, die Daten verschiedener Ressourcen an
+            den Standort angepasst interpretieren zu können.
         </p>
+        <pre type="application/json">{% include studip-settings.json %}</pre>
 
-        <h4 id="api-user">/api/user - Nutzer</h4>
+        <h4 id="api-courses">/api/user/&lt;<em>:user_id</em>&gt; - Nutzerdaten</h4>
+        <h5>GET</h5>
         <p>
-            Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+            Liefert die Daten des Nutzers mit der übergebenen Id zurück. Ist keine Id
+            angegeben, so werden die Daten des autorisierten Nutzers zurückgegeben.
         </p>
+        <pre type="application/json">{% include user.json %}</pre>
         
       </section>
       <footer>
@@ -144,6 +221,9 @@
         <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
       </footer>
     </div>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js"></script>
+    <script src="javascripts/litelighter/jquery-litelighter.js"></script>
+    <script src="javascripts/script.js"></script>
     <script src="javascripts/scale.fix.js"></script>
     
   </body>

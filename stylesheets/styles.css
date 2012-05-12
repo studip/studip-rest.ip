@@ -209,8 +209,24 @@ footer {
     text-align: center;
 }
 
-script[type="text/json"] {
-    display: block;
+pre[type="application/json"] {
+    max-height: 200px;
+    overflow-y: auto;
+    position: relative;
+}
+pre[type="application/json"]:before {
+    color: #aaa;
+    content: "<json/>";
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 2em;
+    padding: .5em 1em;
+    position: absolute;
+    right: 0;
+    text-shadow: 1px 1px 0 #444;
+    top: 0;
+}
+pre[type="application/json"]:hover:before {
+    content: "";
 }
 
 @media print, screen and (max-width: 960px) {

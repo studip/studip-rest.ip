@@ -4,16 +4,16 @@
       "get":true
     },
     "/courses":{
-      "get":true
+      "get":false
     },
     "/courses/:course_id":{
-      "get":true
+      "get":false
     },
     "/courses/semester":{
-      "get":true
+      "get":false
     },
     "/courses/semester/:semester_id":{
-      "get":true
+      "get":false
     },
     "/discovery":{
       "get":true
