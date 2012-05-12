@@ -19,12 +19,6 @@
       <header>
         <h1>Stud.IP: Rest.IP</h1>
         <p>Ein alternativer, "RESTful" Ansatz für Webservices basierend auf OAuth</p>
-        <p class="view"><a href="https://github.com/studip/studip-rest.ip">Projekt auf GitHub anzeigen <small>studip/studip-rest.ip</small></a></p>
-        <ul>
-          <li><a href="https://github.com/studip/studip-rest.ip/zipball/master">Download <strong>ZIP Datei</strong></a></li>
-          <li><a href="https://github.com/studip/studip-rest.ip/tarball/master">Download <strong>TAR Ball</strong></a></li>
-          <li><a href="https://github.com/studip/studip-rest.ip">Anzeigen auf <strong>GitHub</strong></a></li>
-        </ul>
         <h2><a href="#top">API Dokumentation</a></h2>
         <dl>
             <dt><a href="#oauth">/oauth</a></dt>
@@ -39,12 +33,17 @@
             <dd><s><a href="#api-message">Nachrichten</a></s></dd>
             <dt><a href="#api-news">/api/news</a></dt>
             <dd><a href="#api-news">Ankündigungen</a></dd>
-            <dt><s><a href="#api-semester">/api/semester</a></s></dt>
-            <dd><s><a href="#api-semester">Semester</a></s></dd>
+            <dt><a href="#api-semesters">/api/semesters</a></dt>
+            <dd><a href="#api-semesters">Semester</a></dd>
             <dt><a href="#api-studip">/api/studip</a></dt>
             <dd><a href="#api-studip">Globale Einstellungen</a></dd>
             <dt><a href="#api-user">/api/user</a></dt>
             <dd><a href="#api-user">Nutzer</a></dd>
+        </dl>
+        <h2><a href="#api-activities">Bekannte Plugin-Routes</a></h2>
+        <dl>
+            <dt><a href="#api-activities">/api/activities</a></dt>
+            <dd><a href="#api-activities">Aktivitäten</a></dd>
         </dl>
       </header>
       <section>
@@ -195,8 +194,17 @@
         </p>
         <pre type="application/json">{% include news-news_id.json %}</pre>
 
-        <h4 id="api-semester">/api/semester - Semester</h4>
-        <p class="todo">TODO</p>
+        <h4 id="api-semesters">/api/semesters - Alle Semester</h4>
+        <p>
+            Liefert alle bekannten Semester der Installation zurück.
+        </p>
+        <pre type="application/json">{% include semesters.json %}</pre>
+
+        <h4 id="api-semesters">/api/semesters/<em>:semester_id</em> - Daten eines Semesters</h4>
+        <p>
+            Liefert die Daten des übergebenen Semesters zurück.
+        </p>
+        <pre type="application/json">{% include semesters-semester_id.json %}</pre>
 
         <h4 id="api-studip">/api/studip/settings - Globale Einstellungen</h4>
         <p>
@@ -214,10 +222,21 @@
             angegeben, so werden die Daten des autorisierten Nutzers zurückgegeben.
         </p>
         <pre type="application/json">{% include user.json %}</pre>
+
+        <h4 id="api-activities">/api/activities - Aktivitäten</h4>
+        <p>
+            Liefert die Aktivitäten im Umfeld des autorisierten Nutzers zurück.
+        </p>
+        <pre type="application/json">{% include activities.json %}</pre>
+        <p class="todo">
+            Diese Route wurde versuchsweise in das
+            <a href="http://plugin-dev.studip.de/index.php/Plugins/00062">ActivityFeed</a>-Plugin
+            von Elmar Ludwig eingebaut und ist noch experimentell.
+        </p>
         
       </section>
       <footer>
-        <p>This project is maintained by <a href="https://github.com/studip">studip</a></p>
+        <p><a href="https://github.com/studip/studip-rest.ip">This project</a> is maintained by <a href="https://github.com/studip">studip</a></p>
         <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
       </footer>
     </div>

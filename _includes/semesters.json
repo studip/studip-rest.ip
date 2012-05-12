@@ -1,0 +1,39 @@
+  "semesters":{
+    "eb828ebb81bb946fac4108521a3b4697":{
+      "semester_id":"eb828ebb81bb946fac4108521a3b4697",
+      "title":"WS 2010\/11",
+      "description":"",
+      "begin":"1285884000",
+      "end":"1301608799",
+      "seminars_begin":"1287439200",
+      "seminars_end":"1296946799"
+    },
+    "f2b4fdf5ac59a9cb57dd73c4d3bbb651":{
+      "semester_id":"f2b4fdf5ac59a9cb57dd73c4d3bbb651",
+      "title":"SS 2011",
+      "description":"",
+      "begin":"1301608800",
+      "end":"1317419999",
+      "seminars_begin":"1302040800",
+      "seminars_end":"1310248799"
+    },
+    "b0f900555733fe1cdcd60f1568be32b3":{
+      "semester_id":"b0f900555733fe1cdcd60f1568be32b3",
+      "title":"WS 2011\/2012",
+      "description":"",
+      "begin":"1322694000",
+      "end":"1333231199",
+      "seminars_begin":"1322694000",
+      "seminars_end":"1330556399"
+    },
+    "55e872dbcb8a1c79bfb088dfb2da0556":{
+      "semester_id":"55e872dbcb8a1c79bfb088dfb2da0556",
+      "title":"SS 2012",
+      "description":"",
+      "begin":"1333231200",
+      "end":"1349042399",
+      "seminars_begin":"1334440800",
+      "seminars_end":"1345154399"
+    }
+  }
+}

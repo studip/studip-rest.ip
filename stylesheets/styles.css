@@ -162,10 +162,14 @@ header ul a strong {
   color:#222;
 }
 
+header dl {
+    display: inline-block;
+    width: 100%;
+}
 header dl:after {
     clear: both;
-    content: "";
-    display: inline-block;
+    content: " ";
+    display: block;
     height: 0;
     width: 0;
 }
