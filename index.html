@@ -26,7 +26,7 @@
         <h2><a href="#top">API Dokumentation</a></h2>
         <dl>
             <dt><a href="#oauth">/oauth</a></dt>
-            <dd><a href="#oauth">Authentifizierung</a></dd>
+            <dd><a href="#oauth">Autorisierung</a></dd>
             <dt><a href="#api-discovery">/api/discovery</a></dt>
             <dd><a href="#api-discovery">Informationen über die API</a></dd>
             <dt><a href="#api-courses">/api/courses</a></dt>
@@ -55,25 +55,41 @@
             ihren aktuellen Unix-Zeitstempel mit.
         </p>
 
-        <h4>Authentifizierung</h4>
+        <h4>Autorisierung</h4>
         <p>
-            Die Authentifizierung erfolgt mittels sogenanntem <strong>2-legged OAuth</strong>.
+            Die Autorisierung erfolgt mittels sogenanntem <strong>2-legged OAuth</strong>.
             Weitere Details finden Sie in der Dokumentation unter <a href="#oauth">/oauth</a>.
 
         <h4>Rückgabeformate</h4>
         <p>
             Die Rückgabe kann entweder im <strong>JSON</strong>- oder <strong>XML</strong>-Format erfolgen.
             Das jeweilige Format wird durch die Dateiendung der angeforderten Ressource
-            bestimmt. Ein Zugriff auf <em>/api/news.<strong>json</strong></em> liefert die Ankündigungen
-            eines Nutzers im <strong>JSON</strong>-Format zügig, während <em>/api/news.<strong>xml</strong></em>
-            die Ankündigungen im <strong>XML</strong>-Format zurückgeben würde.
+            bestimmt. Ein Zugriff auf <code>/api/news.json</code> liefert die Ankündigungen
+            eines Nutzers im JSON-Format zurück, während <code>/api/news.xml</code>
+            die Ankündigungen im XML-Format zurückgeben würde.
         </p>
 
         <h3>Die Routen im Detail</h3>
-        <h4 id="oauth">/oauth - Authentifizierung</h4>
+        <h4 id="oauth">/oauth - Autorisierung</h4>
         <p>
-            Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+            Die 3 Endpunkte der Autorisierung sind die folgenden:
         </p>
+        <ol>
+            <li>
+                <h5>/oauth/request_token</h5>
+                Fragt einen temporären, unautorisierten Token beim Server ab.
+            </li>
+            <li>
+                <h5>/oauth/authorize</h5>
+                In diesem Schritt wird dem Benutzer ein Dialog angezeigt, in dem
+                er zustimmen muss, den Token aus Schritt zu autorisieren.
+            </li>
+            <li>
+                <h5>/oauth/access_token</h5>
+                Holt ein dauerhaftes, autorisiertes Token im Austausch gegen das
+                in Schritt autorierte Token.
+            </li>
+        </ol>
 
         <h4 id="api-discovery">/api/discovery - Informationen über die API</h4>
         <p>
