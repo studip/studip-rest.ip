@@ -212,9 +212,22 @@
         <h4 id="api-message">/api/messages/<em>:message_id</em> - Daten einer Nachricht</h4>
         <h5>GET</h5>
         <p>
-            Liefert die Daten einer Nachricht zurück.
+            Liefert die Daten der übergebenen Nachricht zurück.
         </p>
         <pre type="application/json">{% include messages-message_id.json %}</pre>
+
+        <h5>DELETE</h5>
+        <p>
+            Löscht die übergebene Nachricht.
+        </p>
+        <p>
+            HTTP-Status der Rückgabe:
+        </p>
+        <ul>
+            <li><code>204</code> bei Erfolg</li>
+            <li><code>403</code> wenn die Nachricht nicht gelöscht werden darf</li>
+            <li><code>404</code> wenn die Nachricht nicht gefunden wurde</li>
+        </ul>
 
         <h4 id="api-message">/api/messages/<em>:box</em>/<em>:folder</em> - Nachrichten eines Ordners auslesen</h4>
         <h5>GET</h5>
