@@ -17,6 +17,12 @@ jQuery(function ($) {
                     language: 'js'
                 });
             });
+        } else {
+            $(this).litelighter({
+                clone: false,
+                style: 'mystyle',
+                language: 'js'
+            });
         }
     });
 });
