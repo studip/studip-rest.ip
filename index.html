@@ -27,8 +27,8 @@
             <dd><a href="#api-discovery">Informationen über die API</a></dd>
             <dt><a href="#api-courses">/api/courses</a></dt>
             <dd><a href="#api-courses">Veranstaltungen</a></dd>
-            <dt><s><a href="#api-documents">/api/documents</a></s></dt>
-            <dd><s><a href="#api-documents">Dateien</a></s></dd>
+            <dt><a href="#api-documents">/api/documents</a></dt>
+            <dd><a href="#api-documents">Dateien</a></dd>
             <dt><s><a href="#api-message">/api/message</a></s></dt>
             <dd><s><a href="#api-message">Nachrichten</a></s></dd>
             <dt><a href="#api-news">/api/news</a></dt>
@@ -168,8 +168,26 @@
         </p>
         <pre type="application/json">{% include courses-semester-semester_id.json %}</pre>
 
-        <h4 id="api-documents">/api/documents - Dateien</h4>
-        <p class="todo">TODO</p>
+        <h4 id="api-documents">/api/documents/<em>:document_id</em> - Daten eines Dokuments</h4>
+        <h5>GET</h5>
+        <p>
+            Liefert die Daten eines Dokuments zurück.
+        </p>
+        <pre type="application/json">{% include documents-document_id.json %}</pre>
+
+        <h4>/api/documents/<em>:document_id</em>/download - Download eines Dokuments</h4>
+        <h5>GET</h5>
+        <p>
+            Liefert das Dokument als solches zurück.
+        </p>
+        <p>- kein Beispiel -</p>
+        
+        <h4>/api/documents/<em>:range_id</em>/folder/&lt;<em>:folder_id</em>&gt; - Dateien eines Ordners</h4>
+        <h5>GET</h5>
+        <p>
+            Liefert die Dateien und Ordner eines übergebenen Ordners einer Veranstaltung zurück.
+        </p>
+        <pre type="application/json">{% include documents-range_id-folder.json %}</pre>
 
         <h4 id="api-message">/api/messages - Nachrichten</h4>
         <p class="todo">TODO</p>
