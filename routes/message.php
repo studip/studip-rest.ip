@@ -138,7 +138,7 @@ class MessageRoute implements \APIPlugin
                 $this->halt(500, 'Could not create message');
             }
 
-            $router->val($router->dispatch('get', '/message(/:message_id)', $message_id));
+            $router->render($router->dispatch('get', '/message(/:message_id)', $message_id));
         });
 
         // Load a message
@@ -176,6 +176,9 @@ class MessageRoute implements \APIPlugin
 
             $messaging = new messaging;
             $messaging->set_read_message($message_id);
+
+            $router->halt(204);
+
         });
 
         // Move message
@@ -213,7 +216,7 @@ class Message
                         {$additional_fields}
                   FROM message AS m
                   INNER JOIN message_user AS mu ON (m.message_id = mu.message_id AND mu.user_id = ?)
-                  INNER JOIN message_user AS mu2 ON (mu.message_id = mu2.message_id AND mu.user_id != mu2.user_id) 
+                  INNER JOIN message_user AS mu2 ON (mu.message_id = mu2.message_id AND mu.user_id != mu2.user_id)
                   WHERE m.message_id IN (?) AND mu.deleted = 0";
         if (is_array($ids) and count($ids) > 1) {
             $query .= " ORDER BY m.mkdate DESC";
