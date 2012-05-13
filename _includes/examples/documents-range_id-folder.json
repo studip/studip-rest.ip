@@ -1,72 +1,56 @@
 {
-  "folders":[
-    {
-      "folder_id":"d36c905c26265fda018e29b02224b635",
-      "user_id":"76ed43ef286fb55cf9e41beadb484a9f",
-      "name":"Allgemeiner Dateiordner",
-      "description":"Ablage f\u00fcr allgemeine Ordner und Dokumente der Veranstaltung",
-      "mkdate":"1326410202",
-      "chdate":"1326410202"
-    },
-    {
-      "folder_id":"83c158e276cc94168a067748e8ae8f95",
-      "user_id":"76ed43ef286fb55cf9e41beadb484a9f",
-      "name":"Allgemeiner Dateiordner",
-      "description":"Ablage f\u00fcr allgemeine Ordner und Dokumente der Veranstaltung",
-      "mkdate":"1326410205",
-      "chdate":"1326410205"
-    },
-    {
-      "folder_id":"842bf5a9fd34a5f7037b1a0c33def067",
-      "user_id":"76ed43ef286fb55cf9e41beadb484a9f",
-      "name":"28.11.11, 10:00 - 12:00, Ohne Titel (Thema gel\u00f6scht)",
-      "description":"Dateiordner bezieht sich auf ein nicht mehr vorhandenes Thema.",
-      "mkdate":"1334137141",
-      "chdate":"1334137141"
-    },
-    {
-      "folder_id":"5da50745efc66547da383da2211668ff",
-      "user_id":"76ed43ef286fb55cf9e41beadb484a9f",
-      "name":"05.12.11, 10:00 - 12:00, Ohne Titel (Thema gel\u00f6scht)",
-      "description":"Dateiordner bezieht sich auf ein nicht mehr vorhandenes Thema.",
-      "mkdate":"1334137409",
-      "chdate":"1334137409"
-    },
-    {
-      "folder_id":"3b5111cc46c90f103be55373bf246d41",
-      "user_id":"76ed43ef286fb55cf9e41beadb484a9f",
-      "name":"Dateiordner der Gruppe: AutorInnen",
-      "description":"Ablage f\u00fcr Ordner und Dokumente dieser Gruppe",
-      "mkdate":"1335182781",
-      "chdate":"1335182781"
-    }
-  ],
-  "documents":[
-    {
-      "document_id":"866c886cbbfa4c3e90d5f5ac6e8aa5c0",
-      "user_id":"76ed43ef286fb55cf9e41beadb484a9f",
-      "name":"Sprechstundenplugin",
-      "description":"Plugin f\u00fcr Sprechstundentermine",
-      "mkdate":"1329120010",
-      "chdate":"1329120010",
-      "filename":"sprechstundenplugin_1.6.3.zip",
-      "filesize":"23031",
-      "downloads":"0",
-      "mime_type":"application\/zip",
-      "icon":"http:\/\/127.0.0.1\/~tleilax\/studip\/trunk\/public\/assets\/images\/icons\/16\/blue\/file-archive.png"
-    },
-    {
-      "document_id":"9232571de085fd5b41f2b12768abd115",
-      "user_id":"e7eaafc2245b04c608d2ce17b8267875",
-      "name":"iPad calendar screenshot: List view",
-      "description":"Foo bar",
-      "mkdate":"1336841128",
-      "chdate":"1336841128",
-      "filename":"calendar-list.png",
-      "filesize":"209695",
-      "downloads":"1",
-      "mime_type":"image\/png",
-      "icon":"http:\/\/127.0.0.1\/~tleilax\/studip\/trunk\/public\/assets\/images\/icons\/16\/blue\/file-image.png"
-    }
-  ]
+    "folders": [
+        {
+            "folder_id": "d36c905c26265fda018e29b02224b635",
+            "user_id": "76ed43ef286fb55cf9e41beadb484a9f",
+            "name": "Allgemeiner Dateiordner",
+            "description": "Ablage f\u00fcr allgemeine Ordner und Dokumente der Veranstaltung",
+            "mkdate": "1326410202",
+            "chdate": "1326410202"
+        },
+        {
+            "folder_id": "842bf5a9fd34a5f7037b1a0c33def067",
+            "user_id": "76ed43ef286fb55cf9e41beadb484a9f",
+            "name": "28.11.11, 10:00 - 12:00, Ohne Titel (Thema gel\u00f6scht)",
+            "description": "Dateiordner bezieht sich auf ein nicht mehr vorhandenes Thema.",
+            "mkdate": "1334137141",
+            "chdate": "1334137141"
+        },
+        {
+            "folder_id": "3b5111cc46c90f103be55373bf246d41",
+            "user_id": "76ed43ef286fb55cf9e41beadb484a9f",
+            "name": "Dateiordner der Gruppe: AutorInnen",
+            "description": "Ablage f\u00fcr Ordner und Dokumente dieser Gruppe",
+            "mkdate": "1335182781",
+            "chdate": "1335182781"
+        }
+    ],
+    "documents": [
+        {
+            "document_id": "866c886cbbfa4c3e90d5f5ac6e8aa5c0",
+            "user_id": "76ed43ef286fb55cf9e41beadb484a9f",
+            "name": "Sprechstundenplugin",
+            "description": "Plugin f\u00fcr Sprechstundentermine",
+            "mkdate": "1329120010",
+            "chdate": "1329120010",
+            "filename": "sprechstundenplugin_1.6.3.zip",
+            "filesize": "23031",
+            "downloads": "0",
+            "mime_type": "application/zip",
+            "icon": "http://studip.example.org/assets/images/icons/16/blue/file-archive.png"
+        },
+        {
+            "document_id": "9232571de085fd5b41f2b12768abd115",
+            "user_id": "e7eaafc2245b04c608d2ce17b8267875",
+            "name": "iPad calendar screenshot: List view",
+            "description": "Foo bar",
+            "mkdate": "1336841128",
+            "chdate": "1336841128",
+            "filename": "calendar-list.png",
+            "filesize": "209695",
+            "downloads": "1",
+            "mime_type": "image/png",
+            "icon": "http://studip.example.org/assets/images/icons/16/blue/file-image.png"
+        }
+    ]
 }

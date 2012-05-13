@@ -1,74 +1,64 @@
 {
-  "messages":[
-    {
-      "message_id":"4fb019436f6270a8a72a7e1aff03ef0d",
-      "sender_id":"ae7a77dff6aa85f82c40cc311600ceb4",
-      "receiver_id":"ae7a77dff6aa85f82c40cc311600ceb4",
-      "subject":"Sie wurden in eine Studiengruppe eingeladen",
-      "message":"John Doe m&ouml;chte Sie auf die Studiengruppe Studiengruppen-Dummy aufmerksam machen. Klicken Sie auf den untenstehenden Link, um direkt zur Studiengruppe zu gelangen.<br><br> <a class=\"link-intern\" href=\"http://studip.example.org/dispatch.php/course/studygroup/details/6909da6f6a8f864ad50458b256722388\">http://studip.example.org/dispatch.php/course/studygroup/details/6909da6f6a8f864ad50458b256722388</a>",
-      "mkdate":"1335250648",
-      "priority":"normal",
-      "unread":"0"
-    },
-    {
-      "message_id":"7f0a55cab501e936342c4a32ae0d201e",
-      "sender_id":"____%system%____",
-      "receiver_id":"____%system%____",
-      "subject":"Systemnachricht: Vote/Test ge\u00e4ndert",
-      "message":"An Ihrem Test &quot;A&quot; wurden von dem Administrator oder der Administratorin John Doe &Auml;nderungen vorgenommen.<br> <br> -- <br>Diese Nachricht wurde automatisch vom Stud.IP-System generiert. Sie k&ouml;nnen darauf nicht antworten.",
-      "mkdate":"1334072556",
-      "priority":"normal",
-      "unread":"0"
-    },
-    {
-      "message_id":"04cb135a12453333d264f7dcddfffa22",
-      "sender_id":"____%system%____",
-      "receiver_id":"____%system%____",
-      "subject":"Systemnachricht: Abonnement aufgehoben",
-      "message":"Ihr Abonnement der Veranstaltung <b>Test-Veranstaltung</b> wurde aufgehoben, da die Veranstaltung mit einem teilnahmebeschr&auml;nkten Anmeldeverfahren versehen wurde. <br>Wenn Sie einen Platz in der Veranstaltung bekommen wollen, melden Sie sich bitte erneut an.<br> <br> -- <br>Diese Nachricht wurde automatisch vom Stud.IP-System generiert. Sie k&ouml;nnen darauf nicht antworten.",
-      "mkdate":"1332755326",
-      "priority":"normal",
-      "unread":"0"
-    },
-    {
-      "message_id":"a4202f26cab3c381b9f138b47192de00",
-      "sender_id":"____%system%____",
-      "receiver_id":"____%system%____",
-      "subject":"Systemnachricht: Profil ver\u00e4ndert",
-      "message":"Ihre pers&ouml;nliche Seite wurde von einer Administratorin oder einem Administrator ver&auml;ndert.<br> Folgende Ver&auml;nderungen wurden vorgenommen:<br> <br>Private Daten wurden ge&auml;ndert.<br>Daten im Lebenslauf u.a. wurden ge&auml;ndert.<br>Diese Nachricht wurde automatisch vom Stud.IP-System generiert. Sie k&ouml;nnen darauf nicht antworten.",
-      "mkdate":"1332256958",
-      "priority":"normal",
-      "unread":"1"
-    },
-    {
-      "message_id":"661f318cced743df38964fccace74336",
-      "sender_id":"76ed43ef286fb55cf9e41beadb484a9f",
-      "receiver_id":"76ed43ef286fb55cf9e41beadb484a9f",
-      "subject":"test",
-      "message":"<img src=\"http://studip.example.org/pictures/smile/wink3.gif\" alt=\"wink3\" title=\"wink3\" width=\"\" height=\"\"> <img src=\"http://studip.example.org/pictures/smile/wink3.gif\" alt=\"wink3\" title=\"wink3\" width=\"\" height=\"\"> <img src=\"http://studip.example.org/pictures/smile/wink3.gif\" alt=\"wink3\" title=\"wink3\" width=\"\" height=\"\">",
-      "mkdate":"1327112995",
-      "priority":"normal",
-      "unread":"1"
-    },
-    {
-      "message_id":"cb0f986b69792c2cfd40ff2529c3155a",
-      "sender_id":"76ed43ef286fb55cf9e41beadb484a9f",
-      "receiver_id":"76ed43ef286fb55cf9e41beadb484a9f",
-      "subject":"Test",
-      "message":"<img src=\"http://studip.example.org/pictures/smile/smile.gif\" alt=\"smile\" title=\"smile\" width=\"\" height=\"\">",
-      "mkdate":"1326539373",
-      "priority":"normal",
-      "unread":"0"
-    },
-    {
-      "message_id":"aa544c488f4951c9c6ed618b87b25282",
-      "sender_id":"____%system%____",
-      "receiver_id":"____%system%____",
-      "subject":"Systemnachricht: Eintragung in Veranstaltung",
-      "message":"Sie wurden vom einem/einer DozentIn oder AdministratorIn als TeilnehmerIn in die Veranstaltung <b>Test-Veranstaltung</b> eingetragen.<br> <br> -- <br>Diese Nachricht wurde automatisch vom Stud.IP-System generiert. Sie k&ouml;nnen darauf nicht antworten.",
-      "mkdate":"1325873243",
-      "priority":"normal",
-      "unread":"0"
-    }
-  ]
+    "messages": [
+        {
+            "message_id": "4fb019436f6270a8a72a7e1aff03ef0d",
+            "sender_id": "ae7a77dff6aa85f82c40cc311600ceb4",
+            "receiver_id": "ae7a77dff6aa85f82c40cc311600ceb4",
+            "subject": "Sie wurden in eine Studiengruppe eingeladen",
+            "message": "John Doe m&ouml;chte Sie auf die Studiengruppe Studiengruppen-Dummy aufmerksam machen. Klicken Sie auf den untenstehenden Link, um direkt zur Studiengruppe zu gelangen.<br><br> <a class=\"link-intern\" href=\"http://studip.example.org/dispatch.php/course/studygroup/details/6909da6f6a8f864ad50458b256722388\">http://studip.example.org/dispatch.php/course/studygroup/details/6909da6f6a8f864ad50458b256722388</a>",
+            "mkdate": "1335250648",
+            "priority": "normal",
+            "unread": "0"
+        },
+        {
+            "message_id": "7f0a55cab501e936342c4a32ae0d201e",
+            "sender_id": "____%system%____",
+            "receiver_id": "____%system%____",
+            "subject": "Systemnachricht: Vote/Test ge\u00e4ndert",
+            "message": "An Ihrem Test &quot;A&quot; wurden von dem Administrator oder der Administratorin John Doe &Auml;nderungen vorgenommen.<br> <br> -- <br>Diese Nachricht wurde automatisch vom Stud.IP-System generiert. Sie k&ouml;nnen darauf nicht antworten.",
+            "mkdate": "1334072556",
+            "priority": "normal",
+            "unread": "0"
+        },
+        {
+            "message_id": "04cb135a12453333d264f7dcddfffa22",
+            "sender_id": "____%system%____",
+            "receiver_id": "____%system%____",
+            "subject": "Systemnachricht: Abonnement aufgehoben",
+            "message": "Ihr Abonnement der Veranstaltung <b>Test-Veranstaltung</b> wurde aufgehoben, da die Veranstaltung mit einem teilnahmebeschr&auml;nkten Anmeldeverfahren versehen wurde. <br>Wenn Sie einen Platz in der Veranstaltung bekommen wollen, melden Sie sich bitte erneut an.<br> <br> -- <br>Diese Nachricht wurde automatisch vom Stud.IP-System generiert. Sie k&ouml;nnen darauf nicht antworten.",
+            "mkdate": "1332755326",
+            "priority": "normal",
+            "unread": "0"
+        },
+        {
+            "message_id": "a4202f26cab3c381b9f138b47192de00",
+            "sender_id": "____%system%____",
+            "receiver_id": "____%system%____",
+            "subject": "Systemnachricht: Profil ver\u00e4ndert",
+            "message": "Ihre pers&ouml;nliche Seite wurde von einer Administratorin oder einem Administrator ver&auml;ndert.<br> Folgende Ver&auml;nderungen wurden vorgenommen:<br> <br>Private Daten wurden ge&auml;ndert.<br>Daten im Lebenslauf u.a. wurden ge&auml;ndert.<br>Diese Nachricht wurde automatisch vom Stud.IP-System generiert. Sie k&ouml;nnen darauf nicht antworten.",
+            "mkdate": "1332256958",
+            "priority": "normal",
+            "unread": "1"
+        },
+        {
+            "message_id": "661f318cced743df38964fccace74336",
+            "sender_id": "76ed43ef286fb55cf9e41beadb484a9f",
+            "receiver_id": "76ed43ef286fb55cf9e41beadb484a9f",
+            "subject": "test",
+            "message": "<img src=\"http://studip.example.org/pictures/smile/wink3.gif\" alt=\"wink3\" title=\"wink3\" width=\"\" height=\"\"> <img src=\"http://studip.example.org/pictures/smile/wink3.gif\" alt=\"wink3\" title=\"wink3\" width=\"\" height=\"\"> <img src=\"http://studip.example.org/pictures/smile/wink3.gif\" alt=\"wink3\" title=\"wink3\" width=\"\" height=\"\">",
+            "mkdate": "1327112995",
+            "priority": "normal",
+            "unread": "1"
+        },
+        {
+            "message_id": "cb0f986b69792c2cfd40ff2529c3155a",
+            "sender_id": "76ed43ef286fb55cf9e41beadb484a9f",
+            "receiver_id": "76ed43ef286fb55cf9e41beadb484a9f",
+            "subject": "Test",
+            "message": "<img src=\"http://studip.example.org/pictures/smile/smile.gif\" alt=\"smile\" title=\"smile\" width=\"\" height=\"\">",
+            "mkdate": "1326539373",
+            "priority": "normal",
+            "unread": "0"
+        }
+    ]
 }

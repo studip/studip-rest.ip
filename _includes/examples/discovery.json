@@ -1,72 +1,72 @@
 {
-  "routes":{
-    "/activities(/:range_id)":{
-      "get":true
-    },
-    "/courses":{
-      "get":false
-    },
-    "/courses/:course_id":{
-      "get":false
-    },
-    "/courses/semester":{
-      "get":false
-    },
-    "/courses/semester/:semester_id":{
-      "get":false
-    },
-    "/discovery":{
-      "get":true
-    },
-    "/documents/:document_id":{
-      "get":true
-    },
-    "/documents/:document_id/download":{
-      "get":true
-    },
-    "/documents/:range_id/folder(/:folder_id)":{
-      "get":true
-    },
-    "/messages":{
-      "post":true
-    },
-    "/messages/:box":{
-      "get":true,
-      "post":true
-    },
-    "/messages/:box/:folder":{
-      "get":true
-    },
-    "/messages/:message_id":{
-      "get":true,
-      "delete":true
-    },
-    "/messages/:message_id/move/:folder":{
-      "post":true
-    },
-    "/messages/:message_id/read":{
-      "post":true
-    },
-    "/news(/range/:range_id)":{
-      "get":true,
-      "post":true
-    },
-    "/news/:news_id":{
-      "get":true,
-      "post":true,
-      "delete":true
-    },
-    "/semesters":{
-      "get":true
-    },
-    "/semesters/:semester_id":{
-      "get":true
-    },
-    "/studip/settings":{
-      "get":true
-    },
-    "/user(/:user_id)":{
-      "get":true
+    "routes": {
+        "/activities(/:range_id)": {
+            "get": true
+        },
+        "/courses": {
+            "get": false
+        },
+        "/courses/:course_id": {
+            "get": false
+        },
+        "/courses/semester": {
+            "get": false
+        },
+        "/courses/semester/:semester_id": {
+            "get": false
+        },
+        "/discovery": {
+            "get": true
+        },
+        "/documents/:document_id": {
+            "get": true
+        },
+        "/documents/:document_id/download": {
+            "get": true
+        },
+        "/documents/:range_id/folder(/:folder_id)": {
+            "get": true
+        },
+        "/messages": {
+            "post": false
+        },
+        "/messages/:box": {
+            "get": true,
+            "post": false
+        },
+        "/messages/:box/:folder": {
+            "get": true
+        },
+        "/messages/:message_id": {
+            "get": true,
+            "delete": true
+        },
+        "/messages/:message_id/move/:folder": {
+            "post": true
+        },
+        "/messages/:message_id/read": {
+            "post": true
+        },
+        "/news(/range/:range_id)": {
+            "get": true,
+            "post": true
+        },
+        "/news/:news_id": {
+            "get": true,
+            "post": false,
+            "delete": true
+        },
+        "/semesters": {
+            "get": true
+        },
+        "/semesters/:semester_id": {
+            "get": true
+        },
+        "/studip/settings": {
+            "get": true
+        },
+        "/user(/:user_id)": {
+            "get": true
+        }
     }
-  }
 }

@@ -1,34 +1,39 @@
 {
-  "course":{
-    "course_id":"25fc42f45366af2b6ab76c6763d6d4b6",
-    "start_time":"1322694000",
-    "title":"Test-Veranstaltung",
-    "subtitle":"",
-    "type":"1",
-    "modules":{
-      "forum":true,
-      "documents":true,
-      "schedule":false,
-      "participants":true,
-      "personal":false,
-      "literature":false,
-      "chat":true,
-      "wiki":true,
-      "scm":true,
-      "elearning_interface":false,
-      "documents_folder_permissions":false,
-      "calendar":false
-    },
-    "teilnehmer":"",
-    "vorrausetzungen":"",
-    "lernorga":"",
-    "leistungsnachweis":"",
-    "description":"",
-    "location":"DAS",
-    "semester_id":"b0f900555733fe1cdcd60f1568be32b3",
-    "teachers":[
-      "ae7a77dff6aa85f82c40cc311600ceb4"
-    ],
-    "tutors":[]
-  }
+    "course": {
+        "course_id": "25fc42f45366af2b6ab76c6763d6d4b6",
+        "start_time": "1322694000",
+        "duration_time": "0",
+        "title": "Stud.IP Basics",
+        "subtitle": "",
+        "description": "An introduction to Stud.IP",
+        "location": "A1 2-345",
+        "type": "1",
+        "semester_id": "b0f900555733fe1cdcd60f1568be32b3",
+        "teachers": [
+            "ae7a77dff6aa85f82c40cc311600ceb4"
+        ],
+        "tutors": [
+            "757af09136a9f8a00280e598ac9814bc",
+            "96f1172ccc378b7710260413d3db8c8f"
+        ],
+        "students": [
+            "e7eaafc2245b04c608d2ce17b8267875",
+            "205f3efb7997a0fc9755da2b535038da",
+            "7e81ec247c151c02ffd479511e24cc03"
+        ],
+        "modules": {
+            "calendar": false,
+            "chat": true,
+            "documents": true,
+            "documents_folder_permissions": false,
+            "elearning_interface": false,
+            "forum": true,
+            "literature": false,
+            "participants": true,
+            "personal": false,
+            "schedule": false,
+            "scm": true,
+            "wiki": true
+        }
+    }
 }

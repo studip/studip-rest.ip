@@ -1,15 +1,15 @@
 {
-  "document":{
-    "document_id":"9232571de085fd5b41f2b12768abd115",
-    "user_id":"e7eaafc2245b04c608d2ce17b8267875",
-    "name":"iPad calendar screenshot: List view",
-    "description":"Foo bar",
-    "mkdate":"1336841128",
-    "chdate":"1336841128",
-    "filename":"calendar-list.png",
-    "filesize":"209695",
-    "downloads":"1",
-    "mime_type":"image/png",
-    "icon":"http://studip.example.org/assets/images/icons/16/blue/file-image.png"
-  }
+    "document": {
+        "document_id": "9232571de085fd5b41f2b12768abd115",
+        "user_id": "e7eaafc2245b04c608d2ce17b8267875",
+        "name": "iPad calendar screenshot: List view",
+        "description": "Foo bar",
+        "mkdate": "1336841128",
+        "chdate": "1336841128",
+        "filename": "calendar-list.png",
+        "filesize": "209695",
+        "downloads": "1",
+        "mime_type": "image/png",
+        "icon": "http://studip.example.org/assets/images/icons/16/blue/file-image.png"
+    }
 }

@@ -1,11 +1,11 @@
 {
-  "semester":{
-    "semester_id":"55e872dbcb8a1c79bfb088dfb2da0556",
-    "title":"SS 2012",
-    "description":"",
-    "begin":"1333231200",
-    "end":"1349042399",
-    "seminars_begin":"1334440800",
-    "seminars_end":"1345154399"
-  }
+    "semester": {
+        "semester_id": "55e872dbcb8a1c79bfb088dfb2da0556",
+        "title": "SS 2012",
+        "description": "",
+        "begin": "1333231200",
+        "end": "1349042399",
+        "seminars_begin": "1334440800",
+        "seminars_end": "1345154399"
+    }
 }
