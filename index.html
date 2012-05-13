@@ -65,8 +65,23 @@
 
         <h4>Autorisierung</h4>
         <p>
-            Die Autorisierung erfolgt mittels sogenanntem <strong>2-legged OAuth</strong>.
-            Weitere Details finden Sie in der Dokumentation unter <a href="#oauth">/oauth</a>.
+            Die Autorisierung erfolgt mittels sogenanntem <strong>3-legged OAuth</strong>. Im
+            Gegensatz zum <em>2-legged OAuth</em>, bei dem sich nur die Applikation
+            beim Server autorisiert, ist beim <em>3-legged OAuth</em> zusätzlich eine
+            Autorisierung des zugreifenden Nutzers erforderlich.
+        </p>
+        <p>
+            Die Autorisierung des Nutzers erfolgt dabei vollkommen transparent, da die
+            Autorisierung auf Seiten des autorisierenden Servers erfolgt. Die zur
+            Autorisierung erforderlichen Nutzerdaten verlassen somit niemals das System.
+        </p>
+        <p>
+            Der komplette Workflow von OAuth findest sich unter
+            <a href="http://oauth.net/core/diagram.png">http://oauth.net/core/diagram.png</a>.
+        <p>
+            Weitere Details zu OAuth finden sie auf <a href="http://oauth.net">http://oauth.net</a>.
+            Informationen zur Autorisierung dieser API finden Sie in der Dokumentation unter
+            <a href="#oauth">/oauth</a>.
         </p>
         
         <h4>Aufbau der Rückgabe</h4>
