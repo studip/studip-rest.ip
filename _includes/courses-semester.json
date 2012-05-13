@@ -1,6 +1,6 @@
 {
-  "semesters":{
-    "b0f900555733fe1cdcd60f1568be32b3":{
+  "semesters":[
+    {
       "semester_id":"b0f900555733fe1cdcd60f1568be32b3",
       "title":"WS 2011\/2012",
       "description":"",
@@ -18,5 +18,5 @@
       "seminars_begin":"1334440800",
       "seminars_end":"1345154399"
     }
-  }
+  ]
 }
