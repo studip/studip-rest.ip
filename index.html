@@ -109,6 +109,10 @@
             sich diese Dokumentation in ihren Beispielen aus offensichtlichen Gründen auf den Modus
             <code>compact</code>.
         </p>
+        <p class="todo">
+            Routen nutzen sich untereinander, um Informationen abzurufen. Ist der Zugriff
+            auf ein davon untersagt, schlägt die gesamte Anfrage fehl.
+        </p>
 
         <h4>Rückgabeformate</h4>
         <p>
@@ -157,206 +161,14 @@
             vergeben werden.
         </p>
 
-        <h4 id="api-discovery">/api/discovery - Informationen über die API</h4>
-        <h5>GET</h5>
-        <p>
-            Liefert Informationen über die in der Instanz unterstützten Routen,
-            ihrer Methoden und den jeweiligen Zugriffsberechtigungen zurück.
-        </p>
-        <pre type="application/json">{% include discovery.json %}</pre>
-        <p>
-            In dem obigen Beispiel sind alle Routen erlaubt bis auf <code>/api/courses</code>,
-            also der Zugriff auf die Veranstaltungen.
-        </p>
-        <p class="todo">
-            Routen nutzen sich untereinander, um Informationen abzurufen. Ist der Zugriff
-            auf ein davon untersagt, schlägt die gesamte Anfrage fehl.
-        </p>
-
-        <h4 id="api-courses">/api/courses - Belegte Veranstaltungen</h4>
-        <h5>GET</h5>
-        <p>
-            Liefert die Veranstaltungen zurück, in die der Nutzer eingetragen ist.
-        </p>
-        <pre type="application/json">{% include courses.json %}</pre>
-
-        <h4>/api/courses/<em>:course_id</em> - Daten einer Veranstaltung</h4>
-        <h5>GET</h5>
-        <p>
-            Liefert die Daten der angegebenen Veranstaltung zurück.
-        </p>
-        <pre type="application/json">{% include courses-course_id.json %}</pre>
-        
-        <h4>/api/courses/semester - Belegte Semester</h4>
-        <h5>GET</h5>
-        <p>
-            Liefert alle Semester zurück, in denen der Nutzer in mindestens eine
-            Veranstaltung eingetragen ist. 
-        </p>
-        <pre type="application/json">{% include courses-semester.json %}</pre>
-
-        <h4>/api/courses/semester/<em>:semester_id</em> - Belegte Veranstaltungen eines Semesters</h4>
-        <h5>GET</h5>
-        <p>
-            Liefert die Veranstaltungen zurück, in die der Nutzer in dem angegebenen
-            Semester eingetragen ist.
-        </p>
-        <pre type="application/json">{% include courses-semester-semester_id.json %}</pre>
-
-        <h4 id="api-documents">/api/documents/<em>:document_id</em> - Daten eines Dokuments</h4>
-        <h5>GET</h5>
-        <p>
-            Liefert die Daten eines Dokuments zurück.
-        </p>
-        <pre type="application/json">{% include documents-document_id.json %}</pre>
-
-        <h4>/api/documents/<em>:document_id</em>/download - Download eines Dokuments</h4>
-        <h5>GET</h5>
-        <p>
-            Liefert das Dokument als solches zurück.
-        </p>
-        <p>- kein Beispiel -</p>
-        
-        <h4>/api/documents/<em>:range_id</em>/folder/&lt;<em>:folder_id</em>&gt; - Dateien eines Ordners</h4>
-        <h5>GET</h5>
-        <p>
-            Liefert die Dateien und Ordner eines angegebenen Ordners einer Veranstaltung zurück.
-        </p>
-        <pre type="application/json">{% include documents-range_id-folder.json %}</pre>
-
-        <h4 id="api-messages">/api/messages/<em>:box</em> - Nachrichtenordner auslesen</h4>
-        <h5>GET</h5>
-        <p>
-            Liefert die vorhandenen Nachrichtenordner des autorisierten Nutzers zurück. Der Parameter
-            bestimmt je nach Wert, auf welchen Bereich zugegriffen werden soll:
-        </p>
-        <ul>
-            <li><h5>in</h5>Nachrichteneingang</li>
-            <li><h5>out</h5>Nachrichtenausgang</li>
-        </ul>
-        <pre type="application/json">{% include messages-box.json %}</pre>
-
-        <h4>/api/messages/<em>:message_id</em> - Daten einer Nachricht</h4>
-        <h5>GET</h5>
-        <p>
-            Liefert die Daten der angegebenen Nachricht zurück.
-        </p>
-        <pre type="application/json">{% include messages-message_id.json %}</pre>
-
-        <h5>DELETE</h5>
-        <p>
-            Löscht die übergebene Nachricht.
-        </p>
-        <p>
-            HTTP-Status der Rückgabe:
-        </p>
-        <ul>
-            <li><code>204</code> bei Erfolg</li>
-            <li><code>403</code> wenn die Nachricht nicht gelöscht werden darf</li>
-            <li><code>404</code> wenn die Nachricht nicht gefunden wurde</li>
-        </ul>
-
-        <h4>/api/messages/<em>:message_id</em>/read - Nachricht als gelesen markieren</h4>
-        <h5>POST</h5>
-        <p>
-            Markiert die angegebene Nachricht als gelesen.
-        </p>
-        <p>
-            HTTP-Status der Rückgabe:
-        </p>
-        <ul>
-            <li><code>204</code> bei Erfolg</li>
-            <li><code>404</code> wenn die Nachricht nicht gefunden wurde</li>
-        </ul>
-
-        <h4>/api/messages/<em>:message_id</em>/move/<em>:folder</em> - Nachricht in Ordner verschieben</h4>
-        <h5>POST</h5>
-        <p>
-            Verschiebt die angegebene Nachricht in den angegebenen Ordner.
-        </p>
-        <p>
-            HTTP-Status der Rückgabe:
-        </p>
-        <ul>
-            <li><code>204</code> bei Erfolg</li>
-            <li><code>404</code> wenn die Nachricht oder der Ordner nicht gefunden wurde</li>
-        </ul>
-
-        <h4 id="api-message">/api/messages/<em>:box</em>/<em>:folder</em> - Nachrichten eines Ordners auslesen</h4>
-        <h5>GET</h5>
-        <p>
-            Liefert die vorhandenen Nachrichten eines Ordners des autorisierten Nutzers
-            zurück.
-        </p>
-        <pre type="application/json">{% include messages-box-folder.json %}</pre>
-
-        <h4 id="api-news">/api/news - Ankündigungen des Nutzers</h4>
-        <h5>GET</h5>
-        <p>
-            Liefert die Ankündigungen des autorisierten Nutzers zurück.
-        </p>
-        <pre type="application/json">{% include news.json %}</pre>
-        
-        <h4>/api/news/<em>:news_id</em> - Daten einer Ankündigung</h4>
-        <h5>GET</h5>
-        <p>
-            Liefert die Daten der angegebenen Ankündigung zurück.
-        </p>
-        <pre type="application/json">{% include news-news_id.json %}</pre>
-        
-        <h5>DELETE</h5>
-        <p>
-            Löscht die angegebene Nachricht.
-        </p>
-        <p>
-            HTTP-Status der Rückgabe:
-        </p>
-        <ul>
-            <li><code>204</code> bei Erfolg</li>
-            <li><code>404</code> wenn die Nachricht nicht gefunden wurde</li>
-        </ul>
-
-        <h4>/api/news/range/<em>:range_id</em> - Ankündigungen einer <em>Range</em></h4>
-        <h5>GET</h5>
-        <p>
-            Liefert die Ankündigungen der angegebenen <em>Range</em> zurück. Eine <em>Range</em>
-            kann hierbei die Id eines Nutzers, einer Veranstaltung/Studiengruppe, eines Instituts
-            oder <code>studip</code> für globale Ankündigungen sein.
-        </p>
-        <pre type="application/json">{% include news-news_id.json %}</pre>
-
-        <h4 id="api-semesters">/api/semesters - Alle Semester</h4>
-        <h5>GET</h5>
-        <p>
-            Liefert alle bekannten Semester der Installation zurück.
-        </p>
-        <pre type="application/json">{% include semesters.json %}</pre>
-
-        <h4 id="api-semesters">/api/semesters/<em>:semester_id</em> - Daten eines Semesters</h4>
-        <h5>GET</h5>
-        <p>
-            Liefert die Daten des angegebenen Semesters zurück.
-        </p>
-        <pre type="application/json">{% include semesters-semester_id.json %}</pre>
-
-        <h4 id="api-studip">/api/studip/settings - Globale Einstellungen</h4>
-        <h5>GET</h5>
-        <p>
-            Liefert lokale Einstellungswerte Stud.IP-interner Konfigurationen
-            zurück.<br>
-            Diese Werte dienen dazu, die Daten verschiedener Ressourcen an
-            den Standort angepasst interpretieren zu können.
-        </p>
-        <pre type="application/json">{% include studip-settings.json %}</pre>
-
-        <h4 id="api-courses">/api/user/&lt;<em>:user_id</em>&gt; - Nutzerdaten</h4>
-        <h5>GET</h5>
-        <p>
-            Liefert die Daten des Nutzers mit der angegebenen Id zurück. Ist keine Id
-            angegeben, so werden die Daten des autorisierten Nutzers zurückgegeben.
-        </p>
-        <pre type="application/json">{% include user.json %}</pre>
-
+        {% include discovery.html %}
+        {% include courses.html %}
+        {% include documents.html %}
+        {% include messages.html %}
+        {% include news.html %}
+        {% include semesters.html %}
+        {% include studip.html %}
+        {% include user.html %}
         {% include activities.html %}
       </section>
       <footer>

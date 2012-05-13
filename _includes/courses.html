@@ -1,0 +1,29 @@
+<h4 id="api-courses">/api/courses - Belegte Veranstaltungen</h4>
+<h5>GET</h5>
+<p>
+    Liefert die Veranstaltungen zurück, in die der Nutzer eingetragen ist.
+</p>
+<pre type="application/json">{% include examples/courses.json %}</pre>
+
+<h4>/api/courses/<em>:course_id</em> - Daten einer Veranstaltung</h4>
+<h5>GET</h5>
+<p>
+    Liefert die Daten der angegebenen Veranstaltung zurück.
+</p>
+<pre type="application/json">{% include examples/courses-course_id.json %}</pre>
+
+<h4>/api/courses/semester - Belegte Semester</h4>
+<h5>GET</h5>
+<p>
+    Liefert alle Semester zurück, in denen der Nutzer in mindestens eine
+    Veranstaltung eingetragen ist. 
+</p>
+<pre type="application/json">{% include examples/courses-semester.json %}</pre>
+
+<h4>/api/courses/semester/<em>:semester_id</em> - Belegte Veranstaltungen eines Semesters</h4>
+<h5>GET</h5>
+<p>
+    Liefert die Veranstaltungen zurück, in die der Nutzer in dem angegebenen
+    Semester eingetragen ist.
+</p>
+<pre type="application/json">{% include examples/courses-semester-semester_id.json %}</pre>

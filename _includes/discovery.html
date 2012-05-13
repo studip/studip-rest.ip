@@ -1,0 +1,11 @@
+<h4 id="api-discovery">/api/discovery - Informationen über die API</h4>
+<h5>GET</h5>
+<p>
+    Liefert Informationen über die in der Instanz unterstützten Routen,
+    ihrer Methoden und den jeweiligen Zugriffsberechtigungen zurück.
+</p>
+<pre type="application/json">{% include examples/discovery.json %}</pre>
+<p>
+    In dem obigen Beispiel sind alle Routen erlaubt bis auf <code>/api/courses</code>,
+    also der Zugriff auf die Veranstaltungen.
+</p>

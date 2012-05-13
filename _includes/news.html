@@ -1,0 +1,34 @@
+<h4 id="api-news">/api/news - Ankündigungen des Nutzers</h4>
+<h5>GET</h5>
+<p>
+    Liefert die Ankündigungen des autorisierten Nutzers zurück.
+</p>
+<pre type="application/json">{% include examples/news.json %}</pre>
+
+<h4>/api/news/<em>:news_id</em> - Daten einer Ankündigung</h4>
+<h5>GET</h5>
+<p>
+    Liefert die Daten der angegebenen Ankündigung zurück.
+</p>
+<pre type="application/json">{% include examples/news-news_id.json %}</pre>
+
+<h5>DELETE</h5>
+<p>
+    Löscht die angegebene Ankündigung.
+</p>
+<p>
+    HTTP-Status der Rückgabe:
+</p>
+<ul>
+    <li><code>204</code> bei Erfolg</li>
+    <li><code>404</code> wenn die Ankündigung nicht gefunden wurde</li>
+</ul>
+
+<h4>/api/news/range/<em>:range_id</em> - Ankündigungen einer <em>Range</em></h4>
+<h5>GET</h5>
+<p>
+    Liefert die Ankündigungen der angegebenen <em>Range</em> zurück. Eine <em>Range</em>
+    kann hierbei die Id eines Nutzers, einer Veranstaltung/Studiengruppe, eines Instituts
+    oder <code>studip</code> für globale Ankündigungen sein.
+</p>
+<pre type="application/json">{% include examples/news-news_id.json %}</pre>

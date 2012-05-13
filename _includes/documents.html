@@ -1,0 +1,19 @@
+<h4 id="api-documents">/api/documents/<em>:document_id</em> - Daten eines Dokuments</h4>
+<h5>GET</h5>
+<p>
+    Liefert die Daten eines Dokuments zurück.
+</p>
+<pre type="application/json">{% include examples/documents-document_id.json %}</pre>
+
+<h4>/api/documents/<em>:document_id</em>/download - Download eines Dokuments</h4>
+<h5>GET</h5>
+<p>
+    Liefert das Dokument als solches zurück.
+</p>
+
+<h4>/api/documents/<em>:range_id</em>/folder/&lt;<em>:folder_id</em>&gt; - Dateien eines Ordners</h4>
+<h5>GET</h5>
+<p>
+    Liefert die Dateien und Ordner eines angegebenen Ordners einer Veranstaltung zurück.
+</p>
+<pre type="application/json">{% include examples/documents-range_id-folder.json %}</pre>
