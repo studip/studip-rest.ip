@@ -86,16 +86,16 @@
         
         <h4>Aufbau der Rückgabe</h4>
         <p>
-            Die API unterscheidet <ins>zukünftig</ins> zwei verschiedene Modi, die den Aufbau der Rückgabe steuern:
+            Die API unterscheidet zwei verschiedene Modi, die den Aufbau der Rückgabe steuern:
         </p>
         <ul>
             <li>
-                <h5>"compact"</h5>
+                <h5>"compact" <small>(Standard)</small></h5>
                 Die Rückgabe enthält lediglich die angeforderten Ressourcen des angeforderten Typs.
                 Anhängige Ressourcen anderen Typs sind durch ihre eindeutige Id vermerkt.
             </li>
             <li>
-                <h5>"complete" <small>(Standard)</small></h5>
+                <h5>"complete"</h5>
                 Die Rückgabe enthält die angeforderten Ressourcen des angeforderten Typs und
                 zusätzlich auch die eventuell anhängigen Ressourcen eines oder mehreren anderen
                 Typs.<br>
@@ -104,11 +104,6 @@
                 verbundenen Semester.
             </li>
         </ul>
-        <p>
-            <strong>Bitte beachten:</strong> Obwohl <code>complete</code> der Standardwert ist, bezieht
-            sich diese Dokumentation in ihren Beispielen aus offensichtlichen Gründen auf den Modus
-            <code>compact</code>.
-        </p>
         <p class="todo">
             Routen nutzen sich untereinander, um Informationen abzurufen. Ist der Zugriff
             auf ein davon untersagt, schlägt die gesamte Anfrage fehl.
