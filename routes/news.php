@@ -33,8 +33,13 @@ class NewsRoute implements \APIPlugin
             }
 
             $news  = array_values(News::loadRange($range_id));
-            $users = array_values(NewsRoute::extractUsers($news, $router));
 
+            if ($router->compact()) {
+                $router->render(compact('news'));
+                return;
+            }
+
+            $users = array_values(NewsRoute::extractUsers($news, $router));
             $router->render(compact('news', 'users'));
         })->conditions(array('range_id' => '(studip|[a-f0-9]{32})'));
 
@@ -50,8 +55,14 @@ class NewsRoute implements \APIPlugin
 
         $router->get('/news/:news_id', function ($news_id) use ($router) {
             $news  = News::load($news_id);
+
+            if ($router->compact()) {
+                $router->render(compact('news'));
+                return;
+            }
+
             $users = NewsRoute::extractUsers(array($news), $router);
-            
+
             $router->render(compact('news', 'users'));
         });
 

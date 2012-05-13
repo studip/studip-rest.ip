@@ -28,6 +28,12 @@ class CoursesRoute implements \APIPlugin
         $router->get('/courses', function () use ($router)
         {
             $courses = Course::load();
+            $courses   = array_values($courses);
+            
+            if ($router->compact()) {
+                $router->render(compact('courses'));
+                return;
+            }
 
             $semesters = array();
             $users     = array();
@@ -45,7 +51,6 @@ class CoursesRoute implements \APIPlugin
                 }
             }
 
-            $courses   = array_values($courses);
             $semesters = array_values($semesters);
             $users     = array_values($users);
 
@@ -75,6 +80,12 @@ class CoursesRoute implements \APIPlugin
             $semester = $temp['semester'];
 
             $courses  = Course::load();
+            $courses = array_values($courses);
+
+            if ($router->compact()) {
+                $router->render(compact('courses'));
+                return;
+            }
 
             $users = array();
             foreach ($courses as &$course) {
@@ -90,7 +101,6 @@ class CoursesRoute implements \APIPlugin
                 }
             }
 
-            $courses = array_values($courses);
             $users   = array_values($users);
 
             $router->render(compact('courses', 'semester', 'users'));
@@ -102,6 +112,7 @@ class CoursesRoute implements \APIPlugin
             if (!$course) {
                 $router->halt(404, sprintf('Course %s not found', $course_id));
             }
+
             $router->render(compact('course'));
         });
     }
@@ -123,7 +134,7 @@ class Course
                          Beschreibung AS description, Ort AS location
                   FROM seminar_user AS su
                   JOIN seminare AS sem ON su.seminar_id = sem.Seminar_id
-                  WHERE user_id = ? OR 1";
+                  WHERE user_id = ?";
         if (func_num_args() > 0) {
             $query .= " AND sem.Seminar_id IN (?)";
             if (is_array($ids) && count($ids) > 1) {

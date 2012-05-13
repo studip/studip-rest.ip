@@ -34,6 +34,11 @@ class DocumentsRoute implements \APIPlugin
             $folders   = Document::loadFolders($folder_id);
             $documents = Document::loadFiles($folder_id, 'folder');
 
+            if ($router->compact()) {
+                $router->render(compact('folders', 'documents'));
+                return;
+            }
+
             $users = array();
             foreach ($folders as &$folder) {
                 if (!isset($users[$folder['user_id']])) {
@@ -57,6 +62,11 @@ class DocumentsRoute implements \APIPlugin
             }
 
             $document = Document::loadFiles($document_id);
+
+            if ($router->compact()) {
+                $router->render(compact('document'));
+                return;
+            }
 
             $user[$document['user_id']] = reset($router->dispatch('get', '/user(/:user_id)', $document['user_id']));
 

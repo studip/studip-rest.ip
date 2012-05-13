@@ -35,6 +35,14 @@ class ApiController extends StudipController
         $router = RestIP\Router::getInstance(OAuth::$consumer_key, $template);
         $router->handleErrors();
         error_reporting(0);
+        
+        $mode = Request::option('mode', 'compact');
+        
+        if ($mode === 'complete') {
+            $router->setMode(RestIP\Router::MODE_COMPLETE);
+        } else {
+            $router->setMode(RestIP\Router::MODE_COMPACT);
+        }
 
         $router->run();
     }

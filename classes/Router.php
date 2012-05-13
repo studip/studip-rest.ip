@@ -19,14 +19,18 @@ class Router
         return self::$instances[$consumer_key];
     }
 
+    const MODE_COMPACT = 0;
+    const MODE_COMPLETE = 1;
+
     protected $router;
     protected $routes = array();  // Contains routes, their methods and the source of the definition
     protected $_routes = array(); // Contains routes, their methods and the actual callable handler
     protected $descriptions = array();
     protected $permissions;
     protected $template;
-    protected static $internal_dispatch = false;
-    protected static $route_result;
+    protected $internal_dispatch = false;
+    protected $route_result;
+    protected $mode = Router::MODE_COMPACT;
 
     /**
      *
@@ -70,6 +74,26 @@ class Router
         set_error_handler(array('Slim', 'handleErrors'));
     }
 
+    public function setMode($mode)
+    {
+        $this->mode = $mode;
+    }
+    
+    public function getMode()
+    {
+        return $this->mode;
+    }
+    
+    public function compact()
+    {
+        return $this->mode === self::MODE_COMPACT;
+    }
+
+    public function complete()
+    {
+        return $this->mode === self::MODE_COMPLETE;
+    }
+    
     /**
      * Returns a list of all available routes
      *
@@ -108,14 +132,14 @@ class Router
             $this->halt(500, sprintf('Tried to dispatch unknown route %s:%s', $method, $route));
         }
 
-        self::$internal_dispatch = true;
+        $this->internal_dispatch = true;
 
         $arguments = array_slice(func_get_args(), 2);
         call_user_func_array($this->_routes[$route][$method], $arguments);
 
-        self::$internal_dispatch = false;
+        $this->internal_dispatch = false;
 
-        return self::$route_result;
+        return $this->route_result;
     }
 
     /**
@@ -123,8 +147,8 @@ class Router
      */
     function render($data = array())
     {
-        if (self::$internal_dispatch) {
-            self::$route_result = $data;
+        if ($this->internal_dispatch) {
+            $this->route_result = $data;
             return;
         }
         
@@ -139,7 +163,8 @@ class Router
     /**
      *
      **/
-    public function __call($method, $arguments) {
+    public function __call($method, $arguments)
+    {
         if (in_array($method, words('delete get post put'))) {
             $backtrace = debug_backtrace();
             while ($trace = array_shift($backtrace) and $trace['class'] == __CLASS__);

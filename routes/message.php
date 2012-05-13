@@ -90,6 +90,11 @@ class MessageRoute implements \APIPlugin
             $ids      = Message::folder($box == 'in' ? 'rec' : 'snd', $folder);
             $messages = Message::load($ids);
 
+            if ($router->compact()) {
+                $router->render(compact('messages'));
+                return;
+            }
+
             $users    = array();
             foreach ($messages as $message) {
                 if (in_array('____%system%____', array($message['sender_id'], $message['receiver_id']))) {
@@ -147,7 +152,7 @@ class MessageRoute implements \APIPlugin
             if (!$message) {
                 $router->halt(404, sprintf('Message %s not found', $message_id));
             }
-            $router->render($message);
+            $router->render(compact('message'));
         });
 
         // Destroy a message
