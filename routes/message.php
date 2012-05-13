@@ -92,6 +92,9 @@ class MessageRoute implements \APIPlugin
 
             $users    = array();
             foreach ($messages as $message) {
+                if (in_array('____%system%____', array($message['sender_id'], $message['receiver_id']))) {
+                    continue;
+                }
                 if (!isset($users[$message['sender_id']])) {
                     $users[$message['sender_id']] = reset($router->dispatch('get', '/user(/:user_id)', $message['sender_id']));
                 }

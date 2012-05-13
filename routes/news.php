@@ -50,7 +50,7 @@ class NewsRoute implements \APIPlugin
 
         $router->get('/news/:news_id', function ($news_id) use ($router) {
             $news  = News::load($news_id);
-            $users = NewsRoute::extractUsers($news, $router);
+            $users = NewsRoute::extractUsers(array($news), $router);
             
             $router->render(compact('news', 'users'));
         });
@@ -73,16 +73,19 @@ class NewsRoute implements \APIPlugin
             if ($item['allow_comments']) {
                 foreach ($item['comments'] as $comment) {
                     if (!isset($users[$comment['user_id']])) {
-                        $users[$comment['user_id']] = reset($router->dispatch('get', '/user(/:user_id)', $comment['user_id']));
+                        $user = $router->dispatch('get', '/user(/:user_id)', $comment['user_id']);
+                        $users[$comment['user_id']] = $user['user'];
                     }
                 }
             }
 
             if (!isset($users[$item['user_id']])) {
-                $users[$item['user_id']] = reset($router->dispatch('get', '/user(/:user_id)', $item['user_id']));
+                $user = $router->dispatch('get', '/user(/:user_id)', $item['user_id']);
+                $users[$item['user_id']] = $user['user'];
             }
             if ($item['chdate_uid'] && !isset($users[$item['chdate_uid']])) {
-                $users[$item['chdate_uid']] = reset($router->dispatch('get', '/user(/:user_id)', $item['chdate_uid']));
+                $user = $router->dispatch('get', '/user(/:user_id)', $item['chdate_uid']);
+                $users[$item['chdate_uid']] = $user['user'];
             }
         }
         return $users;
@@ -93,16 +96,18 @@ class News
 {
     static function adjust($news)
     {
-        if (is_array($news)) {
-            $news['body_original'] = $news['body'];
-            $news['body']          = formatReady($news['body']);
-            $news['chdate_uid']    = trim($news['chdate_uid']);
+        if (!is_array($news)) {
+            $news = $news->toArray();
+        }
+        
+        $news['body_original'] = $news['body'];
+        $news['body']          = formatReady($news['body']);
+        $news['chdate_uid']    = trim($news['chdate_uid']);
 
-            unset($news['author']);
+        unset($news['author']);
 
-            if ($news['allow_comments']) {
-                $news['comments'] = self::loadComments($news['news_id']);
-            }
+        if ($news['allow_comments']) {
+            $news['comments'] = self::loadComments($news['news_id']);
         }
 
         return $news;

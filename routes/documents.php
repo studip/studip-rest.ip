@@ -33,11 +33,6 @@ class DocumentsRoute implements \APIPlugin
 
             $folders   = Document::loadFolders($folder_id);
             $documents = Document::loadFiles($folder_id, 'folder');
-            if ($folder_id === $range_id) {
-                $top_folder = md5($range_id . 'top_folder');
-                $folders   = array_merge($documents, Document::loadFolders($top_folder));
-                $documents = array_merge($documents, Document::loadFiles($top_folder, 'folder'));
-            }
 
             $users = array();
             foreach ($folders as &$folder) {
@@ -136,10 +131,29 @@ class Document
     {
         $query = "SELECT folder_id, user_id, name, description, mkdate, chdate
                   FROM folder
-                  WHERE range_id = ?";
+                  WHERE range_id IN (:folder_id, MD5(CONCAT(:folder_id, 'top_folder')))
+                  
+                  UNION
+                  
+                  SELECT DISTINCT folder_id, folder.user_id, folder.name, folder.description, folder.mkdate, folder.chdate
+                  FROM themen AS th
+                  LEFT JOIN themen_termine AS tt USING (issue_id) 
+                  LEFT JOIN termine AS t USING (termin_id)
+                  INNER JOIN folder ON (th.issue_id = folder.range_id)
+                  WHERE th.seminar_id = :folder_id
+                  
+                  UNION
+                  
+                  SELECT folder_id, folder.user_id, folder.name, folder.description, folder.mkdate, folder.chdate
+                  FROM statusgruppen sg
+                  INNER JOIN folder ON sg.statusgruppe_id = folder.range_id
+                  WHERE sg.range_id = :folder_id";
         $statement = \DBManager::get()->prepare($query);
-        $statement->execute(array($folder_id));
-        return $statement->fetchAll(\PDO::FETCH_ASSOC);
+        $statement->bindParam(':folder_id', $folder_id);
+        $statement->execute();
+        $folders =  $statement->fetchAll(\PDO::FETCH_ASSOC);
+        
+        return $folders;
     }
 
     static function loadFiles($id, $type = 'file')

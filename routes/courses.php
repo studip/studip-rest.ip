@@ -32,12 +32,14 @@ class CoursesRoute implements \APIPlugin
             $users     = array();
             foreach ($courses as $course) {
                 if (!isset($semesters[$course['semester_id']])) {
-                    $semesters[$course['semester_id']] = reset($router->dispatch('get', '/semesters/:semester_id', $course['semester_id']));
+                    $semester = $router->dispatch('get', '/semesters/:semester_id', $course['semester_id']);
+                    $semesters[$course['semester_id']] = $semester['semester'];
                 }
 
                 foreach ($course['teachers'] + $course['tutors'] as $user_id) {
                     if (!isset($users[$user_id])) {
-                        $users[$user_id] = reset($router->dispatch('get', '/user(/:user_id)', $user_id));
+                        $user = $router->dispatch('get', '/user(/:user_id)', $user_id);
+                        $users[$user_id] = $user['user'];
                     }
                 }
             }
@@ -52,7 +54,8 @@ class CoursesRoute implements \APIPlugin
             $semesters = array();
             foreach ($courses as $course) {
                 if (!isset($semesters[$course['semester_id']])) {
-                    $semesters[$course['semester_id']] = reset($router->dispatch('get', '/semesters/:semester_id', $course['semester_id']));
+                    $semester = $router->dispatch('get', '/semesters/:semester_id', $course['semester_id']);
+                    $semesters[$course['semester_id']] = $semester['semester'];
                 }
             }
 
@@ -61,7 +64,9 @@ class CoursesRoute implements \APIPlugin
 
         //
         $router->get('/courses/semester/:semester_id', function ($semester_id) use ($router) {
-            $semester = reset($router->dispatch('get', '/semesters/:semester_id', $semester_id));
+            $temp = $router->dispatch('get', '/semesters/:semester_id', $semester_id);
+            $semester = $temp['semester'];
+
             $courses  = Course::load();
 
             $users = array();
@@ -72,7 +77,8 @@ class CoursesRoute implements \APIPlugin
 
                 foreach ($course['teachers'] + $course['tutors'] as $user_id) {
                     if (!isset($users[$user_id])) {
-                        $users[$user_id] = reset($router->dispatch('get', '/user(/:user_id)', $user_id));
+                        $user = $router->dispatch('get', '/user(/:user_id)', $user_id);
+                        $users[$user_id] = $user['user'];
                     }
                 }
             }
