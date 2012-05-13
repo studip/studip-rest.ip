@@ -60,8 +60,12 @@ class NewsRoute implements \APIPlugin
         });
 
         $router->delete('/news/:news_id', function ($news_id) use ($router) {
-            \StudipNews::find($news_id)->delete();
+            $news = \StudipNews::find($news_id);
+            if (!$news) {
+                $router->halt(404, sprintf('News %s not found', $news_id));
+            }
 
+            $news->delete();
             $router->halt(204);
         });
     }

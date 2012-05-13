@@ -3,6 +3,7 @@
 // TODO Veranstaltungen, die mehr als ein Semester laufen?
 // TODO /courses POST, je nach Status: In Veranstaltung eintragen bzw. bearbeiten
 // TODO Studiengruppen
+// TODO Nutzer anzeigen?
 
 namespace RestIP;
 use \DBManager, \PDO;
@@ -36,7 +37,7 @@ class CoursesRoute implements \APIPlugin
                     $semesters[$course['semester_id']] = $semester['semester'];
                 }
 
-                foreach ($course['teachers'] + $course['tutors'] as $user_id) {
+                foreach ($course['teachers'] + $course['tutors'] + $course['students'] as $user_id) {
                     if (!isset($users[$user_id])) {
                         $user = $router->dispatch('get', '/user(/:user_id)', $user_id);
                         $users[$user_id] = $user['user'];
@@ -117,12 +118,12 @@ class Course
         $additional_fields = implode(',', $additional_fields);
 
         $query = "SELECT sem.Seminar_id AS course_id, IF(sem.status=99, su.mkdate, start_time) AS start_time,
-                         Name AS title, Untertitel AS subtitle, sem.status AS type, modules, teilnehmer,
-                         vorrausetzungen, lernorga, leistungsnachweis, Beschreibung AS description,
-                         Ort AS location
+                         duration_time, 
+                         Name AS title, Untertitel AS subtitle, sem.status AS type, modules,
+                         Beschreibung AS description, Ort AS location
                   FROM seminar_user AS su
                   JOIN seminare AS sem ON su.seminar_id = sem.Seminar_id
-                  WHERE user_id = ?";
+                  WHERE user_id = ? OR 1";
         if (func_num_args() > 0) {
             $query .= " AND sem.Seminar_id IN (?)";
             if (is_array($ids) && count($ids) > 1) {
@@ -156,6 +157,10 @@ class Course
 
             $statement->execute(array($course['course_id'], 'tutor'));
             $course['tutors'] = $statement->fetchAll(PDO::FETCH_COLUMN) ?: array();
+            $statement->closeCursor();
+
+            $statement->execute(array($course['course_id'], 'autor'));
+            $course['students'] = $statement->fetchAll(PDO::FETCH_COLUMN) ?: array();
             $statement->closeCursor();
         }
 
