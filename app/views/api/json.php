@@ -8,3 +8,4 @@ if (Studip\ENV === 'development') {
 
 header('Content-Type: application/json');
 echo $json;
+die;
