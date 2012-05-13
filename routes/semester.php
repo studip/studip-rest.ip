@@ -32,6 +32,8 @@ class SemesterRoute implements \APIPlugin
                     $semesters[$sem['semester_id']] = reset($router->dispatch('get', '/semesters/:semester_id', $sem['semester_id']));
                 }
             }
+            
+            $semesters = array_values($semesters);
 
             $router->render(compact('semesters'));
         });

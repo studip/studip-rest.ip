@@ -32,8 +32,8 @@ class NewsRoute implements \APIPlugin
                 $router->halt(403, sprintf('User may not access range %s', $range_id));
             }
 
-            $news  = News::loadRange($range_id);
-            $users = NewsRoute::extractUsers($news, $router);
+            $news  = array_values(News::loadRange($range_id));
+            $users = array_values(NewsRoute::extractUsers($news, $router));
 
             $router->render(compact('news', 'users'));
         })->conditions(array('range_id' => '(studip|[a-f0-9]{32})'));

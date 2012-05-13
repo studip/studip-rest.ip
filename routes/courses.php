@@ -44,6 +44,10 @@ class CoursesRoute implements \APIPlugin
                 }
             }
 
+            $courses   = array_values($courses);
+            $semesters = array_values($semesters);
+            $users     = array_values($users);
+
             $router->render(compact('courses', 'semesters', 'users'));
         });
 
@@ -58,6 +62,8 @@ class CoursesRoute implements \APIPlugin
                     $semesters[$course['semester_id']] = $semester['semester'];
                 }
             }
+
+            $semesters = array_values($semesters);
 
             $router->render(compact('semesters'));
         });
@@ -82,6 +88,9 @@ class CoursesRoute implements \APIPlugin
                     }
                 }
             }
+
+            $courses = array_values($courses);
+            $users   = array_values($users);
 
             $router->render(compact('courses', 'semester', 'users'));
         });
