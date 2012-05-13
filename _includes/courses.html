@@ -3,14 +3,14 @@
 <p>
     Liefert die Veranstaltungen zurück, in die der Nutzer eingetragen ist.
 </p>
-{% highlight json linenos %}{% include examples/courses.json %}{% endhighlight %}
+{% highlight js linenos %}{% include examples/courses.json %}{% endhighlight %}
 
 <h4>/api/courses/<em>:course_id</em> - Daten einer Veranstaltung</h4>
 <h5>GET</h5>
 <p>
     Liefert die Daten der angegebenen Veranstaltung zurück.
 </p>
-{% highlight json linenos %}{% include examples/courses-course_id.json %}{% endhighlight %}
+{% highlight js linenos %}{% include examples/courses-course_id.json %}{% endhighlight %}
 
 <h4>/api/courses/semester - Belegte Semester</h4>
 <h5>GET</h5>
@@ -18,7 +18,7 @@
     Liefert alle Semester zurück, in denen der Nutzer in mindestens eine
     Veranstaltung eingetragen ist. 
 </p>
-{% highlight json linenos %}{% include examples/courses-semester.json %}{% endhighlight %}
+{% highlight js linenos %}{% include examples/courses-semester.json %}{% endhighlight %}
 
 <h4>/api/courses/semester/<em>:semester_id</em> - Belegte Veranstaltungen eines Semesters</h4>
 <h5>GET</h5>
@@ -26,4 +26,4 @@
     Liefert die Veranstaltungen zurück, in die der Nutzer in dem angegebenen
     Semester eingetragen ist.
 </p>
-{% highlight json linenos %}{% include examples/courses-semester-semester_id.json %}{% endhighlight %}
+{% highlight js linenos %}{% include examples/courses-semester-semester_id.json %}{% endhighlight %}
