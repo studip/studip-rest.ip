@@ -7,11 +7,11 @@ implementing authentication by OAuth.
 
 ## Integration in Stud.IP
 
-### New API
+### API location
 
 The API is located at ***installation_url*/plugins.php/restipplugin/api** for now.
 
-Full API documentation will follow.
+Full german API documentation is available [here](http://studip.github.com/studip-rest.ip).
 
 ### Administration of consumers for root administrators
 
