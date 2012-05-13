@@ -11,7 +11,7 @@ class Router
     /**
      *
      **/
-    public static function getInstance($consumer_key, $template)
+    public static function getInstance($consumer_key = null, $template = null)
     {
         if (!isset(self::$instances[$consumer_key])) {
             self::$instances[$consumer_key] = new self($consumer_key, $template);
@@ -25,6 +25,8 @@ class Router
     protected $descriptions = array();
     protected $permissions;
     protected $template;
+    protected static $internal_dispatch = false;
+    protected static $route_result;
 
     /**
      *
@@ -98,19 +100,6 @@ class Router
     }
 
     /**
-     *
-     **/
-    public function value($val = null)
-    {
-        static $value;
-        if (func_num_args() == 0) {
-            return $value;
-        } else {
-            $value = $val;
-        }
-    }
-
-    /**
      * 
      */
     public function dispatch($method, $route)
@@ -119,14 +108,14 @@ class Router
             $this->halt(500, sprintf('Tried to dispatch unknown route %s:%s', $method, $route));
         }
 
-        $arguments = array_slice(func_get_args(), 2);
+        self::$internal_dispatch = true;
 
+        $arguments = array_slice(func_get_args(), 2);
         call_user_func_array($this->_routes[$route][$method], $arguments);
 
-        $result = $this->value();
-        $this->value(null);
+        self::$internal_dispatch = false;
 
-        return $result;
+        return self::$route_result;
     }
 
     /**
@@ -134,6 +123,11 @@ class Router
      */
     function render($data = array())
     {
+        if (self::$internal_dispatch) {
+            self::$route_result = $data;
+            return;
+        }
+        
         header('X-Server-Timestamp: ' . time());
         header_remove('x-powered-by');
         header_remove('set-cookie');
