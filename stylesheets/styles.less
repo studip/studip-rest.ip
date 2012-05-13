@@ -1,4 +1,6 @@
-@import url(https://fonts.googleapis.com/css?family=Lato:300italic,700italic,300,700);
+---
+---
+@import url("https://fonts.googleapis.com/css?family=Lato:300italic,700italic,300,700");
 
 body {
   padding:50px;
@@ -226,24 +228,9 @@ p.todo:before,p.todo:after {
     width: 100%;
 }
 
-pre[type="application/json"] {
+.highlight pre {
     max-height: 200px;
     overflow-y: auto;
-    position: relative;
-}
-pre[type="application/json"]:before {
-    color: #aaa;
-    content: "<json/>";
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-size: 2em;
-    padding: .5em 1em;
-    position: absolute;
-    right: 0;
-    text-shadow: 1px 1px 0 #444;
-    top: 0;
-}
-pre[type="application/json"]:hover:before {
-    content: "";
 }
 
 @media print, screen and (max-width: 960px) {

@@ -8,14 +8,14 @@
     <li><h5>in</h5>Nachrichteneingang</li>
     <li><h5>out</h5>Nachrichtenausgang</li>
 </ul>
-<pre type="application/json">{% include examples/messages-box.json %}</pre>
+{% highlight json linenos %}{% include examples/messages-box.json %}{% endhighlight %}
 
 <h4>/api/messages/<em>:message_id</em> - Daten einer Nachricht</h4>
 <h5>GET</h5>
 <p>
     Liefert die Daten der angegebenen Nachricht zurück.
 </p>
-<pre type="application/json">{% include examples/messages-message_id.json %}</pre>
+{% highlight json linenos %}{% include examples/messages-message_id.json %}{% endhighlight %}
 
 <h5>DELETE</h5>
 <p>
@@ -49,7 +49,7 @@
     Liefert die vorhandenen Nachrichten eines Ordners des autorisierten Nutzers
     zurück.
 </p>
-<pre type="application/json">{% include examples/messages-box-folder.json %}</pre>
+{% highlight json linenos %}{% include examples/messages-box-folder.json %}{% endhighlight %}
 
 <h4>/api/messages/<em>:message_id</em>/move/<em>:folder</em> - Nachricht in Ordner verschieben</h4>
 <h5>POST</h5>

@@ -1,0 +1,4 @@
+safe: false
+pygments: true
+
+plugins:     ./_plugins
