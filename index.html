@@ -31,8 +31,8 @@
             <dd><a href="#api-courses">Veranstaltungen</a></dd>
             <dt><a href="#api-documents">/api/documents</a></dt>
             <dd><a href="#api-documents">Dateien</a></dd>
-            <dt><a href="#api-message">/api/message</a></dt>
-            <dd><a href="#api-message">Nachrichten</a></dd>
+            <dt><a href="#api-messages">/api/messages</a></dt>
+            <dd><a href="#api-messages">Nachrichten</a></dd>
             <dt><a href="#api-news">/api/news</a></dt>
             <dd><a href="#api-news">Ankündigungen</a></dd>
             <dt><a href="#api-semesters">/api/semesters</a></dt>
@@ -121,6 +121,12 @@
         <p>
             Die Beispiele in dieser Dokumentation decken vorläufig nur die zurückgegebenen JSON-Daten
             ab, da dies das bevorzugte Format ist.
+        </p>
+        <p>
+            Methoden, die keine Rückgabe erfordern, antworten im Erfolgsfall in aller Regel
+            mit einem HTTP-Status-Code von <code>204 - No Content</code>. Bei Fehlern ist
+            zusätzlich zu einem Status von <code>4xx</code> auch der Body der Antwort zu beachten.
+            Dort findet sich eine genauere Beschreibung des Fehlers.
         </p>
 
         <h3>Die Routen im Detail</h3>
@@ -218,7 +224,7 @@
         </p>
         <pre type="application/json">{% include documents-range_id-folder.json %}</pre>
 
-        <h4 id="api-message">/api/messages/<em>:box</em> - Nachrichtenordner auslesen</h4>
+        <h4 id="api-messages">/api/messages/<em>:box</em> - Nachrichtenordner auslesen</h4>
         <h5>GET</h5>
         <p>
             Liefert die vorhandenen Nachrichtenordner des autorisierten Nutzers zurück. Der Parameter
@@ -230,12 +236,38 @@
         </ul>
         <pre type="application/json">{% include messages-box.json %}</pre>
 
-        <h4 id="api-message">/api/messages/<em>:message_id</em> - Daten einer Nachricht</h4>
+        <h4>/api/messages/<em>:message_id</em> - Daten einer Nachricht</h4>
         <h5>GET</h5>
         <p>
             Liefert die Daten der übergebenen Nachricht zurück.
         </p>
         <pre type="application/json">{% include messages-message_id.json %}</pre>
+
+        <h4>/api/messages/<em>:message_id</em>/read - Nachricht als gelesen markieren</h4>
+        <h5>POST</h5>
+        <p>
+            Markiert die angegebene Nachricht als gelesen.
+        </p>
+        <p>
+            HTTP-Status der Rückgabe:
+        </p>
+        <ul>
+            <li><code>204</code> bei Erfolg</li>
+            <li><code>404</code> wenn die Nachricht nicht gefunden wurde</li>
+        </ul>
+
+        <h4>/api/messages/<em>:message_id</em>/move/<em>:folder</em> - Nachricht in Ordner verschieben</h4>
+        <h5>POST</h5>
+        <p>
+            Verschiebt die angegebene Nachricht in den angegebenen Ordner.
+        </p>
+        <p>
+            HTTP-Status der Rückgabe:
+        </p>
+        <ul>
+            <li><code>204</code> bei Erfolg</li>
+            <li><code>404</code> wenn die Nachricht oder der Ordner nicht gefunden wurde</li>
+        </ul>
 
         <h5>DELETE</h5>
         <p>
