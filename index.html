@@ -183,7 +183,7 @@
         <h4>/api/courses/<em>:course_id</em> - Daten einer Veranstaltung</h4>
         <h5>GET</h5>
         <p>
-            Liefert die Daten der übergebenen Veranstaltung zurück.
+            Liefert die Daten der angegebenen Veranstaltung zurück.
         </p>
         <pre type="application/json">{% include courses-course_id.json %}</pre>
         
@@ -220,7 +220,7 @@
         <h4>/api/documents/<em>:range_id</em>/folder/&lt;<em>:folder_id</em>&gt; - Dateien eines Ordners</h4>
         <h5>GET</h5>
         <p>
-            Liefert die Dateien und Ordner eines übergebenen Ordners einer Veranstaltung zurück.
+            Liefert die Dateien und Ordner eines angegebenen Ordners einer Veranstaltung zurück.
         </p>
         <pre type="application/json">{% include documents-range_id-folder.json %}</pre>
 
@@ -239,9 +239,22 @@
         <h4>/api/messages/<em>:message_id</em> - Daten einer Nachricht</h4>
         <h5>GET</h5>
         <p>
-            Liefert die Daten der übergebenen Nachricht zurück.
+            Liefert die Daten der angegebenen Nachricht zurück.
         </p>
         <pre type="application/json">{% include messages-message_id.json %}</pre>
+
+        <h5>DELETE</h5>
+        <p>
+            Löscht die übergebene Nachricht.
+        </p>
+        <p>
+            HTTP-Status der Rückgabe:
+        </p>
+        <ul>
+            <li><code>204</code> bei Erfolg</li>
+            <li><code>403</code> wenn die Nachricht nicht gelöscht werden darf</li>
+            <li><code>404</code> wenn die Nachricht nicht gefunden wurde</li>
+        </ul>
 
         <h4>/api/messages/<em>:message_id</em>/read - Nachricht als gelesen markieren</h4>
         <h5>POST</h5>
@@ -269,19 +282,6 @@
             <li><code>404</code> wenn die Nachricht oder der Ordner nicht gefunden wurde</li>
         </ul>
 
-        <h5>DELETE</h5>
-        <p>
-            Löscht die übergebene Nachricht.
-        </p>
-        <p>
-            HTTP-Status der Rückgabe:
-        </p>
-        <ul>
-            <li><code>204</code> bei Erfolg</li>
-            <li><code>403</code> wenn die Nachricht nicht gelöscht werden darf</li>
-            <li><code>404</code> wenn die Nachricht nicht gefunden wurde</li>
-        </ul>
-
         <h4 id="api-message">/api/messages/<em>:box</em>/<em>:folder</em> - Nachrichten eines Ordners auslesen</h4>
         <h5>GET</h5>
         <p>
@@ -291,38 +291,56 @@
         <pre type="application/json">{% include messages-box-folder.json %}</pre>
 
         <h4 id="api-news">/api/news - Ankündigungen des Nutzers</h4>
+        <h5>GET</h5>
         <p>
             Liefert die Ankündigungen des autorisierten Nutzers zurück.
         </p>
         <pre type="application/json">{% include news.json %}</pre>
         
         <h4>/api/news/<em>:news_id</em> - Daten einer Ankündigung</h4>
+        <h5>GET</h5>
         <p>
-            Liefert die Daten der übergebenen Ankündigung zurück.
+            Liefert die Daten der angegebenen Ankündigung zurück.
         </p>
         <pre type="application/json">{% include news-news_id.json %}</pre>
+        
+        <h5>DELETE</h5>
+        <p>
+            Löscht die angegebene Nachricht.
+        </p>
+        <p>
+            HTTP-Status der Rückgabe:
+        </p>
+        <ul>
+            <li><code>204</code> bei Erfolg</li>
+            <li><code>404</code> wenn die Nachricht nicht gefunden wurde</li>
+        </ul>
 
         <h4>/api/news/range/<em>:range_id</em> - Ankündigungen einer <em>Range</em></h4>
+        <h5>GET</h5>
         <p>
-            Liefert die Ankündigungen der übergebenen <em>Range</em> zurück. Eine <em>Range</em>
+            Liefert die Ankündigungen der angegebenen <em>Range</em> zurück. Eine <em>Range</em>
             kann hierbei die Id eines Nutzers, einer Veranstaltung/Studiengruppe, eines Instituts
             oder <code>studip</code> für globale Ankündigungen sein.
         </p>
         <pre type="application/json">{% include news-news_id.json %}</pre>
 
         <h4 id="api-semesters">/api/semesters - Alle Semester</h4>
+        <h5>GET</h5>
         <p>
             Liefert alle bekannten Semester der Installation zurück.
         </p>
         <pre type="application/json">{% include semesters.json %}</pre>
 
         <h4 id="api-semesters">/api/semesters/<em>:semester_id</em> - Daten eines Semesters</h4>
+        <h5>GET</h5>
         <p>
-            Liefert die Daten des übergebenen Semesters zurück.
+            Liefert die Daten des angegebenen Semesters zurück.
         </p>
         <pre type="application/json">{% include semesters-semester_id.json %}</pre>
 
         <h4 id="api-studip">/api/studip/settings - Globale Einstellungen</h4>
+        <h5>GET</h5>
         <p>
             Liefert lokale Einstellungswerte Stud.IP-interner Konfigurationen
             zurück.<br>
@@ -334,12 +352,13 @@
         <h4 id="api-courses">/api/user/&lt;<em>:user_id</em>&gt; - Nutzerdaten</h4>
         <h5>GET</h5>
         <p>
-            Liefert die Daten des Nutzers mit der übergebenen Id zurück. Ist keine Id
+            Liefert die Daten des Nutzers mit der angegebenen Id zurück. Ist keine Id
             angegeben, so werden die Daten des autorisierten Nutzers zurückgegeben.
         </p>
         <pre type="application/json">{% include user.json %}</pre>
 
         <h4 id="api-activities">/api/activities - Aktivitäten</h4>
+        <h5>GET</h5>
         <p>
             Liefert die Aktivitäten im Umfeld des autorisierten Nutzers zurück.
         </p>
