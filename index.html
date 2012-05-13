@@ -49,7 +49,7 @@
         </dl>
       </header>
       <section>
-        <h3>Rest.IP</h3>
+        <h2>Rest.IP</h2>
 
         <h3>API-Dokumentation</h3>
         <h4>Allgemeines</h4>
@@ -106,7 +106,7 @@
         </ul>
         <p>
             <strong>Bitte beachten:</strong> Obwohl <code>complete</code> der Standardwert ist, bezieht
-            sich diese Dokumentation in ihren Beispiel aus offensichtlichen Gründen auf den Modus
+            sich diese Dokumentation in ihren Beispielen aus offensichtlichen Gründen auf den Modus
             <code>compact</code>.
         </p>
 
@@ -117,6 +117,10 @@
             bestimmt. Ein Zugriff auf <code>/api/news.json</code> liefert die Ankündigungen
             eines Nutzers im JSON-Format zurück, während <code>/api/news.xml</code>
             die Ankündigungen im XML-Format zurückgeben würde.
+        </p>
+        <p>
+            Die Beispiele in dieser Dokumentation decken vorläufig nur die zurückgegebenen JSON-Daten
+            ab, da dies das bevorzugte Format ist.
         </p>
 
         <h3>Die Routen im Detail</h3>
@@ -132,12 +136,12 @@
             <li>
                 <h5>/oauth/authorize</h5>
                 In diesem Schritt wird dem Benutzer ein Dialog angezeigt, in dem
-                er zustimmen muss, den Token aus Schritt zu autorisieren.
+                er zustimmen muss, den Token aus Schritt 1 zu autorisieren.
             </li>
             <li>
                 <h5>/oauth/access_token</h5>
                 Holt ein dauerhaftes, autorisiertes Token im Austausch gegen das
-                in Schritt autorierte Token.
+                in Schritt 2 autorierte Token.
             </li>
         </ol>
         <p>
