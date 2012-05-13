@@ -3,7 +3,8 @@
 <p>
     Liefert die Aktivitäten im Umfeld des autorisierten Nutzers zurück.
 </p>
-{% highlight json linenos %}{% include examples/activities.json %}{% endhighlight %}
+{% capture example %}{% include examples/activities.json %}{% endcapture %}
+{% highlight json linenos %}{{ example }}{% endhighlight %}
 <p class="todo">
     Diese Route wurde versuchsweise in das
     <a href="http://plugin-dev.studip.de/index.php/Plugins/00062">ActivityFeed</a>-Plugin
