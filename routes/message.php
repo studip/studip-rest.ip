@@ -114,8 +114,6 @@ class MessageRoute implements \APIPlugin
     // Direct access to messages
         // Create a message
         $router->post('/messages', function () use ($router) {
-            $router->halt(400);
-
             $subject = trim($_POST['subject'] ?: '');
             if (empty($subject)) {
                 $router->halt(406, 'No subject provided');
@@ -127,7 +125,7 @@ class MessageRoute implements \APIPlugin
             }
 
             $usernames = array_map(function ($id) use ($router) {
-                $user = User::find($id);
+                $user = \User::find($id);
                 if (!$user) {
                     $router->halt(404, sprintf('Receiver user id %s not found', $id));
                 }
@@ -136,14 +134,14 @@ class MessageRoute implements \APIPlugin
 
             $message_id = md5(uniqid('message', true));
 
-            $messaging = new messaging;
+            $messaging = new \messaging;
             $r = $messaging->insert_message($message, $usernames, '', '', $message_id, '', '', $subject);
 
             if (!$r) {
                 $this->halt(500, 'Could not create message');
             }
 
-            $router->render($router->dispatch('get', '/message(/:message_id)', $message_id));
+            $router->render($router->dispatch('get', '/messages/:message_id', $message_id));
         });
 
         // Load a message
@@ -221,11 +219,12 @@ class Message
                         {$additional_fields}
                   FROM message AS m
                   INNER JOIN message_user AS mu ON (m.message_id = mu.message_id AND mu.user_id = ?)
-                  INNER JOIN message_user AS mu2 ON (mu.message_id = mu2.message_id AND mu.user_id != mu2.user_id)
+                  INNER JOIN message_user AS mu2 ON (mu.message_id = mu2.message_id AND mu.snd_rec != mu2.snd_rec)
                   WHERE m.message_id IN (?) AND mu.deleted = 0";
         if (is_array($ids) and count($ids) > 1) {
             $query .= " ORDER BY m.mkdate DESC";
         }
+
         $statement = DBManager::get()->prepare($query);
         $statement->execute(array($GLOBALS['user']->id, $ids));
         $messages = $statement->fetchAll(PDO::FETCH_ASSOC);
