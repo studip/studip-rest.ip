@@ -659,8 +659,8 @@ class OAuthRequest
 		}
 		else
 		{
-			return $this->urlencode(rawurldecode($s));
-			// return $this->urlencode(urldecode($s));
+			//return $this->urlencode(rawurldecode($s));
+			return $this->urlencode(urldecode($s));
 		}
 	}
 

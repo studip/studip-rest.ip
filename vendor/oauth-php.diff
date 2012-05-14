@@ -1,0 +1,15 @@
+diff --git a/vendor/oauth-php/library/OAuthRequest.php b/vendor/oauth-php/library/OAuthRequest.php
+index c5c43fa..f259220 100644
+--- a/vendor/oauth-php/library/OAuthRequest.php
++++ b/vendor/oauth-php/library/OAuthRequest.php
+@@ -659,8 +659,8 @@ class OAuthRequest
+ 		}
+ 		else
+ 		{
+-			return $this->urlencode(rawurldecode($s));
+-			// return $this->urlencode(urldecode($s));
++			//return $this->urlencode(rawurldecode($s));
++			return $this->urlencode(urldecode($s));
+ 		}
+ 	}
+ 
