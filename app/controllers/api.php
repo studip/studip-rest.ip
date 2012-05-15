@@ -19,7 +19,8 @@ class ApiController extends StudipController
         // Kids, don't try this at home!
         $_SERVER['PATH_INFO'] = '/' . $unconsumed;
 
-        $GLOBALS['user'] = new Seminar_User(OAuth::verify());
+        $GLOBALS['user'] = new Seminar_User;
+        $GLOBALS['user']->start(OAuth::verify());
 
         \Slim_Route::setDefaultConditions(array(
             'course_id'   => '[0-9a-f]{32}',

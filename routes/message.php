@@ -55,13 +55,13 @@ class MessageRoute implements \APIPlugin
 
         // Create new folder
         $router->post('/messages/:box', function ($box) use ($router) {
-            $folder = trim($_POST['folder'] ?: '');
+            $folder = trim(\Request::get('folder', ''));
             $val = Helper::getUserData();
 
             if (empty($folder)) {
                 $router->halt(406, 'No folder name provided');
             }
-            if (preg_match('/[^a-z0-9]/', $folder)) {
+            if (false and preg_match('/[^a-z0-9]/', $folder)) {
                 $router->halt(406, 'Invalid folder name provided');
             }
             if (in_array($folder, $val['my_messaging_settings']['folder'][$box])
@@ -71,9 +71,11 @@ class MessageRoute implements \APIPlugin
                 $router->halt(409, 'Duplicate');
             }
 
-            $val['my_messaging_settings']['folder'][$box][] = trim($_POST['folder']);
+            $val['my_messaging_settings']['folder'][$box][] = $folder;
             Helper::setUserData($val);
 
+            $GLOBALS['user']->unregister('my_messaging_settings');
+            
             $router->halt(201);
         })->conditions(array('box' => '(in|out)'));
 
@@ -97,13 +99,10 @@ class MessageRoute implements \APIPlugin
 
             $users    = array();
             foreach ($messages as $message) {
-                if (in_array('____%system%____', array($message['sender_id'], $message['receiver_id']))) {
-                    continue;
-                }
-                if (!isset($users[$message['sender_id']])) {
+                if ($message['sender_id'] != '____%system%____' && !isset($users[$message['sender_id']])) {
                     $users[$message['sender_id']] = reset($router->dispatch('get', '/user(/:user_id)', $message['sender_id']));
                 }
-                if (!isset($users[$message['receiver_id']])) {
+                if ($message['receiver_id'] != '____%system%____' && !isset($users[$message['receiver_id']])) {
                     $users[$message['receiver_id']] = reset($router->dispatch('get', '/user(/:user_id)', $message['receiver_id']));
                 }
             }
@@ -134,14 +133,18 @@ class MessageRoute implements \APIPlugin
 
             $message_id = md5(uniqid('message', true));
 
+            check_messaging_default();
             $messaging = new \messaging;
-            $r = $messaging->insert_message($message, $usernames, '', '', $message_id, '', '', $subject);
+            $result = $messaging->insert_message($message, $usernames,
+                                                 $GLOBALS['user']->id, time(),
+                                                 $message_id, false, \Request::get('signature'),
+                                                 $subject, \Request::int('email', 0));
 
-            if (!$r) {
+            if (!$result) {
                 $this->halt(500, 'Could not create message');
             }
 
-            $router->render($router->dispatch('get', '/messages/:message_id', $message_id));
+            $router->render($router->dispatch('get', '/messages/:message_id', $message_id), 201);
         });
 
         // Load a message
@@ -150,7 +153,21 @@ class MessageRoute implements \APIPlugin
             if (!$message) {
                 $router->halt(404, sprintf('Message %s not found', $message_id));
             }
-            $router->render(compact('message'));
+
+            if ($router->compact()) {
+                $router->render(compact('message'));
+                return;
+            }
+
+            $users = array();
+            if ($message['sender_id'] != '____%system%____' && !isset($users[$message['sender_id']])) {
+                $users[$message['sender_id']] = reset($router->dispatch('get', '/user(/:user_id)', $message['sender_id']));
+            }
+            if ($message['receiver_id'] != '____%system%____' && !isset($users[$message['receiver_id']])) {
+                $users[$message['receiver_id']] = reset($router->dispatch('get', '/user(/:user_id)', $message['receiver_id']));
+            }
+
+            $router->render(compact('message', 'users'));
         });
 
         // Destroy a message
@@ -170,7 +187,7 @@ class MessageRoute implements \APIPlugin
         });
 
         // Read (load and update read flag) a message
-        $router->post('/messages/:message_id/read', function ($message_id) use ($router) {
+        $router->put('/messages/:message_id/read', function ($message_id) use ($router) {
             $message = Message::load($message_id);
             if (!$message) {
                 $router->halt(404, sprintf('Message %s not found', $message_id));
@@ -181,11 +198,10 @@ class MessageRoute implements \APIPlugin
             $messaging->set_read_message($message_id);
 
             $router->halt(204);
-
         });
 
         // Move message
-        $router->post('/messages/:message_id/move/:folder', function ($folder, $message_id) use ($router) {
+        $router->put('/messages/:message_id/move/:folder', function ($folder, $message_id) use ($router) {
             $val = Helper::getUserData();
             $settings = $val['my_messaging_settings'] ?: array();
 
@@ -220,7 +236,7 @@ class Message
                   FROM message AS m
                   INNER JOIN message_user AS mu ON (m.message_id = mu.message_id AND mu.user_id = ?)
                   INNER JOIN message_user AS mu2 ON (mu.message_id = mu2.message_id AND mu.snd_rec != mu2.snd_rec)
-                  WHERE m.message_id IN (?) AND mu.deleted = 0";
+                  WHERE m.message_id IN (?)";
         if (is_array($ids) and count($ids) > 1) {
             $query .= " ORDER BY m.mkdate DESC";
         }
@@ -230,6 +246,7 @@ class Message
         $messages = $statement->fetchAll(PDO::FETCH_ASSOC);
 
         array_walk($messages, function (&$message) {
+            $message['message_original'] = $message['message'];
             $message['message'] = formatReady($message['message']);
         });
 

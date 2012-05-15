@@ -145,7 +145,7 @@ class Router
     /**
      * 
      */
-    function render($data = array())
+    function render($data = array(), $status = null)
     {
         if ($this->internal_dispatch) {
             $this->route_result = $data;
@@ -156,8 +156,13 @@ class Router
         header_remove('x-powered-by');
         header_remove('set-cookie');
 
+        if ($status !== null) {
+            header('Status: ' . $status);
+        }
+
         $this->template->data = $data;
         echo $this->template->render();
+        die;
     }
 
     /**
