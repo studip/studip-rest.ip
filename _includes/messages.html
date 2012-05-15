@@ -1,4 +1,32 @@
-<h4 id="api-messages">/api/messages/<em>:box</em> - Nachrichtenordner auslesen</h4>
+<h4 id="api-messages">/api/messages - Nachricht schreiben</h4>
+<h5>POST</h5>
+<p>Schreibt eine neue Nachricht.</p>
+<p>Parameter:</p>
+<dl>
+    <dt>user_id</dt>
+    <dd>
+        Id des bzw. der Empfänger (es kann ein String oder auch ein Array für mehrere
+        Empfänger übergeben werden)
+    </dd>
+    <dt>subject</dt>
+    <dd>Der Betreff der Nachricht</dd>
+    <dt>message</dt>
+    <dd>Die eigentliche Nachricht</dd>
+</dl>
+<p>
+    HTTP-Status der Rückgabe:
+</p>
+<ul>
+    <li><code>406</code> bei fehlenden oder ungültigen Parametern</li>
+    <li><code>404</code> falls einer der angegebenen Empfänger nicht im System vorhanden ist</li>
+    <li><code>500</code> falls die Nachricht nicht erzeugt werden konnte</li>
+    <li>
+        <code>201</code> falls die Nachricht erzeugt wurde - in diesem Fall wird auch das
+        erzeugte Nachrichtenobjekt mitgeliefert
+    </li>
+</ul>
+
+<h4>/api/messages/<em>:box</em> - Nachrichtenordner auslesen</h4>
 <h5>GET</h5>
 <p>
     Liefert die vorhandenen Nachrichtenordner des autorisierten Nutzers zurück. Der Parameter
@@ -31,7 +59,7 @@
 </ul>
 
 <h4>/api/messages/<em>:message_id</em>/read - Nachricht als gelesen markieren</h4>
-<h5>POST</h5>
+<h5>PUT</h5>
 <p>
     Markiert die angegebene Nachricht als gelesen.
 </p>
@@ -52,7 +80,7 @@
 {% highlight js linenos %}{% include examples/messages-box-folder.json %}{% endhighlight %}
 
 <h4>/api/messages/<em>:message_id</em>/move/<em>:folder</em> - Nachricht in Ordner verschieben</h4>
-<h5>POST</h5>
+<h5>PUT</h5>
 <p>
     Verschiebt die angegebene Nachricht in den angegebenen Ordner.
 </p>
