@@ -78,5 +78,16 @@ class UserRoute implements \APIPlugin
 
             $router->render(compact('user'));
         });
+
+        // Deletes a user
+        $router->delete('/user/:user_id', function ($user_id) use ($router) {
+            require 'lib/classes/UserManagement.class.php';
+            $user = new \UserManagement($user_id.'.');
+            if (empty($user->user_data['auth_user_md5.user_id'])) {
+                $router->halt(404, sprintf('User id "%s" not found', $user_id));
+                die;
+            }
+            $router->halt($user->deleteUser() ? 200 : 500);
+        });
     }
 }
