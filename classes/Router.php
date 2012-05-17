@@ -158,6 +158,7 @@ class Router
 
         if ($status !== null) {
             header('Status: ' . $status);
+            header('HTTP/1.1 ' . $status);
         }
 
         $this->template->data = $data;
