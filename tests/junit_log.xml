@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuites>
-  <testsuite name="Rest.IP Unit-Tests" tests="1" assertions="1" failures="0" errors="0" time="0.006191">
-    <testsuite name="XMLTest" file="/Users/tleilax/Dropbox/Code/studip/trunk/public/plugins_packages/UOL/RestipPlugin/tests/xml-test.php" tests="1" assertions="1" failures="0" errors="0" time="0.006191">
-      <testcase name="testStruct" class="XMLTest" file="/Users/tleilax/Dropbox/Code/studip/trunk/public/plugins_packages/UOL/RestipPlugin/tests/xml-test.php" line="14" assertions="1" time="0.006191"/>
-    </testsuite>
-  </testsuite>
-</testsuites>
