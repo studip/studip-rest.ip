@@ -76,3 +76,29 @@
     oder <code>studip</code> für globale Ankündigungen sein.
 </p>
 {% highlight js linenos %}{% include examples/news-news_id.json %}{% endhighlight %}
+
+<h5>POST</h5>
+<p>Erzeugt eine Ankündigung für die angegebene Range.</p>
+<p>Parameter:</p>
+<dl>
+    <dt>title</dt>
+    <dd>Titel der Ankündigung</dd>
+    <dt>body</dt>
+    <dd>Inhalt der Ankündigung</dd>
+    <dt>expire <small>(optional, Standard = 1029600 = 2 Wochen)</small></dt>
+    <dd>Laufzeit der Ankündigung in Sekunden.</dd>
+    <dt>allow_comments <small>(optional, Standard = 0)</small></dt>
+    <dd>Kommentare erlauben</dd>
+</dl>
+<p>
+    HTTP-Status der Rückgabe:
+</p>
+<ul>
+    <li>
+        <code>201</code> falls die Ankündigung erzeugt wurde - in diesem Fall wird auch das
+        erzeugte Ankündigungsobjekt mitgeliefert
+    </li>
+    <li><code>403</code> falls der Nutzer nicht zum Zugriff auf die angegebene Range berechtigt ist</li>
+    <li><code>406</code> bei fehlenden oder ungültigen Parametern</li>
+    <li><code>500</code> falls die Ankündigung nicht erzeugt werden konnte</li>
+</ul>
