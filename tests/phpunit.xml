@@ -1,0 +1,10 @@
+<phpunit colors="true">
+    <logging>
+        <log type="junit" target="junit_log.xml"/>
+    </logging>
+    <testsuites>
+        <testsuite name="Rest.IP Unit-Tests" class="TestSuite">
+            <directory suffix="-test.php">.</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>
