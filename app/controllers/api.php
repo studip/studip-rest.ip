@@ -5,15 +5,27 @@
  **/
 class ApiController extends StudipController
 {
+    protected static $format_guesses = array(
+        'application/json' => 'json',
+        'text/php'         => 'php',
+        'text/xml'         => 'xml',
+    );
+
     /**
      *
      **/
     public function perform($unconsumed)
     {
-        if ($_SERVER['Content-Type'] === 'application/json') {
-            $format = 'json';
+        $format = reset(self::$format_guesses);
+
+        if (isset($_SERVER['CONTENT_TYPE'])) {
+            foreach (self::$format_guesses as $mime_type => $guessed_format) {
+                if ($_SERVER['CONTENT_TYPE'] === $mime_type) {
+                    $format = $guessed_format;
+                }
+            }
         }
-        if (preg_match('/\.(json|xml)$/', $unconsumed, $match)) {
+        if (preg_match('/\.(' . implode('|', self::$format_guesses) . ')$/', $unconsumed, $match)) {
             $format = $match[1];
             $unconsumed = substr($unconsumed, 0, - strlen($match[0]));
         }
@@ -22,8 +34,23 @@ class ApiController extends StudipController
         // Kids, don't try this at home!
         $_SERVER['PATH_INFO'] = '/' . $unconsumed;
 
-        $GLOBALS['user'] = new Seminar_User;
-        $GLOBALS['user']->start(OAuth::verify());
+        // Fake user identity ()
+        $user = User::find(OAuth::verify());
+
+        $GLOBALS['auth'] = new Seminar_Auth();
+        $GLOBALS['auth']->auth = array(
+            'uid'   => $user->user_id,
+            'uname' => $user->username,
+            'perm'  => $user->perms,
+        );
+
+        $GLOBALS['user'] = new Seminar_User();
+        $GLOBALS['user']->fake_user = true;
+        $GLOBALS['user']->register_globals = false;
+        $GLOBALS['user']->start($user->user_id);
+    
+        $GLOBALS['perm'] = new Seminar_Perm();
+        $GLOBALS['MAIL_VALIDATE_BOX'] = false;
 
         \Slim_Route::setDefaultConditions(array(
             'course_id'   => '[0-9a-f]{32}',
@@ -40,9 +67,7 @@ class ApiController extends StudipController
         $router->handleErrors();
         error_reporting(0);
 
-        $mode = Request::option('mode', 'compact');
-
-        if ($mode === 'complete') {
+        if (Request::option('mode', 'compact') === 'complete') {
             $router->setMode(RestIP\Router::MODE_COMPLETE);
         } else {
             $router->setMode(RestIP\Router::MODE_COMPACT);
