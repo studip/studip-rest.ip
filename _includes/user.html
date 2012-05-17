@@ -5,3 +5,17 @@
     angegeben, so werden die Daten des autorisierten Nutzers zurückgegeben.
 </p>
 {% highlight js linenos %}{% include examples/user.json %}{% endhighlight %}
+
+<h4>/api/user/<em>:user_id</em></h4>
+<h5>DELETE</h5>
+<p>
+    Löscht einen Nutzer.
+</p>
+<p>
+    HTTP-Status der Rückgabe:
+</p>
+<ul>
+    <li><code>200</code> wenn der Nutzer gelöscht wurde</li>
+    <li><code>404</code> falls der Nutzer nicht existiert</li>
+    <li><code>500</code> falls der Nutzer nicht gelöscht werden konnte</li>
+</ul>
