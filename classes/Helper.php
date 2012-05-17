@@ -61,6 +61,10 @@ class Helper
 
     }
 
+    public static function isNumericIndexed($array) {
+        return (is_array($array) && count(array_filter(array_keys($array), 'is_string')) == 0);
+    }
+
     /**
      *
      **/
@@ -71,7 +75,7 @@ class Helper
         $xml = $dom->asXML();
         $xml = str_replace(array('&lt;![CDATA[', ']]&gt;'), array('<![CDATA[', ']]>'), $xml);
 
-        // Pretty print, "inspired" by from http://gdatatips.blogspot.com/2008/11/xml-php-pretty-printer.html
+        // Pretty print, "inspired" by http://gdatatips.blogspot.com/2008/11/xml-php-pretty-printer.html
         if ($pretty_print) {
             // Fix empty tag bug
             preg_match_all('/<(\w+)(?:\s[^>\/]*)?><\/\\1>/', $xml, $matches);
@@ -133,13 +137,26 @@ class Helper
         }
 
         foreach ($array as $key => $value) {
-            $index = is_numeric($key) ? 'item' : $key;
+            if (is_numeric($key)) {
+                throw new \Exception('Cannot compile numeric indexes');
+            } elseif (preg_match('/\W/', $key)) {
+                throw new \Exception(sprintf('Cannot compile index: "%s"', $key));
+            }
 
-            if (is_array($value)) {
-                $subnode = $node->addChild($index);
+            if (self::isNumericIndexed($value)) {
+                foreach ($value as $k => $v) {
+                    if (is_array($v)) {
+                        $subnode = $node->addChild($key);
+                        self::array_to_xml($v, $subnode, $parameters);
+                    } else {
+                        $subnode = $node->addChild($key, $v);
+                    }
+                }
+            } elseif (is_array($value)) {
+                $subnode = $node->addChild($key);
                 self::array_to_xml($value, $subnode, $parameters);
             } else {
-                $subnode = $node->addChild($index, $value);
+                $subnode = $node->addChild($key, $value);
             }
 
             if (!empty($parameters['add_id_index']) and is_numeric($key)) {
