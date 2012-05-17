@@ -87,9 +87,10 @@ require_once 'app/models/Permissions.php';
 // Populate $_DELETE, $_HEAD, $_OPTIONS and $_PUT
 foreach (words('DELETE HEAD OPTIONS PUT') as $method) {
     $var = '_' . $method;
-    $$var = array();  
+    $GLOBALS[$var] = array();  
     if ($_SERVER['REQUEST_METHOD'] == $method) {  
-        parse_str(file_get_contents('php://input'), $$var);  
+        parse_str(file_get_contents('php://input'), $GLOBALS[$var]);
+        $_REQUEST = array_merge($_REQUEST, $GLOBALS[$var]);
     }
 }
 
