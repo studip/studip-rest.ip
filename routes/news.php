@@ -1,6 +1,8 @@
 <?php
 namespace RestIP;
 
+use \Request;
+
 /**
  *
  **/
@@ -12,7 +14,7 @@ class NewsRoute implements \APIPlugin
     public function describeRoutes()
     {
         return array(
-            '/news(/range/:range_id)' => _('Ankündigungen einer Entität'),
+            '/news(/range/:range_id)' => _('Ankündigungen einer Range'),
             '/news/:news_id'          => _('Ankündigungen'),
         );
     }
@@ -24,6 +26,7 @@ class NewsRoute implements \APIPlugin
     {
         require_once 'lib/classes/StudipNews.class.php';
 
+        // Get news of a range id
         $router->get('/news(/range/:range_id)', function ($range_id = false) use ($router)
         {
             $range_id = $range_id ?: $GLOBALS['user']->id;
@@ -43,6 +46,7 @@ class NewsRoute implements \APIPlugin
             $router->render(compact('news', 'users'));
         })->conditions(array('range_id' => '(studip|[a-f0-9]{32})'));
 
+        // Create news for a specific range
         $router->post('/news(/range/:range_id)', function () use ($router) {
             $range_id = $range_id ?: $GLOBALS['user']->id;
 
@@ -50,11 +54,40 @@ class NewsRoute implements \APIPlugin
                 $router->halt(403, sprintf('User may not access range %s', $range_id));
             }
 
-            $router->halt(501, 'Not implemented');
+            $title = trim(Request::get('title'));
+            if (empty($title)) {
+                $router->halt(406, 'No news title provided');
+            }
+
+            $body = trim(Request::get('body'));
+            if (empty($body)) {
+                $router->halt(406, 'No news body provided');
+            }
+
+            $news = new \StudipNews();
+            $news->user_id        = $GLOBALS['user']->id;
+            $news->author         = $GLOBALS['user']->getFullName();
+            $news->topic          = $title;
+            $news->body           = $body;
+            $news->date           = time();
+            $news->expire         = Request::int('expire', 2 * 7 * 24 * 60 * 60);
+            $news->allow_comments = Request::int('allow_comments', 0);
+            if (!$news->store()) {
+                $router->halt(501, 'Could not create news');
+            }
+
+            $news->addRange($range_id);
+            $news->storeRanges();
+
+            $router->render($router->dispatch('get', '/news/:news_id', $news->news_id), 201);
         })->conditions(array('range_id' => '(studip|[a-f0-9]{32})'));
 
+        // Get news data
         $router->get('/news/:news_id', function ($news_id) use ($router) {
             $news  = News::load($news_id);
+            if (!$news) {
+                $router->halt(404, sprintf('News %s not found', $news_id));
+            }
 
             if ($router->compact()) {
                 $router->render(compact('news'));
@@ -66,10 +99,54 @@ class NewsRoute implements \APIPlugin
             $router->render(compact('news', 'users'));
         });
 
-        $router->post('/news/:news_id', function ($news_id) use ($router) {
-            $router->halt(501, 'Nope, no updating of news yet');
+        // Update news
+        $router->put('/news/:news_id', function ($news_id) use ($router) {
+            global $_PUT;
+            
+            $news = new \StudipNews($news_id);
+            if (!$news) {
+                $router->halt(404, sprintf('News %s not found', $news_id));
+            }
+
+/*
+            // TODO Check access
+            if (!Helper::UserHasAccessToRange($range_id)) {
+                $router->halt(403, sprintf('User may not access range %s', $range_id));
+            }
+*/
+            if (isset($_PUT['title'])) {
+                $title = trim($_PUT['title']);
+                if (empty($title)) {
+                    $router->halt(406, 'No news title provided');
+                }
+                $news->topic = $title;
+            }
+
+            if (isset($_PUT['body'])) {
+                $body = trim($_PUT['body']);
+                if (empty($body)) {
+                    $router->halt(406, 'No news body provided');
+                }
+                $news->body = $body;
+            }
+
+            // date?
+
+            if (isset($_PUT['expire'])) {
+                $news->expire = $_PUT['expire'] ?: $news->expire;
+            }
+            if (isset($_PUT['allow_comments'])) {
+                $news->allow_comments = (int)$_PUT['allow_comments'];
+            }
+
+            if (!$news->store()) {
+                $router->halt(501, 'Could not update news');
+            }
+
+            $router->render($router->dispatch('get', '/news/:news_id', $news->news_id), 201);
         });
 
+        // Delete news
         $router->delete('/news/:news_id', function ($news_id) use ($router) {
             $news = \StudipNews::find($news_id);
             if (!$news) {
