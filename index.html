@@ -111,10 +111,11 @@
 
         <h4>Rückgabeformate</h4>
         <p>
-            Die Rückgabe kann entweder im <strong>JSON</strong>- oder <strong>XML</strong>-Format erfolgen.
-            Das jeweilige Format wird durch die Dateiendung der angeforderten Ressource
-            bestimmt. Ein Zugriff auf <code>/api/news.json</code> liefert die Ankündigungen
-            eines Nutzers im JSON-Format zurück, während <code>/api/news.xml</code>
+            Die Rückgabe kann entweder als <strong>JSON</strong>, als serialisiertes <strong>PHP</strong>
+            oder als <strong>XML</strong> erfolgen.
+            Das jeweilige Format wird entweder über den <code>Content-Type</code>-HTTP-Header der Anfrage
+            oder durch die Dateiendung der angeforderten Ressource bestimmt. Ein Zugriff auf <code>/api/news.json</code>
+            liefert die Ankündigungen eines Nutzers im JSON-Format zurück, während <code>/api/news.xml</code>
             die Ankündigungen im XML-Format zurückgeben würde.
         </p>
         <p>
@@ -123,7 +124,7 @@
         </p>
         <p>
             Methoden, die keine Rückgabe erfordern, antworten im Erfolgsfall in aller Regel
-            mit einem HTTP-Status-Code von <code>204 - No Content</code>. Bei Fehlern ist
+            mit einem HTTP-Status-Code von <code>200 - Success</code>. Bei Fehlern ist
             zusätzlich zu einem Status von <code>4xx</code> auch der Body der Antwort zu beachten.
             Dort findet sich eine genauere Beschreibung des Fehlers.
         </p>
