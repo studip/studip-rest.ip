@@ -77,7 +77,7 @@ class NewsRoute implements \APIPlugin
             }
 
             $news->delete();
-            $router->halt(204);
+            $router->halt(200);
         });
     }
 
