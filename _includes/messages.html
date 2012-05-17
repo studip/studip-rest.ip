@@ -17,13 +17,13 @@
     HTTP-Status der Rückgabe:
 </p>
 <ul>
-    <li><code>406</code> bei fehlenden oder ungültigen Parametern</li>
-    <li><code>404</code> falls einer der angegebenen Empfänger nicht im System vorhanden ist</li>
-    <li><code>500</code> falls die Nachricht nicht erzeugt werden konnte</li>
     <li>
         <code>201</code> falls die Nachricht erzeugt wurde - in diesem Fall wird auch das
         erzeugte Nachrichtenobjekt mitgeliefert
     </li>
+    <li><code>404</code> falls einer der angegebenen Empfänger nicht im System vorhanden ist</li>
+    <li><code>406</code> bei fehlenden oder ungültigen Parametern</li>
+    <li><code>500</code> falls die Nachricht nicht erzeugt werden konnte</li>
 </ul>
 
 <h4>/api/messages/<em>:box</em> - Nachrichtenordner auslesen</h4>
