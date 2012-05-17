@@ -1,26 +1,70 @@
 <h4 id="api-news">/api/news - Ankündigungen des Nutzers</h4>
 <h5>GET</h5>
-<p>
-    Liefert die Ankündigungen des autorisierten Nutzers zurück.
-</p>
+<p>Liefert die Ankündigungen des autorisierten Nutzers zurück.</p>
 {% highlight js linenos %}{% include examples/news.json %}{% endhighlight %}
 
-<h4>/api/news/<em>:news_id</em> - Daten einer Ankündigung</h4>
-<h5>GET</h5>
-<p>
-    Liefert die Daten der angegebenen Ankündigung zurück.
-</p>
-{% highlight js linenos %}{% include examples/news-news_id.json %}{% endhighlight %}
-
-<h5>DELETE</h5>
-<p>
-    Löscht die angegebene Ankündigung.
-</p>
+<h5>POST</h5>
+<p>Erzeugt eine Ankündigung für den autorisierten Nutzer.</p>
+<p>Parameter:</p>
+<dl>
+    <dt>title</dt>
+    <dd>Titel der Ankündigung</dd>
+    <dt>body</dt>
+    <dd>Inhalt der Ankündigung</dd>
+    <dt>expire <small>(optional, Standard = 1029600 = 2 Wochen)</small></dt>
+    <dd>Laufzeit der Ankündigung in Sekunden.</dd>
+    <dt>allow_comments <small>(optional, Standard = 0)</small></dt>
+    <dd>Kommentare erlauben</dd>
+</dl>
 <p>
     HTTP-Status der Rückgabe:
 </p>
 <ul>
-    <li><code>204</code> bei Erfolg</li>
+    <li>
+        <code>201</code> falls die Ankündigung erzeugt wurde - in diesem Fall wird auch das
+        erzeugte Ankündigungsobjekt mitgeliefert
+    </li>
+    <li><code>403</code> falls der Nutzer nicht zum Zugriff auf die angegebene Range berechtigt ist</li>
+    <li><code>406</code> bei fehlenden oder ungültigen Parametern</li>
+    <li><code>500</code> falls die Ankündigung nicht erzeugt werden konnte</li>
+</ul>
+
+<h4>/api/news/<em>:news_id</em> - Daten einer Ankündigung</h4>
+<h5>GET</h5>
+<p>Liefert die Daten der angegebenen Ankündigung zurück.</p>
+{% highlight js linenos %}{% include examples/news-news_id.json %}{% endhighlight %}
+
+<h5>PUT</h5>
+<p>Verändert die Daten einer Ankündigung.</p>
+<p>Parameter:</p>
+<dl>
+    <dt>title <small>(optional)</small></dt>
+    <dd>Titel der Ankündigung</dd>
+    <dt>body <small>(optional)</small></dt>
+    <dd>Inhalt der Ankündigung</dd>
+    <dt>expire <small>(optional)</small></dt>
+    <dd>Laufzeit der Ankündigung in Sekunden.</dd>
+    <dt>allow_comments <small>(optional)</small></dt>
+    <dd>Kommentare erlauben</dd>
+</dl>
+<p>
+    HTTP-Status der Rückgabe:
+</p>
+<ul>
+    <li>
+        <code>200</code> falls die Ankündigung verändert wurde - in diesem Fall wird auch das
+        veränderte Ankündigungsobjekt mitgeliefert
+    </li>
+    <li><code>404</code> falls die Ankündigung nicht existiert</li>
+    <li><code>406</code> bei fehlenden oder ungültigen Parametern</li>
+    <li><code>501</code> falls die Ankündigung nicht verändert wurde</li>
+</ul>
+
+<h5>DELETE</h5>
+<p>Löscht die angegebene Ankündigung.</p>
+<p>HTTP-Status der Rückgabe:</p>
+<ul>
+    <li><code>200</code> bei Erfolg</li>
     <li><code>404</code> wenn die Ankündigung nicht gefunden wurde</li>
 </ul>
 
