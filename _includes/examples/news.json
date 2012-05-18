@@ -11,17 +11,7 @@
             "chdate": "1336835422",
             "chdate_uid": "",
             "mkdate": "1336835409",
-            "body_original": "Lorem ipsum dolor...",
-            "comments": [
-                {
-                    "comment_id": "c81aa61d22ea203dba9da5b8d69bef39",
-                    "comment": "foorst!!!1!",
-                    "mkdate": "1336835458",
-                    "chdate": "1336835458",
-                    "user_id": "76ed43ef286fb55cf9e41beadb484a9f",
-                    "comment_original": "foorst!!!1!"
-                }
-            ]
+            "body_original": "Lorem ipsum dolor..."
         }
     ]
 }

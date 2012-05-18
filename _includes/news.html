@@ -102,3 +102,50 @@
     <li><code>406</code> bei fehlenden oder ungültigen Parametern</li>
     <li><code>500</code> falls die Ankündigung nicht erzeugt werden konnte</li>
 </ul>
+
+<h4>/api/news/<em>:news_id</em>/comments - Kommentare einer Ankündigung</h4>
+<h5>GET</h5>
+<p>Liest alle Kommentare zu einer Ankündigung aus.</p>
+<p>HTTP-Status der Rückgabe:</p>
+<ul>
+    <li><code>200</code> wenn alles in Ordnung ist</li>
+    <li><code>404</code> falls die angegebene Ankündigung nicht existiert</li>
+    <li><code>406</code> falls Kommentare für die angegebene Ankündigung deaktiviert sind</li>
+</ul>
+{% highlight js linenos %}{% include examples/news-comments.json %}{% endhighlight %}
+
+<h5>POST</h5>
+<p>Fügt der Ankündigung einen neuen Kommentar hinzu.</p>
+<p>Parameter:</p>
+<dl>
+    <dt>content</dt>
+    <dd>Inhalt des Kommentars</dd>
+</dl>
+<p>
+    HTTP-Status der Rückgabe:
+</p>
+<ul>
+    <li>
+        <code>201</code> falls der Kommentar erzeugt wurde - in diesem Fall wird auch das
+        erzeugte Kommentarobjekt mitgeliefert
+    </li>
+    <li><code>404</code> falls die Ankündigung nicht existiert</li>
+    <li><code>406</code> bei fehlenden oder ungültigen Parametern</li>
+    <li><code>500</code> falls der Kommentar nicht erzeugt werden konnte</li>
+</ul>
+
+<h4>/api/news/<em>:news_id</em>/comments/<em>:comment_id</em> - Kommentar einer Ankündigung</h4>
+<h5>GET</h5>
+<p>Liefert die Daten des Kommentars zurück.</p>
+{% highlight js linenos %}{% include examples/news-comment.json %}{% endhighlight %}
+
+<h5>DELETE</h5>
+<p>Löscht den angegebenen Kommentar.</p>
+<p>
+    HTTP-Status der Rückgabe:
+</p>
+<ul>
+    <li><code>200</code> falls der Kommentar gelöscht wurde</li>
+    <li><code>404</code> falls die Ankündigung oder der Kommentar nicht existiert</li>
+    <li><code>500</code> falls der Kommentar nicht gelöscht werden konnte</li>
+</ul>
