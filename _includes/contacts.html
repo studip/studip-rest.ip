@@ -1,0 +1,81 @@
+<h4 id="api-contacts">/api/contacts - Kontakte des Nutzers</h4>
+<h5>GET</h5>
+<p>Liefert die Kontakte des autorisierten Nutzers zurück.</p>
+{% highlight js linenos %}{% include examples/contacts.json %}{% endhighlight %}
+
+<h4>/api/contacts/:user_id - Kontakte verwalten</h4>
+<h5>PUT</h5>
+<p>Fügt den angegebenen Nutzer als Kontakt hinzu.</p>
+<p>
+    HTTP-Status der Rückgabe:
+</p>
+<ul>
+    <li>
+        <code>200</code> falls der Nutzer als Kontakt hinzugefügt wurde - in diesem Fall
+        wird auch die veränderte Liste der Kontakte mitgeliefert
+    </li>
+    <li><code>404</code> falls der als Kontakt hinzuzufügende Nutzer nicht existiert</li>
+    <li><code>406</code> falls der Nutzer bereits als Kontakt gespeichert ist</li>
+</ul>
+
+<h5>DELETE</h5>
+<p>Löscht einen Nutzer als Kontakt.</p>
+<ul>
+    <li><code>200</code> falls der Nutzer als Kontakt gelöscht wurde</li>
+    <li><code>404</code> falls der als Kontakt zu löschende Nutzer nicht existiert</li>
+    <li><code>406</code> falls der Nutzer nicht als Kontakt gespeichert ist</li>
+</ul>
+
+<h4>/api/contacts/groups - Kontaktgruppen des Nutzers</h4>
+<h5>GET</h5>
+<p>Liefert alle vorhandenen Kontaktgruppen zurück.</p>
+{% highlight js linenos %}{% include examples/contacts-groups.json %}{% endhighlight %}
+
+<h5>POST</h5>
+<p>Erzeugt eine neue Kontaktgruppe.</p>
+<p>Parameter:</p>
+<dl>
+    <dt>name</dt>
+    <dd>Name der Gruppe</dd>
+</dl>
+<p>HTTP-Status der Rückgabe:</p>
+<ul>
+    <li>
+        <code>200</code> falls die Kontaktgruppe erzeugt wurde - in diesem Fall wird die
+        veränderte Liste der Kontaktgruppen zurückgegeben
+    </li>
+    <li><code>406</code> bei fehlenden oder ungültigen Parametern</li>
+</ul>
+
+<h4>/api/contacts/groups/<em>:group_id</em> - Daten einer Kontaktgruppe</h4>
+<h5>GET</h5>
+<p>Liefert alle der Kontaktgruppe zugewiesenen Nutzer zurück.</p>
+{% highlight js linenos %}{% include examples/contacts-groups-group_id.json %}{% endhighlight %}
+
+<h5>DELETE</h5>
+<p>Löscht die angegebene Kontaktgruppe.</p>
+<p>HTTP-Status der Rückgabe:</p>
+<ul>
+    <li><code>200</code> falls die Kontaktgruppe gelöscht wurde</li>
+    <li><code>404</code> falls die Kontaktgruppe nicht existiert</li>
+</ul>
+
+<h4>/api/contacts/group_id/<em>:group_id</em>/<em>:user_id</em> - Kontaktgruppenverwaltung</h4>
+<h5>PUT</h5>
+<p>Fügt den angegebenen Nutzer zur angegebenen Kontaktgruppe hinzu.</p>
+<p>HTTP-Status der Rückgabe:</p>
+<ul>
+    <li>
+        <code>200</code> falls der Nutzer zu der Kontaktgruppe hinzugefügt wurde - in diesem Fall
+        wird die veränderte Liste der der Kontaktgruppen zugewiesenen Nutzer zurückgegeben
+    </li>
+    <li><code>404</code> falls die Kontaktgruppe oder der Nutzer nicht existiert</li>
+</ul>
+
+<h5>DELETE</h5>
+<p>Löscht den angegebenen Nutzer aus der angegebenen Kontaktgruppe.</p>
+<p>HTTP-Status der Rückgabe:</p>
+<ul>
+    <li><code>200</code> falls der Nutzer aus der Kontaktgruppe gelöscht wurde</li>
+    <li><code>404</code> falls die Kontaktgruppe oder der Nutzer nicht existiert</li>
+</ul>
