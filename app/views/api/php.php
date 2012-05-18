@@ -1,3 +1,3 @@
 <?
-header('Content-Type: text/php');
-die(serialize($data));
+$router->contentType('text/php');
+echo serialize($data);

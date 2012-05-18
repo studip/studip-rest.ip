@@ -48,7 +48,7 @@ class Router
         // Get routes from plugins, default routes are also defined as fake plugins
         $default_routes = glob(dirname(__FILE__) . '/../routes/*.php');
         foreach ($default_routes as $route) {
-            $class_name = 'RestIP\\' . ucfirst(basename($route, '.php')) . 'Route';
+            $class_name = 'RestIP\\' . str_replace(' ', '', ucwords(str_replace('-', ' ', basename($route, '.php')))) . 'Route';
 
             require_once $route;
 
@@ -86,12 +86,12 @@ class Router
     
     public function compact()
     {
-        return $this->mode === self::MODE_COMPACT;
+        return $this->internal_dispatch || $this->mode === self::MODE_COMPACT;
     }
 
     public function complete()
     {
-        return $this->mode === self::MODE_COMPLETE;
+        return !$this->internal_dispatch && $this->mode === self::MODE_COMPLETE;
     }
     
     /**
@@ -145,7 +145,7 @@ class Router
     /**
      * 
      */
-    function render($data = array(), $status = null)
+    function render($data = array(), $status = 200)
     {
         if ($this->internal_dispatch) {
             $this->route_result = $data;
@@ -156,14 +156,22 @@ class Router
         header_remove('x-powered-by');
         header_remove('set-cookie');
 
-        if ($status !== null) {
-            header('Status: ' . $status);
-            header('HTTP/1.1 ' . $status);
-        }
+        $this->template->data   = $data;
+        $this->template->router = $this;
+        $result = $this->template->render();
 
-        $this->template->data = $data;
-        echo $this->template->render();
-        die;
+        $this->halt($status, $result);
+    }
+
+    /**
+     *
+     */
+    public function halt($status, $message = '')
+    {
+        $arguments = array_slice(func_get_args(), 2);
+        $message = vsprintf($message, $arguments);
+
+        $this->router->halt($status, $message);
     }
 
     /**
