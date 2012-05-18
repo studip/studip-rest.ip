@@ -42,7 +42,14 @@ class NewsRoute implements \APIPlugin
                 return;
             }
 
+            foreach ($news as $index => $n) {
+                if ($n['allow_comments']) {
+                    $comments = $router->dispatch('get', '/news/:news_id/comments', $n['news_id']);
+                    $news[$index]['comments'] = $comments['comments'];
+                }
+            }
             $users = array_values(NewsRoute::extractUsers($news, $router));
+
             $router->render(compact('news', 'users'));
         })->conditions(array('range_id' => '(studip|[a-f0-9]{32})'));
 
@@ -95,7 +102,9 @@ class NewsRoute implements \APIPlugin
             }
 
             $users = NewsRoute::extractUsers(array($news), $router);
-
+            if ($news['allow_comments']) {
+                $news['comments'] = reset($router->dispatch('get', '/news/:news_id/comments', $news_id));
+            }
             $router->render(compact('news', 'users'));
         });
 
@@ -154,7 +163,7 @@ class NewsRoute implements \APIPlugin
             }
 
             $news->delete();
-            $router->halt(200);
+            $router->halt(200, sprintf('Deleted news %s.', $news_id));
         });
     }
 
@@ -162,7 +171,7 @@ class NewsRoute implements \APIPlugin
     {
         $users = array();
         foreach ((array)$collection as $item) {
-            if ($item['allow_comments']) {
+            if (!empty($item['comments'])) {
                 foreach ($item['comments'] as $comment) {
                     if (!isset($users[$comment['user_id']])) {
                         $user = $router->dispatch('get', '/user(/:user_id)', $comment['user_id']);
@@ -191,21 +200,17 @@ class News
         if (!is_array($news)) {
             $news = $news->toArray();
         }
-        
+
         $news['body_original'] = $news['body'];
         $news['body']          = formatReady($news['body']);
         $news['chdate_uid']    = trim($news['chdate_uid']);
 
         unset($news['author']);
 
-        if ($news['allow_comments']) {
-            $news['comments'] = self::loadComments($news['news_id']);
-        }
-
         return $news;
     }
 
-    static function load ($id)
+    static function load($id)
     {
         $result = array();
         foreach ((array)$id as $i) {
@@ -223,23 +228,5 @@ class News
         $news = array_map('self::adjust', $news);
 
         return $news;
-    }
-
-    static function loadComments($news_id)
-    {
-        $query = "SELECT comment_id, content AS comment, mkdate, chdate, user_id
-                  FROM comments
-                  WHERE object_id = ?
-                  ORDER BY mkdate";
-        $statement = \DBManager::get()->prepare($query);
-        $statement->execute(array($news_id));
-        $comments = $statement->fetchAll(\PDO::FETCH_ASSOC);
-
-        foreach ($comments as &$comment) {
-            $comment['comment_original'] = $comment['comment'];
-            $comment['comment']          = formatReady($comment['comment']);
-        }
-
-        return $comments;
     }
 }
