@@ -74,5 +74,7 @@ class ApiController extends StudipController
         }
 
         $router->run();
+
+        die;
     }
 }
