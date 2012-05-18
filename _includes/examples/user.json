@@ -1,6 +1,7 @@
 {
     "user": {
         "user_id": "e7eaafc2245b04c608d2ce17b8267875",
+        "username": "john@doe",
         "perms": "autor",
         "title_pre": "The One and Only",
         "forename": "John",
