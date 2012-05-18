@@ -166,7 +166,7 @@ class Router
     /**
      *
      */
-    public function halt($status, $message = '')
+    public function halt($status = 200, $message = '')
     {
         $arguments = array_slice(func_get_args(), 2);
         $message = vsprintf($message, $arguments);
