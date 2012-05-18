@@ -52,6 +52,8 @@ class ApiController extends StudipController
         $GLOBALS['perm'] = new Seminar_Perm();
         $GLOBALS['MAIL_VALIDATE_BOX'] = false;
 
+        setTempLanguage($GLOBALS['user']->id);
+
         \Slim_Route::setDefaultConditions(array(
             'course_id'   => '[0-9a-f]{32}',
             'message_id'  => '[0-9a-f]{32}',
@@ -74,6 +76,8 @@ class ApiController extends StudipController
         }
 
         $router->run();
+
+        restoreLanguage();
 
         die;
     }
