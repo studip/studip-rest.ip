@@ -62,6 +62,7 @@ class UserRoute implements \APIPlugin
 
             $user = array(
                 'user_id'       => $user_id,
+                'username'      => $user['username'],
                 'perms'         => $user['perms'],
                 'title_pre'     => $user['title_front'],
                 'forename'      => $user['Vorname'],
