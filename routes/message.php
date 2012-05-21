@@ -90,6 +90,7 @@ class MessageRoute implements \APIPlugin
                 $router->halt(404, sprintf('Folder %s-%s not found', $box, $folder));
             }
 
+            error_reporting(E_ALL ^ (E_NOTICE | E_WARNING));
             $ids      = Message::folder($box == 'in' ? 'rec' : 'snd', $folder);
             $messages = Message::load($ids);
 

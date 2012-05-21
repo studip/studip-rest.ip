@@ -30,12 +30,26 @@ class ApiController extends StudipController
             $unconsumed = substr($unconsumed, 0, - strlen($match[0]));
         }
 
-        // Yes, this is indeed a pretty nasty hack
-        // Kids, don't try this at home!
-        $_SERVER['PATH_INFO'] = '/' . $unconsumed;
+        // Get id from authorisation (either OAuth or standard)
+        try {
+            if (OAuth::isSigned()) {
+                $user_id = OAuth::verify();
+            } elseif (HTTPAuth::isSigned()) {
+                $user_id = HTTPAuth::verify();
+            } elseif ($GLOBALS['user']->id !== 'nobody') {
+                $user_id = $GLOBALS['user']->id;
+            }
+            if (!$user_id) {
+                throw new Exception('Unauthorized', 401);
+            }
+        } catch (Exception $e) {
+            $status = sprintf('HTTP/1.1 %u %s', $e->getCode(), $e->getMessage());
+            header($status, true, $e->getCode());
+            die($status);
+        }
 
-        // Fake user identity ()
-        $user = User::find(OAuth::verify());
+        // Fake user identity
+        $user = User::find($user_id);
 
         $GLOBALS['auth'] = new Seminar_Auth();
         $GLOBALS['auth']->auth = array(
@@ -54,6 +68,9 @@ class ApiController extends StudipController
 
         setTempLanguage($GLOBALS['user']->id);
 
+        // Yes, this is indeed a pretty nasty hack but we need this for Slim to work
+        $_SERVER['PATH_INFO'] = '/' . $unconsumed;
+
         \Slim_Route::setDefaultConditions(array(
             'course_id'   => '[0-9a-f]{32}',
             'message_id'  => '[0-9a-f]{32}',
@@ -65,7 +82,7 @@ class ApiController extends StudipController
         $template_factory = new Flexi_TemplateFactory($this->dispatcher->plugin->getPluginPath());
         $template =  $template_factory->open('app/views/api/' . $format . '.php');
 
-        $router = RestIP\Router::getInstance(OAuth::$consumer_key, $template);
+        $router = RestIP\Router::getInstance(null, $template);
         $router->handleErrors();
         error_reporting(0);
 

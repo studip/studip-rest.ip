@@ -80,6 +80,7 @@ require_once 'classes/APIPlugin.php';
 require_once 'classes/Router.php';
 require_once 'classes/Helper.php';
 require_once 'classes/OAuth.php';
+require_once 'classes/HTTPAuth.php';
 require_once 'app/models/OAuthUser.php';
 require_once 'app/models/OAuthConsumer.php';
 require_once 'app/models/Permissions.php';
