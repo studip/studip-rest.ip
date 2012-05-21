@@ -37,5 +37,13 @@ class StudipRoute implements \APIPlugin
                 'UNI_NAME_CLEAN'        => $GLOBALS['UNI_NAME_CLEAN'],
             ));
         });
+        
+        $router->get('/studip/colors', function () use ($router) {
+            $router->render(array('colors' => array(
+                'background' => '#e1e4e9',
+                'dark'       => '#34578c',
+                'light'      => '#899ab9',
+            )));
+        });
     }
 }
