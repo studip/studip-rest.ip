@@ -2,6 +2,7 @@
 namespace RestIP;
 
 require_once 'lib/messaging.inc.php';
+require_once 'lib/sms_functions.inc.php';
 
 use \DBManager, \PDO, \messaging;
 
@@ -111,6 +112,15 @@ class MessageRoute implements \APIPlugin
         })->conditions((array('box' => '(in|out)', array('folder' => '\d+'))));
 
     // Direct access to messages
+        // Get count of message
+        $router->get('/messages', function () use ($router) {
+            $count = array(
+                'read'   => 0 + count_messages_from_user('in', ' AND message_user.readed = 1 '),
+                'unread' => 0 + count_messages_from_user('in', ' AND message_user.readed = 0 '),
+            );
+            $router->render($count);
+        });
+
         // Create a message
         $router->post('/messages', function () use ($router) {
             $subject = trim($_POST['subject'] ?: '');
@@ -146,7 +156,7 @@ class MessageRoute implements \APIPlugin
 
             $router->render($router->dispatch('get', '/messages/:message_id', $message_id), 201);
         });
-
+        
         // Load a message
         $router->get('/messages/:message_id', function ($message_id) use ($router) {
             $message = Message::load($message_id);
