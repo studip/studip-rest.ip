@@ -1,4 +1,5 @@
 <?php
+require_once 'config_plugin.inc.php';
 require_once 'bootstrap.php';
 
 /**

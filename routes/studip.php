@@ -39,11 +39,11 @@ class StudipRoute implements \APIPlugin
         });
         
         $router->get('/studip/colors', function () use ($router) {
-            $router->render(array('colors' => array(
-                'background' => '#e1e4e9',
-                'dark'       => '#34578c',
-                'light'      => '#899ab9',
-            )));
+            $colors = array();
+            foreach ($GLOBALS['THEME']['COLORS'] as $key => $color) {
+                $colors[strtolower($key)] = $color;
+            }
+            $router->render(compact('colors'));
         });
     }
 }
