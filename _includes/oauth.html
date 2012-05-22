@@ -1,0 +1,44 @@
+<h4 id="oauth">/oauth - OAuth-Autorisierung</h4>
+<p>
+    Die Autorisierung erfolgt mittels sogenanntem <strong>3-legged OAuth</strong>. Im
+    Gegensatz zum <em>2-legged OAuth</em>, bei dem sich nur die Applikation
+    beim Server autorisiert, ist beim <em>3-legged OAuth</em> zusätzlich eine
+    Autorisierung des zugreifenden Nutzers erforderlich.
+</p>
+<p>
+    Die Autorisierung des Nutzers erfolgt dabei vollkommen transparent, da die
+    Autorisierung auf Seiten des autorisierenden Servers erfolgt. Die zur
+    Autorisierung erforderlichen Nutzerdaten verlassen somit niemals das System.
+</p>
+<p>
+    Der komplette Workflow von OAuth findest sich unter
+    <a href="http://oauth.net/core/diagram.png">http://oauth.net/core/diagram.png</a>.
+</p>
+<p>
+    Weitere Details zu OAuth finden sie auf <a href="http://oauth.net">http://oauth.net</a>.
+</p>
+<p>
+    Die 3 Endpunkte der Autorisierung sind die folgenden:
+</p>
+<ol>
+    <li>
+        <h5>/oauth/request_token</h5>
+        Fragt einen temporären, unautorisierten Token beim Server ab.
+    </li>
+    <li>
+        <h5>/oauth/authorize</h5>
+        In diesem Schritt wird dem Benutzer ein Dialog angezeigt, in dem
+        er zustimmen muss, den Token aus Schritt 1 zu autorisieren.
+    </li>
+    <li>
+        <h5>/oauth/access_token</h5>
+        Holt ein dauerhaftes, autorisiertes Token im Austausch gegen das
+        in Schritt 2 autorierte Token.
+    </li>
+</ol>
+<p>
+    Für die Autorisierung werden weiterhin die beiden Schlüssel
+    <code>consumer_key</code> und <code>consumer_secret</code>
+    benötigt, welche vom Betreiber der jeweiligen Stud.IP-Instanz
+    vergeben werden.
+</p>
