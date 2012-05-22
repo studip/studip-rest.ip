@@ -241,7 +241,7 @@ class Message
 
         $additional_fields = implode(',', $additional_fields);
 
-        $query = "SELECT m.message_id, autor_id AS sender_id, mu2.user_id AS receiver_id, subject,
+        $query = "SELECT DISTINCT m.message_id, autor_id AS sender_id, mu2.user_id AS receiver_id, subject,
                          message, m.mkdate, priority, 1 - mu.readed AS unread
                         {$additional_fields}
                   FROM message AS m
