@@ -210,6 +210,11 @@ class MessageRoute implements \APIPlugin
 
             $router->halt(204);
         });
+        
+        $router->put('/messages/read', function () use ($router) {
+            Message::readAll($GLOBALS['user']->id);
+            $router->halt(200);
+        });
 
         // Move message
         $router->put('/messages/:message_id/move/:folder', function ($folder, $message_id) use ($router) {
@@ -284,6 +289,13 @@ class Message
         $statement = DBManager::get()->prepare($query);
         $statement->execute(array($folder, $message_id, $GLOBALS['user']->id));
         return $statement->rowCount() > 0;
+    }
+    
+    static function readAll($user_id)
+    {
+        $query = "UPDATE message_user SET readed = 1 WHERE user_id = ?";
+        $statement = DBManager::get()->prepare($query);
+        return $statement->execute(array($user_id));
     }
 
 }
