@@ -12,6 +12,16 @@
 </p>
 {% highlight js linenos %}{% include examples/courses-course_id.json %}{% endhighlight %}
 
+<h4>/api/courses/<em>:course_id</em>/members - Teilnehmer einer Veranstaltung</h4>
+<h5>GET</h5>
+<p>Liefert die eingetragenen Nutzer einer Veranstaltung zurück.</p>
+{% highlight js linenos %}{% include examples/courses-course_id-members.json %}{% endhighlight %}
+
+<h4>/api/courses/<em>:course_id</em>/members/<em>:status</em> - Bestimmte Teilnehmer einer Veranstaltung</h4>
+<h5>GET</h5>
+<p>Liefert die eingetragenen Nutzer mit dem angegebenen Status einer Veranstaltung zurück.</p>
+{% highlight js linenos %}{% include examples/courses-course_id-members-status.json %}{% endhighlight %}
+
 <h4>/api/courses/semester - Belegte Semester</h4>
 <h5>GET</h5>
 <p>
