@@ -156,6 +156,8 @@ class Router
         header_remove('x-powered-by');
         header_remove('set-cookie');
 
+        $data = array_map_recursive('studip_utf8encode', $data);
+
         $this->template->data   = $data;
         $this->template->router = $this;
         $result = $this->template->render();

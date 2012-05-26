@@ -1,5 +1,5 @@
 <?
-$router->contentType('text/xml;charset=windows-1252');
+$router->contentType('text/xml;charset=UTF-8');
 
 $content = RestIP\Helper::arrayToXML($data, array(
     'root_node' => 'response',
