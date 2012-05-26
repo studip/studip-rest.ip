@@ -1,6 +1,5 @@
 <?php
-require_once 'config_plugin.inc.php';
-require_once 'bootstrap.php';
+require_once 'classes/APIPlugin.php';
 
 /**
  * RestipPlugin.class.php
@@ -40,8 +39,11 @@ class RestipPlugin extends StudIPPlugin implements SystemPlugin, HomepagePlugin
      **/
     public function initialize()
     {
-        PageLayout::addStylesheet($this->getPluginURL() . '/assets/form-settings.css');
-        PageLayout::addStylesheet($this->getPluginURL() . '/assets/oauth.css');
+        require_once 'config_plugin.inc.php';
+        require_once 'bootstrap.php';
+
+        $this->addStylesheet('assets/form-settings.less');
+        $this->addStylesheet('assets/oauth.less');
         PageLayout::addScript($this->getPluginURL() . '/assets/oauth.js');
     }
 

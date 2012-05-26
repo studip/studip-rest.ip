@@ -1,0 +1,81 @@
+form.settings {
+    input[type=text], select, textarea { width: 97.5%; }
+
+    fieldset {
+        border: 0;
+        margin: 0 0 1em;
+        padding: 0;
+
+        legend {
+            background: #d1d1d1;
+            border-bottom: 1px solid #aaa;
+            display: block;
+            font-weight: bold;
+            padding: 4px;
+            text-align: center;
+            width: 99%;
+        }
+        > div {
+            padding: 0.5em 0.5em 0.5em 50%;
+            background: #f3f5f8;
+            border-bottom: 1px dotted #444;
+            overflow: hidden;
+            position: relative;
+
+            &:nth-child(2n + 1) { background: #e7ebf1; }
+            &:hover label { background-color: #ffe; }
+            &.centered {
+                background-color: inherit;
+                padding: 1em 0.5em !important;
+                text-align: center;
+            }
+            &.type-text, &.type-checkbox, &.type-select { zoom: 1; }
+
+            label {
+                background: #fff;
+                bottom: 0;
+                left: 0;
+                padding: 0.7em 0.5em 1em;
+                right: 51%;
+                position: absolute;
+                text-align: right;
+                top: 0;
+
+                small {
+                    color: #444;
+                    display: none;
+                }
+            }
+        }
+    }
+
+    .type-button { text-align: center; }
+    
+    &.horizontal {
+        fieldset {
+            display: inline-block;
+            position: relative;
+            vertical-align: top;
+            width: 49%;
+            > div {
+                padding-left: 25%;
+                width: 75%;
+                &.centered { width: auto; }
+            }
+            label { right: 77.5%; }
+        }
+    }
+}
+
+.oauth-apps {
+    h2, p { margin: 0; }
+    p { font-size: smaller; }
+    p + p {
+        font-size: inherit;
+        margin-top: 0.5em;
+    }
+    td {
+        vertical-align: middle;
+        &:last-child { text-align: right; }
+    }
+}

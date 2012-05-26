@@ -1,11 +1,13 @@
 <?php
 
-function array_map_recursive($func, $arr){
-  $a = array(); 
-  if(is_array($arr))
-    foreach($arr as $k => $v)
-      $a[$k] = is_array($v) ? array_map_recursive($func, $v) : $func($v);
-  return $a;
+if (!function_exists('array_map_recursive')) {
+    function array_map_recursive($func, $arr){
+      $a = array(); 
+      if(is_array($arr))
+        foreach($arr as $k => $v)
+          $a[$k] = is_array($v) ? array_map_recursive($func, $v) : $func($v);
+      return $a;
+    }
 }
 
 /**
@@ -76,7 +78,6 @@ $error_reporting = error_reporting();
 require 'vendor/Slim/Slim/Slim.php';
 error_reporting($error_reporting);
 
-require_once 'classes/APIPlugin.php';
 require_once 'classes/Router.php';
 require_once 'classes/Helper.php';
 require_once 'classes/OAuth.php';
@@ -86,16 +87,16 @@ require_once 'app/models/OAuthConsumer.php';
 require_once 'app/models/Permissions.php';
 
 // Populate $_DELETE, $_HEAD, $_OPTIONS and $_PUT
-foreach (words('DELETE HEAD OPTIONS POST PUT') as $method) {
+foreach (words('DELETE HEAD OPTIONS PUT') as $method) {
     $var = '_' . $method;
     $GLOBALS[$var] = array();  
     if ($_SERVER['REQUEST_METHOD'] == $method) {  
         parse_str(file_get_contents('php://input'), $GLOBALS[$var]);
+        foreach ($GLOBALS[$var] as $key => $value) {
+            Request::set($key, $value);
+        }
         $_REQUEST = array_merge($_REQUEST, $GLOBALS[$var]);
     }
-}
-foreach ($_REQUEST as $key => $value) {
-    Request::set($key, $value);
 }
 
 // Autoload
