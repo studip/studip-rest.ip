@@ -62,14 +62,11 @@ class ApiController extends StudipController
         $GLOBALS['user']->fake_user = true;
         $GLOBALS['user']->register_globals = false;
         $GLOBALS['user']->start($user->user_id);
-    
+
         $GLOBALS['perm'] = new Seminar_Perm();
         $GLOBALS['MAIL_VALIDATE_BOX'] = false;
 
         setTempLanguage($GLOBALS['user']->id);
-
-        // Yes, this is indeed a pretty nasty hack but we need this for Slim to work
-        $_SERVER['PATH_INFO'] = '/' . $unconsumed;
 
         \Slim_Route::setDefaultConditions(array(
             'course_id'   => '[0-9a-f]{32}',
@@ -91,7 +88,10 @@ class ApiController extends StudipController
         } else {
             $router->setMode(RestIP\Router::MODE_COMPACT);
         }
-        
+
+        $env = $router->environment();
+        $env['PATH_INFO']   = '/' . $unconsumed;
+
         $router->hook('slim.before.dispatch', function () use ($router) {
             $route   = reset($router->router()->getMatchedRoutes());
             $pattern = rtrim($route->getPattern(), '?');
