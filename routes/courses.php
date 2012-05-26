@@ -32,30 +32,14 @@ class CoursesRoute implements \APIPlugin
         {
             $courses = Course::load();
             $courses   = array_values($courses);
-            
+
             if ($router->compact()) {
                 $router->render(compact('courses'));
                 return;
             }
 
-            $semesters = array();
-            $users     = array();
-            foreach ($courses as $course) {
-                if (!isset($semesters[$course['semester_id']])) {
-                    $semester = $router->dispatch('get', '/semesters/:semester_id', $course['semester_id']);
-                    $semesters[$course['semester_id']] = $semester['semester'];
-                }
-
-                foreach ($course['teachers'] + $course['tutors'] + $course['students'] as $user_id) {
-                    if (!isset($users[$user_id])) {
-                        $user = $router->dispatch('get', '/user(/:user_id)', $user_id);
-                        $users[$user_id] = $user['user'];
-                    }
-                }
-            }
-
-            $semesters = array_values($semesters);
-            $users     = array_values($users);
+            $semesters = CoursesRoute::extractSemesters($courses, $router);
+            $users     = CoursesRoute::extractUsers($courses, $router);
 
             $router->render(compact('courses', 'semesters', 'users'));
         });
@@ -63,16 +47,8 @@ class CoursesRoute implements \APIPlugin
         //
         $router->get('/courses/semester', function () use ($router) {
             $courses = Course::load();
-            
-            $semesters = array();
-            foreach ($courses as $course) {
-                if (!isset($semesters[$course['semester_id']])) {
-                    $semester = $router->dispatch('get', '/semesters/:semester_id', $course['semester_id']);
-                    $semesters[$course['semester_id']] = $semester['semester'];
-                }
-            }
 
-            $semesters = array_values($semesters);
+            $semesters = CoursesRoute::extractSemesters($courses, $router);
 
             $router->render(compact('semesters'));
         });
@@ -90,21 +66,13 @@ class CoursesRoute implements \APIPlugin
                 return;
             }
 
-            $users = array();
             foreach ($courses as &$course) {
                 if ($course['semester_id'] != $semester_id) {
                     unset($course);
                 }
-
-                foreach ($course['teachers'] + $course['tutors'] as $user_id) {
-                    if (!isset($users[$user_id])) {
-                        $user = $router->dispatch('get', '/user(/:user_id)', $user_id);
-                        $users[$user_id] = $user['user'];
-                    }
-                }
             }
 
-            $users   = array_values($users);
+            $users = CoursesRoute::extractUsers($courses, $router);
 
             $router->render(compact('courses', 'semester', 'users'));
         });
@@ -116,37 +84,107 @@ class CoursesRoute implements \APIPlugin
                 $router->halt(404, sprintf('Course %s not found', $course_id));
             }
 
-            $router->render(compact('course'));
+            if ($router->compact()) {
+                $router->render(compact('course'));
+            }
+
+            $semesters = CoursesRoute::extractSemesters($course, $router);
+            $users     = CoursesRoute::extractUsers($course, $router);
+
+            $router->render(compact('course', 'semesters', 'users'));
         });
+
+        $router->get('/courses/:course_id/members(/:status)', function ($course_id, $status = null) use ($router) {
+            $course = Course::load($course_id);
+            if (!$course) {
+                $router->halt(404, sprintf('Course %s not found', $course_id));
+            }
+
+            if ($status !== null && !in_array($status, words('students tutors teachers'))) {
+                $router->halt(406, sprintf('Status "%s" is not acceptable', $status));
+            }
+
+            $members = array();
+            foreach (words($status ?: 'students tutors teachers') as $status) {
+                $members[$status] = $course[$status];
+            }
+            
+            if (!$router->compact()) {
+                $users = CoursesRoute::extractUsers($members, $router);
+            }
+
+            if (count($members) == 1) {
+                $members = reset($members);
+            }
+
+            $router->render($router->compact() ? compact('members') : compact('members', 'users'));
+        });
+    }
+
+    public static function extractUsers($collection, $router)
+    {
+        if (isset($collection['students']) or isset($collection['tutors']) or isset($collection['teachers'])) {
+            $collection = array($collection);
+        }
+
+        $users = array();
+        foreach ($collection as $item) {
+            foreach (words('students tutors teachers') as $status) {
+                foreach ($item[$status] as $user_id) {
+                    if (!isset($users[$user_id])) {
+                        $user = $router->dispatch('get', '/user(/:user_id)', $user_id);
+                        $users[$user_id] = $user['user'];
+                    }
+                }
+            }
+        }
+        return array_values($users);
+    }
+
+    public static function extractSemesters($collection, $router)
+    {
+        if (isset($collection['students']) or isset($collection['tutors']) or isset($collection['teachers'])) {
+            $collection = array($collection);
+        }
+
+        $semesters = array();
+        foreach ($collection as $item) {
+            if ($item['semester_id'] && !isset($semesters[$item['semester_id']])) {
+                $semester = $router->dispatch('get', '/semesters/:semester_id', $item['semester_id']);
+                $semesters[$item['semester_id']] = $semester['semester'];
+            }
+        }
+        return array_values($semesters);
     }
 }
 
 class Course
 {
-    static function load($ids = null, $additional_fields = array())
+    static function load($ids = null)
     {
         if (is_array($ids) && empty($ids)) {
             return array();
         }
 
-        $additional_fields = implode(',', $additional_fields);
-
-        $query = "SELECT sem.Seminar_id AS course_id, IF(sem.status=99, su.mkdate, start_time) AS start_time,
-                         duration_time, 
+        $query = "SELECT sem.Seminar_id AS course_id, start_time,
+                         duration_time,
                          Name AS title, Untertitel AS subtitle, sem.status AS type, modules,
                          Beschreibung AS description, Ort AS location
-                  FROM seminar_user AS su
-                  JOIN seminare AS sem ON su.seminar_id = sem.Seminar_id
-                  WHERE user_id = ?";
+                  FROM seminare AS sem";
         if (func_num_args() > 0) {
-            $query .= " AND sem.Seminar_id IN (?)";
+            $query .= " WHERE sem.Seminar_id IN (?)";
+            $parameter = $ids;
             if (is_array($ids) && count($ids) > 1) {
                 $query .= " ORDER BY start_time DESC";
             }
+        } else {
+            $query .= " LEFT JOIN seminar_user AS su ON sem.Seminar_id = su.seminar_id
+                        WHERE user_id = ?";
+            $parameter = $GLOBALS['user']->id;
         }
 
         $statement = DBManager::get()->prepare($query);
-        $statement->execute(array($GLOBALS['user']->id, $ids));
+        $statement->execute(array($parameter));
         $courses = $statement->fetchAll(PDO::FETCH_ASSOC);
 
         $query = "SELECT user_id
