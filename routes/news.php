@@ -19,13 +19,16 @@ class NewsRoute implements \APIPlugin
         );
     }
 
+    public static function before()
+    {
+        require_once 'lib/classes/StudipNews.class.php';
+    }
+
     /**
      *
      **/
     public function routes(&$router)
     {
-        require_once 'lib/classes/StudipNews.class.php';
-
         // Get news of a range id
         $router->get('/news(/range/:range_id)', function ($range_id = false) use ($router)
         {

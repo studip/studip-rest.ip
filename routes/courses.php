@@ -8,8 +8,6 @@
 namespace RestIP;
 use \DBManager, \PDO;
 
-require_once 'lib/classes/Modules.class.php';
-
 class CoursesRoute implements \APIPlugin
 {
     function describeRoutes()
@@ -20,6 +18,11 @@ class CoursesRoute implements \APIPlugin
             '/courses/semester'              => _('Belegte Semester'),
             '/courses/semester/:semester_id' => _('Veranstaltungen eines Semesters'),
         );
+    }
+
+    public static function before()
+    {
+        require_once 'lib/classes/Modules.class.php';
     }
 
     function routes(&$router)

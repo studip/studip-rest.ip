@@ -19,14 +19,17 @@ class NewsCommentsRoute implements \APIPlugin
         );
     }
 
+    public static function before()
+    {
+        require_once 'lib/classes/StudipNews.class.php';
+        require_once 'lib/classes/StudipComments.class.php';
+    }
+
     /**
      *
      **/
     public function routes(&$router)
     {
-        require_once 'lib/classes/StudipNews.class.php';
-        require_once 'lib/classes/StudipComments.class.php';
-
     // Comments
         // Load comments for a news
         $router->get('/news/:news_id/comments', function ($news_id) use ($router) {

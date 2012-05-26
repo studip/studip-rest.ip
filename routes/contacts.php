@@ -11,9 +11,13 @@ class ContactsRoute implements \APIPlugin
         );
     }
 
-    public function routes(&$router)
+    public static function before()
     {
         require_once 'lib/contact.inc.php';
+    }
+
+    public function routes(&$router)
+    {
 
         // Get all contact
         $router->get('/contacts', function () use ($router) {

@@ -1,9 +1,6 @@
 <?php
 namespace RestIP;
 
-require_once 'lib/messaging.inc.php';
-require_once 'lib/sms_functions.inc.php';
-
 use \DBManager, \PDO, \messaging;
 
 /**
@@ -30,6 +27,12 @@ class MessageRoute implements \APIPlugin
             '/messages/:message_id/read'         => _('Nachricht als gelesen markieren'),
             '/messages/:message_id/move/:folder' => _('Nachrichten verschieben'),
         );
+    }
+    
+    public static function before()
+    {
+        require_once 'lib/messaging.inc.php';
+        require_once 'lib/sms_functions.inc.php';
     }
 
     /**

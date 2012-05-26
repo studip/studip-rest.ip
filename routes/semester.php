@@ -18,6 +18,11 @@ class SemesterRoute implements \APIPlugin
         );
     }
 
+    public static function before()
+    {
+        require_once 'lib/classes/SemesterData.class.php';
+    }
+
     /**
      * 
      **/

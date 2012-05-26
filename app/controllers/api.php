@@ -91,11 +91,37 @@ class ApiController extends StudipController
         } else {
             $router->setMode(RestIP\Router::MODE_COMPACT);
         }
+        
+        $router->hook('slim.before.dispatch', function () use ($router) {
+            $route   = reset($router->router()->getMatchedRoutes());
+            $pattern = rtrim($route->getPattern(), '?');
+            $method  = strtolower(reset($route->getHttpMethods()));
+
+            $routes  = $router->getRoutes();
+            $handler = $routes[$pattern][$method];
+            $before  = sprintf('%s::before', $handler);
+
+            if (is_callable($before)) {
+                call_user_func($before);
+            }
+        });
 
         $router->run();
 
-        restoreLanguage();
+        $router->hook('slim.after.dispatch', function () use ($router) {
+            $route   = reset($router->router()->getMatchedRoutes());
+            $pattern = rtrim($route->getPattern(), '?');
+            $method  = strtolower(reset($route->getHttpMethods()));
 
-        die;
+            $routes  = $router->getRoutes();
+            $handler = $routes[$pattern][$method];
+            $after   = sprintf('%s::after', $handler);
+
+            if (is_callable($after)) {
+                call_user_func($after);
+            }
+        });
+
+        restoreLanguage();
     }
 }

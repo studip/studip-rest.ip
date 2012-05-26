@@ -11,10 +11,13 @@ class ContactsGroupsRoute implements \APIPlugin
         );
     }
 
-    public function routes(&$router)
+    public static function before()
     {
         require_once 'lib/statusgruppe.inc.php';
+    }
 
+    public function routes(&$router)
+    {
         // Get all contact groups
         $router->get('/contacts/groups', function () use ($router) {
             $groups = ContactsGroups::load($GLOBALS['user']->id);

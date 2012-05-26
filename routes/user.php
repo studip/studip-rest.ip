@@ -18,6 +18,11 @@ class UserRoute implements \APIPlugin
         );
     }
 
+    public static function before()
+    {
+        require 'lib/classes/UserManagement.class.php';
+    }
+
     /**
      *
      **/
@@ -82,7 +87,6 @@ class UserRoute implements \APIPlugin
 
         // Deletes a user
         $router->delete('/user/:user_id', function ($user_id) use ($router) {
-            require 'lib/classes/UserManagement.class.php';
             $user = new \UserManagement($user_id.'.');
             if (empty($user->user_data['auth_user_md5.user_id'])) {
                 $router->halt(404, sprintf('User id "%s" not found', $user_id));

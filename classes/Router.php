@@ -184,14 +184,14 @@ class Router
         if (in_array($method, words('delete get post put'))) {
             $backtrace = debug_backtrace();
             while ($trace = array_shift($backtrace) and $trace['class'] == __CLASS__);
-            $caller = ($trace and is_a($trace['class'], 'StudIPPlugin')) ? $trace['class'] : false;
+            $class = ($trace and is_a($trace['class'], 'APIPlugin')) ? $trace['class'] : false;
 
             $route = reset($arguments);
 
             if (!isset($this->routes[$route])) {
                 $this->routes[$route] = array();
             }
-            $this->routes[$route][$method] = $caller;
+            $this->routes[$route][$method] = $class;
 
             if (!$this->permissions->check($route, $method)) {
                 $router = $this->router;

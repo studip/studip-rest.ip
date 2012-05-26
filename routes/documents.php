@@ -12,11 +12,17 @@ class DocumentsRoute implements \APIPlugin
         );
     }
 
-    function routes(&$router)
+    /**
+     *
+     */
+    public static function before()
     {
         require_once 'lib/datei.inc.php';
         require_once 'lib/classes/StudipDocument.class.php';
+    }
 
+    function routes(&$router)
+    {
         $router->get('/documents/:range_id/folder(/:folder_id)', function($range_id, $folder_id = null) use ($router) {
             $folder_id = $folder_id ?: $range_id;
 
