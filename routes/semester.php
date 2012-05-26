@@ -46,7 +46,7 @@ class SemesterRoute implements \APIPlugin
         $router->get('/semesters/:semester_id', function ($semester_id) use ($router) {
             $temp = \SemesterData::getInstance()->getSemesterData($semester_id);
             if (!$temp) {
-                $router->halt(404, sprintf('Semester %s not found', $semester_id));
+                $router->halt(404, sprintf('Semester "%s" not found', $semester_id));
             }
             
             $semester = array(

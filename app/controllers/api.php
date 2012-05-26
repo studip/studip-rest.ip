@@ -81,7 +81,12 @@ class ApiController extends StudipController
 
         $router = RestIP\Router::getInstance(null, $template);
         $router->handleErrors();
-        error_reporting(0);
+
+        if (Studip\ENV === 'development') {
+            error_reporting(E_ALL ^ (E_NOTICE | E_WARNING));
+        } else {
+            error_reporting(0);
+        }
 
         if (Request::option('mode', 'compact') === 'complete') {
             $router->setMode(RestIP\Router::MODE_COMPLETE);
@@ -123,5 +128,7 @@ class ApiController extends StudipController
         });
 
         restoreLanguage();
+
+        return new Trails_Response();
     }
 }
