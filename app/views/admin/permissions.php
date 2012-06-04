@@ -26,7 +26,7 @@
             <td><?= htmlReady($descriptions[$route]) ?></td>
         <? endif; ?>
             <td><?= htmlReady($method) ?></td>
-            <td><?= htmlReady(is_a($source, 'StudipPlugin') ? "Plugin: ${source}" : _('System')) ?></td>
+            <td><?= htmlReady(is_a($source, 'StudipPlugin', true) ? "Plugin: ${source}" : _('System')) ?></td>
             <td>
                 <input type="hidden" name="permission[<?= urlencode($route) ?>][<?= urlencode($method) ?>]" value="0">
                 <input type="checkbox" name="permission[<?= urlencode($route) ?>][<?= urlencode($method) ?>]"
