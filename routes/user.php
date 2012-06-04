@@ -31,7 +31,7 @@ class UserRoute implements APIPlugin
         //
         $router->get('/user(/:user_id)', function ($user_id) use ($router)
         {
-            $user_id = $user_id ?: $GLOBALS['user']->id;
+            $user_id = $user_id ? $user_id : $GLOBALS['user']->id;
 
             $user = User::find($user_id);
             if (!$user) {

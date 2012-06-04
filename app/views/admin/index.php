@@ -29,7 +29,7 @@
                 <?= htmlReady($consumer['application_title']) ?>
             <? endif; ?>
             </td>
-            <td><?= $types[$consumer['application_type']] ?: '&nbsp;' ?></td>
+            <td><?= isset($types[$consumer['application_type']]) ? $types[$consumer['application_type']] : '&nbsp;' ?></td>
             <td>
                 <a href="mailto:<?= $consumer['requester_email'] ?>">
                     <?= htmlReady($consumer['requester_name']) ?>

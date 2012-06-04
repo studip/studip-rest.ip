@@ -32,7 +32,7 @@ class NewsRoute implements APIPlugin
         // Get news of a range id
         $router->get('/news(/range/:range_id)', function ($range_id = false) use ($router)
         {
-            $range_id = $range_id ?: $GLOBALS['user']->id;
+            $range_id = $range_id ? $range_id : $GLOBALS['user']->id;
 
             if (!Helper::UserHasAccessToRange($range_id)) {
                 $router->halt(403, sprintf('User may not access range %s', $range_id));
@@ -58,7 +58,7 @@ class NewsRoute implements APIPlugin
 
         // Create news for a specific range
         $router->post('/news(/range/:range_id)', function () use ($router) {
-            $range_id = $range_id ?: $GLOBALS['user']->id;
+            $range_id = $range_id ? $range_id : $GLOBALS['user']->id;
 
             if (!Helper::UserHasAccessToRange($range_id)) {
                 $router->halt(403, sprintf('User may not access range %s', $range_id));
@@ -145,7 +145,7 @@ class NewsRoute implements APIPlugin
             // date?
 
             if (isset($_PUT['expire'])) {
-                $news->expire = $_PUT['expire'] ?: $news->expire;
+                $news->expire = $_PUT['expire'] ? $_PUT['expire'] : $news->expire;
             }
             if (isset($_PUT['allow_comments'])) {
                 $news->allow_comments = (int)$_PUT['allow_comments'];

@@ -7,9 +7,9 @@
 class Helper
 {
     // TODO
-    public static function UserHasAccessToRange($range_id, $user_id)
+    public static function UserHasAccessToRange($range_id, $user_id = null)
     {
-        $user_id = $user_id ?: $GLOBALS['user']->id;
+        $user_id = empty($user_id) ? $GLOBALS['user']->id : $user_id;
 
         return true;
     }
@@ -43,7 +43,8 @@ class Helper
             $query = "SELECT val FROM user_data WHERE sid = ?";
             $statement = DBManager::get()->prepare($query);
             $statement->execute(array($GLOBALS['user']->id));
-            $user_data = unserialize($statement->fetchColumn() ?: 'a:0:{}');
+            $data = $statement->fetchColumn();
+            $user_data = unserialize($data ? $data : 'a:0:{}');
         }
         return $user_data;
     }
@@ -125,8 +126,8 @@ class Helper
     public static function array_to_xml($array, &$node, $parameters)
     {
         if ($node === null) {
-            $root_node = $parameters['root_node'] ?: 'root';
-            $root_attributes = $parameters['root_attributes'] ?: array();
+            $root_node = $parameters['root_node'] ? $parameters['root_node'] : 'root';
+            $root_attributes = $parameters['root_attributes'] ? $parameters['root_attributes'] : array();
 
             $attributes = '';
             foreach ($root_attributes as $key=>$value) {

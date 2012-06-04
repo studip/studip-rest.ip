@@ -105,7 +105,7 @@ class CoursesRoute implements APIPlugin
             }
 
             $members = array();
-            foreach (words($status ?: 'students tutors teachers') as $status) {
+            foreach (words($status ? $status : 'students tutors teachers') as $status) {
                 $members[$status] = $course[$status];
             }
 
@@ -204,16 +204,19 @@ class Course
             $course['semester_id'] = Helper::getSemester($course['start_time']);
 
             $statement->execute(array($course['course_id'], 'dozent'));
-            $course['teachers'] = $statement->fetchAll(PDO::FETCH_COLUMN) ?: array();
+            $result = $statement->fetchAll(PDO::FETCH_COLUMN);
             $statement->closeCursor();
+            $course['teachers'] = $result ? $result : array();
 
             $statement->execute(array($course['course_id'], 'tutor'));
-            $course['tutors'] = $statement->fetchAll(PDO::FETCH_COLUMN) ?: array();
+            $result = $statement->fetchAll(PDO::FETCH_COLUMN);
             $statement->closeCursor();
+            $course['tutors'] = $result ? $result : array();
 
             $statement->execute(array($course['course_id'], 'autor'));
-            $course['students'] = $statement->fetchAll(PDO::FETCH_COLUMN) ?: array();
+            $result = $statement->fetchAll(PDO::FETCH_COLUMN);
             $statement->closeCursor();
+            $course['students'] = $result ? $result : array();
         }
 
         return (func_num_args() === 0 || is_array($ids))

@@ -24,7 +24,7 @@ class DocumentsRoute implements APIPlugin
     function routes(&$router)
     {
         $router->get('/documents/:range_id/folder(/:folder_id)', function($range_id, $folder_id = null) use ($router) {
-            $folder_id = $folder_id ?: $range_id;
+            $folder_id = $folder_id ? $folder_id : $range_id;
 
             if (!Document::isActivated($range_id)) {
                 $router->halt(400, sprintf('Range %s has no documents', $range_id));

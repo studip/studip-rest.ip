@@ -46,7 +46,7 @@ class MessageRoute implements APIPlugin
         // List folders
         $router->get('/messages/:box', function ($box) use ($router) {
             $val = Helper::getUserData();
-            $settings = $val['my_messaging_settings'] ?: array();
+            $settings = $val['my_messaging_settings'] ? $val['my_messaging_settings'] : array();
             $folders = $settings['folder'];
 
             $folders['in'][0]  = _('Posteingang');
@@ -87,7 +87,7 @@ class MessageRoute implements APIPlugin
         // List messages
         $router->get('/messages/:box/:folder', function ($box, $folder) use ($router) {
             $val = Helper::getUserData();
-            $settings = $val['my_messaging_settings'] ?: array();
+            $settings = $val['my_messaging_settings'] ? $val['my_messaging_settings'] : array();
 
             if ($folder != 0 && !isset($settings['folder'][$box][$folder])) {
                 $router->halt(404, sprintf('Folder %s-%s not found', $box, $folder));
@@ -127,12 +127,12 @@ class MessageRoute implements APIPlugin
 
         // Create a message
         $router->post('/messages', function () use ($router) {
-            $subject = trim($_POST['subject'] ?: '');
+            $subject = trim($_POST['subject'] ? $_POST['subject'] : '');
             if (empty($subject)) {
                 $router->halt(406, 'No subject provided');
             }
 
-            $message = trim($_POST['message'] ?: '');
+            $message = trim($_POST['message'] ? $_POST['message'] : '');
             if (empty($message)) {
                 $router->halt(406, 'No message provided');
             }
@@ -143,7 +143,7 @@ class MessageRoute implements APIPlugin
                     $router->halt(404, sprintf('Receiver user id %s not found', $id));
                 }
                 return $user['username'];
-            }, (array)($_POST['user_id'] ?: null));
+            }, (array)($_POST['user_id'] ? $_POST['user_id'] : null));
 
             $message_id = md5(uniqid('message', true));
 
@@ -222,7 +222,7 @@ class MessageRoute implements APIPlugin
         // Move message
         $router->put('/messages/:message_id/move/:folder', function ($folder, $message_id) use ($router) {
             $val = Helper::getUserData();
-            $settings = $val['my_messaging_settings'] ?: array();
+            $settings = $val['my_messaging_settings'] ? $val['my_messaging_settings'] : array();
 
             if ($folder != 0 && !isset($settings['folder'][$box][$folder])) {
                 $router->halt(404, sprintf('Folder %s-%s not found', $box, $folder));
