@@ -1,4 +1,4 @@
-<? use Studip\Button, Studip\LinkButton; ?>
+<? #use Studip\Button, Studip\LinkButton; ?>
 
 <h1><?= _('Applikationen') ?></h1>
 <? if (empty($consumers)): ?>

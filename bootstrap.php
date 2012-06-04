@@ -2,7 +2,7 @@
 
 if (!function_exists('array_map_recursive')) {
     function array_map_recursive($func, $arr){
-      $a = array(); 
+      $a = array();
       if(is_array($arr))
         foreach($arr as $k => $v)
           $a[$k] = is_array($v) ? array_map_recursive($func, $v) : $func($v);
@@ -36,8 +36,8 @@ function indent($json) {
         // Are we inside a quoted string?
         if ($char == '"' && $prevChar != '\\') {
             $outOfQuotes = !$outOfQuotes;
-        
-        // If this character is the end of an element, 
+
+        // If this character is the end of an element,
         // output a new line and indent the next line.
         } else if(($char == '}' || $char == ']') && $outOfQuotes) {
             $result .= $newLine;
@@ -46,23 +46,23 @@ function indent($json) {
                 $result .= $indentStr;
             }
         }
-        
+
         // Add the character to the result string.
         $result .= $char;
 
-        // If the last character was the beginning of an element, 
+        // If the last character was the beginning of an element,
         // output a new line and indent the next line.
         if (($char == ',' || $char == '{' || $char == '[') && $outOfQuotes) {
             $result .= $newLine;
             if ($char == '{' || $char == '[') {
                 $pos ++;
             }
-            
+
             for ($j = 0; $j < $pos; $j++) {
                 $result .= $indentStr;
             }
         }
-        
+
         $prevChar = $char;
     }
 
@@ -82,6 +82,11 @@ require_once 'classes/Router.php';
 require_once 'classes/Helper.php';
 require_once 'classes/OAuth.php';
 require_once 'classes/HTTPAuth.php';
+
+require_once 'classes/buttons/Interactable.class.php';
+require_once 'classes/buttons/Button.class.php';
+require_once 'classes/buttons/LinkButton.class.php';
+
 require_once 'app/models/OAuthUser.php';
 require_once 'app/models/OAuthConsumer.php';
 require_once 'app/models/Permissions.php';
@@ -89,8 +94,8 @@ require_once 'app/models/Permissions.php';
 // Populate $_DELETE, $_HEAD, $_OPTIONS and $_PUT
 foreach (words('DELETE HEAD OPTIONS PUT') as $method) {
     $var = '_' . $method;
-    $GLOBALS[$var] = array();  
-    if ($_SERVER['REQUEST_METHOD'] == $method) {  
+    $GLOBALS[$var] = array();
+    if ($_SERVER['REQUEST_METHOD'] == $method) {
         parse_str(file_get_contents('php://input'), $GLOBALS[$var]);
         foreach ($GLOBALS[$var] as $key => $value) {
             Request::set($key, $value);

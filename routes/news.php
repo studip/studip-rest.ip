@@ -1,12 +1,12 @@
 <?php
-namespace RestIP;
+# namespace RestIP;
 
-use \Request;
+# use \Request;
 
 /**
  *
  **/
-class NewsRoute implements \APIPlugin
+class NewsRoute implements APIPlugin
 {
     /**
      *
@@ -74,7 +74,7 @@ class NewsRoute implements \APIPlugin
                 $router->halt(406, 'No news body provided');
             }
 
-            $news = new \StudipNews();
+            $news = new StudipNews();
             $news->user_id        = $GLOBALS['user']->id;
             $news->author         = $GLOBALS['user']->getFullName();
             $news->topic          = $title;
@@ -114,8 +114,8 @@ class NewsRoute implements \APIPlugin
         // Update news
         $router->put('/news/:news_id', function ($news_id) use ($router) {
             global $_PUT;
-            
-            $news = new \StudipNews($news_id);
+
+            $news = new StudipNews($news_id);
             if (!$news) {
                 $router->halt(404, sprintf('News %s not found', $news_id));
             }
@@ -160,7 +160,7 @@ class NewsRoute implements \APIPlugin
 
         // Delete news
         $router->delete('/news/:news_id', function ($news_id) use ($router) {
-            $news = \StudipNews::find($news_id);
+            $news = StudipNews::find($news_id);
             if (!$news) {
                 $router->halt(404, sprintf('News %s not found', $news_id));
             }
@@ -200,7 +200,7 @@ class News
 {
     static function adjust($news)
     {
-        if (!is_array($news)) {
+        if (!is_array($news) && is_object($news)) {
             $news = $news->toArray();
         }
 
@@ -217,7 +217,7 @@ class News
     {
         $result = array();
         foreach ((array)$id as $i) {
-            $news = \StudipNews::find($i);
+            $news = StudipNews::find($i);
             $news = self::adjust($news);
             $result[] = $news;
         }
@@ -227,8 +227,8 @@ class News
 
     static function loadRange($range_id)
     {
-        $news = \StudipNews::GetNewsByRange($range_id);
-        $news = array_map('self::adjust', $news);
+        $news = StudipNews::GetNewsByRange($range_id);
+        $news = array_map('self::adjust', (array)$news);
 
         return $news;
     }

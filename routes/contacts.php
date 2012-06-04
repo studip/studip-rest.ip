@@ -1,8 +1,8 @@
 <?php
-namespace RestIP;
-use \DBManager, \PDO, \Request;
+# namespace RestIP;
+# use \DBManager, \PDO, \Request;
 
-class ContactsRoute implements \APIPlugin
+class ContactsRoute implements APIPlugin
 {
     public function describeRoutes()
     {
@@ -38,7 +38,7 @@ class ContactsRoute implements \APIPlugin
 
         // Add contact
         $router->put('/contacts/:user_id', function ($user_id) use ($router) {
-            $user = \User::find($user_id);
+            $user = User::find($user_id);
             if (!$user) {
                 $router->halt(404, 'User "%s" not found', $user_id);
             }
@@ -55,7 +55,7 @@ class ContactsRoute implements \APIPlugin
 
         // Remove contact
         $router->delete('/contacts/:user_id', function ($user_id) use ($router) {
-            $user = \User::find($user_id);
+            $user = User::find($user_id);
             if (!$user) {
                 $router->halt(404, 'User "%s" not found', $user_id);
             }

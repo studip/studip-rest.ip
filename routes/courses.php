@@ -5,10 +5,10 @@
 // TODO Studiengruppen
 // TODO Nutzer anzeigen?
 
-namespace RestIP;
-use \DBManager, \PDO;
+# namespace RestIP;
+# use \DBManager, \PDO;
 
-class CoursesRoute implements \APIPlugin
+class CoursesRoute implements APIPlugin
 {
     function describeRoutes()
     {
@@ -108,7 +108,7 @@ class CoursesRoute implements \APIPlugin
             foreach (words($status ?: 'students tutors teachers') as $status) {
                 $members[$status] = $course[$status];
             }
-            
+
             if (!$router->compact()) {
                 $users = CoursesRoute::extractUsers($members, $router);
             }
@@ -193,7 +193,7 @@ class Course
                   ORDER BY position ASC";
         $statement = DBManager::get()->prepare($query);
 
-        $modules = new \Modules;
+        $modules = new Modules;
 
         foreach ($courses as &$course) {
             $course['modules'] = $modules->getLocalModules($course['course_id'], 'sem');

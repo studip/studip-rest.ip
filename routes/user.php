@@ -1,12 +1,12 @@
 <?php
 
-namespace RestIP;
-use \Avatar, \DBManager, \PDO, \User;
+# namespace RestIP;
+# use \Avatar, \DBManager, \PDO, \User;
 
 /**
  *
  **/
-class UserRoute implements \APIPlugin
+class UserRoute implements APIPlugin
 {
     /**
      *
@@ -38,21 +38,21 @@ class UserRoute implements \APIPlugin
                 $router->halt(404, sprintf('User %s not found', $user_id));
                 return;
             }
-            
+
             $visibilities = get_local_visibility_by_id($user_id, 'homepage');
             if (is_array(json_decode($visibilities, true))) {
                 $visibilities = json_decode($visibilities, true);
             } else {
                 $visibilities = array();
             }
-            
+
             $get_field = function ($field, $visibility) use ($user_id, $user, $visibilities) {
                 if (!$user[$field]
                     || !is_element_visible_for_user($GLOBALS['user']->id, $user_id, $visibilities[$visibility]))
                 {
                     return false;
                 }
-                return $user[$field]; 
+                return $user[$field];
             };
 
             $avatar = function ($size) use ($user_id, $visibilities) {
@@ -87,7 +87,7 @@ class UserRoute implements \APIPlugin
 
         // Deletes a user
         $router->delete('/user/:user_id', function ($user_id) use ($router) {
-            $user = new \UserManagement($user_id.'.');
+            $user = new UserManagement($user_id.'.');
             if (empty($user->user_data['auth_user_md5.user_id'])) {
                 $router->halt(404, sprintf('User id "%s" not found', $user_id));
                 die;

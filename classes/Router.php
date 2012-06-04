@@ -1,7 +1,7 @@
 <?php
-namespace RestIP;
+# namespace RestIP;
 
-use \APIPlugin;
+# use \APIPlugin;
 /**
  *
  **/
@@ -39,8 +39,8 @@ class Router
     private function __construct($consumer_key, $template)
     {
         $this->template = $template;
-        
-        $this->router = new \Slim();
+
+        $this->router = new Slim();
 
         restore_error_handler(); // @see handleErrors()
 
@@ -49,7 +49,7 @@ class Router
         // Get routes from plugins, default routes are also defined as fake plugins
         $default_routes = glob(dirname(__FILE__) . '/../routes/*.php');
         foreach ($default_routes as $route) {
-            $class_name = 'RestIP\\' . str_replace(' ', '', ucwords(str_replace('-', ' ', basename($route, '.php')))) . 'Route';
+            $class_name = /*'RestIP\\' . */str_replace(' ', '', ucwords(str_replace('-', ' ', basename($route, '.php')))) . 'Route';
 
             require_once $route;
 
@@ -60,7 +60,7 @@ class Router
 
         // Unfortunately, PluginEngine::sendMessage() discards the reference
         // to the router somewhere along the way so we need to iterate manually
-        foreach (\PluginManager::getInstance()->getPlugins('APIPlugin') as $plugin) {
+        foreach (PluginManager::getInstance()->getPlugins('APIPlugin') as $plugin) {
             $plugin->routes($this);
             $this->descriptions = array_merge($this->descriptions, $plugin->describeRoutes());
         }
@@ -79,12 +79,12 @@ class Router
     {
         $this->mode = $mode;
     }
-    
+
     public function getMode()
     {
         return $this->mode;
     }
-    
+
     public function compact()
     {
         return $this->internal_dispatch || $this->mode === self::MODE_COMPACT;
@@ -94,7 +94,7 @@ class Router
     {
         return !$this->internal_dispatch && $this->mode === self::MODE_COMPLETE;
     }
-    
+
     /**
      * Returns a list of all available routes
      *
@@ -125,7 +125,7 @@ class Router
     }
 
     /**
-     * 
+     *
      */
     public function dispatch($method, $route)
     {
@@ -144,7 +144,7 @@ class Router
     }
 
     /**
-     * 
+     *
      */
     function render($data = array(), $status = 200)
     {
@@ -152,7 +152,7 @@ class Router
             $this->route_result = $data;
             return;
         }
-        
+
         header('X-Server-Timestamp: ' . time());
         header_remove('x-powered-by');
         header_remove('set-cookie');
@@ -187,7 +187,7 @@ class Router
         if (in_array($method, words('delete get post put'))) {
             $backtrace = debug_backtrace();
             while ($trace = array_shift($backtrace) and $trace['class'] == __CLASS__);
-            $class = ($trace and is_a($trace['class'], 'APIPlugin', true)) ? $trace['class'] : false;
+            $class = ($trace and is_a($trace['class'], 'APIPlugin')) ? $trace['class'] : false;
 
             $route = reset($arguments);
 

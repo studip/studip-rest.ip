@@ -54,7 +54,7 @@ class AdminController extends StudipController
     public function index_action()
     {
         $this->consumers = $this->store->getList();
-        $this->routes    = RestIP\Router::getInstance()->getRoutes();
+        $this->routes    = Router::getInstance()->getRoutes();
     }
 
     /**
@@ -160,7 +160,7 @@ class AdminController extends StudipController
         if (Request::submitted('store')) {
             $perms = $_POST['permission'];
 
-            $permissions = RestIP\Router::getInstance($consumer_key ?: null)->getPermissions();
+            $permissions = Router::getInstance($consumer_key ?: null)->getPermissions();
             foreach ($_POST['permission'] as $route => $methods) {
                 foreach ($methods as $method => $granted) {
                     $permissions->set(urldecode($route), urldecode($method), (bool)$granted);
@@ -177,10 +177,65 @@ class AdminController extends StudipController
         PageLayout::setTitle($title);
 
         $this->consumer_key = $consumer_key;
-        $this->router       = RestIP\Router::getInstance($consumer_key);
+        $this->router       = Router::getInstance($consumer_key);
         $this->routes       = $this->router->getRoutes();
         $this->descriptions = $this->router->getDescriptions();
         $this->permissions  = $this->router->getPermissions();
-        $this->global       = $consumer_key ? RestIP\Router::getInstance()->getPermissions() : false;
+        $this->global       = $consumer_key ? Router::getInstance()->getPermissions() : false;
+    }
+
+/** from Stud.IP 2.3 **/
+
+    /**
+     * Spawns a new infobox variable on this object, if neccessary.
+     *
+     * @since Stud.IP 2.3
+     **/
+    private function populateInfobox() {
+        if (!isset($this->infobox)) {
+            $this->infobox = array(
+                'picture' => 'blank.gif',
+                'content' => array()
+            );
+        }
+    }
+
+    /**
+     * Sets the header image for the infobox.
+     *
+     * @param String $image Image to display, path is relative to :assets:/images
+     *
+     * @since Stud.IP 2.3
+     **/
+    function setInfoBoxImage($image) {
+        $this->populateInfobox();
+        $this->infobox['picture'] = $image;
+    }
+
+    /**
+     * Adds an item to a certain category section of the infobox. Categories
+     * are created in the order this method is invoked. Multiple occurences of
+     * a category will add items to the category.
+     *
+     * @param String $category The item's category title used as the header
+     *                         above displayed category - write spoken not
+     *                         tech language ^^
+     * @param String $text     The content of the item, may contain html
+     * @param String $icon     Icon to display in front the item, path is
+     *                         relative to :assets:/images
+     *
+     * @since Stud.IP 2.3
+     **/
+    function addToInfobox($category, $text, $icon = 'blank.gif') {
+        $this->populateInfobox();
+        $infobox = $this->infobox;
+        if (!isset($infobox['content'][$category])) {
+            $infobox['content'][$category] = array(
+                'kategorie' => $category,
+                'eintrag'   => array(),
+            );
+        }
+        $infobox['content'][$category]['eintrag'][] = compact('icon', 'text');
+        $this->infobox = $infobox;
     }
 }

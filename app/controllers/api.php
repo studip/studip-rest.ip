@@ -68,7 +68,7 @@ class ApiController extends StudipController
 
         setTempLanguage($GLOBALS['user']->id);
 
-        \Slim_Route::setDefaultConditions(array(
+        Slim_Route::setDefaultConditions(array(
             'course_id'   => '[0-9a-f]{32}',
             'message_id'  => '[0-9a-f]{32}',
             'range_id'    => '[0-9a-f]{32}',
@@ -79,19 +79,19 @@ class ApiController extends StudipController
         $template_factory = new Flexi_TemplateFactory($this->dispatcher->plugin->getPluginPath());
         $template =  $template_factory->open('app/views/api/' . $format . '.php');
 
-        $router = RestIP\Router::getInstance(null, $template);
+        $router = Router::getInstance(null, $template);
         $router->handleErrors();
 
-        if (Studip\ENV === 'development') {
+#        if (Studip\ENV === 'development') {
             error_reporting(E_ALL ^ (E_NOTICE | E_WARNING));
-        } else {
-            error_reporting(0);
-        }
+#        } else {
+#            error_reporting(0);
+#        }
 
         if (Request::option('mode', 'compact') === 'complete') {
-            $router->setMode(RestIP\Router::MODE_COMPLETE);
+            $router->setMode(Router::MODE_COMPLETE);
         } else {
-            $router->setMode(RestIP\Router::MODE_COMPACT);
+            $router->setMode(Router::MODE_COMPACT);
         }
 
         $env = $router->environment();

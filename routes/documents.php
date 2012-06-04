@@ -1,7 +1,7 @@
 <?php
-namespace RestIP;
+# namespace RestIP;
 
-class DocumentsRoute implements \APIPlugin
+class DocumentsRoute implements APIPlugin
 {
     function describeRoutes()
     {
@@ -62,7 +62,7 @@ class DocumentsRoute implements \APIPlugin
         });
 
         $router->get('/documents/:document_id', function($document_id) use ($router) {
-            $document = new \StudipDocument($document_id);
+            $document = new StudipDocument($document_id);
             if (!$document->checkAccess($GLOBALS['user']->id)) {
                 $router->halt(403, sprintf('User may not access file %s', $document_id));
             }
@@ -81,7 +81,7 @@ class DocumentsRoute implements \APIPlugin
 
         // See public/sendfile.php
         $router->get('/documents/:document_id/download', function($document_id) use ($router) {
-            $document = new \StudipDocument($document_id);
+            $document = new StudipDocument($document_id);
             if (!$document->checkAccess($GLOBALS['user']->id)) {
                 $router->halt(403, sprintf('User may not access file %s', $document_id));
             }
@@ -120,15 +120,15 @@ class Document
     {
         // Documents is 2nd bit (0-based indexed!) in modules flag
         $query = "SELECT modules & (1 << 1) != 0 FROM seminare WHERE Seminar_id = ?";
-        $statement = \DBManager::get()->prepare($query);
+        $statement = DBManager::get()->prepare($query);
         $statement->execute(array($range_id));
         return $statement->fetchColumn();
     }
-    
+
     static function folderBelongsToRange($range_id, $folder_id)
     {
         $query = "SELECT range_id FROM folder WHERE folder_id = ?";
-        $statement = \DBManager::get()->prepare($query);
+        $statement = DBManager::get()->prepare($query);
 
         $top_folder = md5($range_id . 'top_folder');
         while ($folder_id
@@ -148,27 +148,27 @@ class Document
         $query = "SELECT folder_id, user_id, name, description, mkdate, chdate
                   FROM folder
                   WHERE range_id IN (:folder_id, MD5(CONCAT(:folder_id, 'top_folder')))
-                  
+
                   UNION
-                  
+
                   SELECT DISTINCT folder_id, folder.user_id, folder.name, folder.description, folder.mkdate, folder.chdate
                   FROM themen AS th
-                  LEFT JOIN themen_termine AS tt USING (issue_id) 
+                  LEFT JOIN themen_termine AS tt USING (issue_id)
                   LEFT JOIN termine AS t USING (termin_id)
                   INNER JOIN folder ON (th.issue_id = folder.range_id)
                   WHERE th.seminar_id = :folder_id
-                  
+
                   UNION
-                  
+
                   SELECT folder_id, folder.user_id, folder.name, folder.description, folder.mkdate, folder.chdate
                   FROM statusgruppen sg
                   INNER JOIN folder ON sg.statusgruppe_id = folder.range_id
                   WHERE sg.range_id = :folder_id";
-        $statement = \DBManager::get()->prepare($query);
+        $statement = DBManager::get()->prepare($query);
         $statement->bindParam(':folder_id', $folder_id);
         $statement->execute();
-        $folders =  $statement->fetchAll(\PDO::FETCH_ASSOC);
-        
+        $folders =  $statement->fetchAll(PDO::FETCH_ASSOC);
+
         return $folders;
     }
 
@@ -185,13 +185,13 @@ class Document
                       FROM dokumente
                       WHERE dokument_id IN (?)";
         }
-        $statement = \DBManager::get()->prepare($query);
+        $statement = DBManager::get()->prepare($query);
         $statement->execute(array($id));
-        $files =  $statement->fetchAll(\PDO::FETCH_ASSOC);
+        $files =  $statement->fetchAll(PDO::FETCH_ASSOC);
 
         foreach ($files as &$file) {
             $file['mime_type'] = get_mime_type($file['filename']);
-            $file['icon'] = \Assets::image_path(GetFileIcon(getFileExtension($file['filename'])));
+            $file['icon'] = Assets::image_path(GetFileIcon(getFileExtension($file['filename'])));
         }
 
         return ($type !== 'folder' && !is_array($id)) ? reset($files) : $files;

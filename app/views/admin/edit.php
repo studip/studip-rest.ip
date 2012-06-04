@@ -1,17 +1,17 @@
-<? use Studip\Button, Studip\LinkButton; ?>
+<? #use Studip\Button, Studip\LinkButton; ?>
 <h1>
 <?= $consumer['consumer_key']
     ? sprintf(_('Registrierte Applikation "%s" bearbeiten'), $consumer['application_title'])
     : _('Neue Applikation registrieren') ?></h1>
 
-    
+
 <form class="<?= $consumer['consumer_key'] ? 'horizontal' : '' ?> settings"
       action="<?= $controller->url_for('admin/edit', $consumer['consumer_key']) ?>" method="post">
     <?= CSRFProtection::tokenTag() ?>
-    
+
     <fieldset>
         <legend><?= _('Grundeinstellungen') ?></legend>
-        
+
         <div class="type-checkbox">
             <label for="enabled"><?= _('Aktiviert') ?></label>
             <input type="checkbox" class="switch" id="enabled" name="enabled" value="1"
@@ -45,7 +45,7 @@
                    placeholder="http://appsite.tld/auth"
                    value="<?= htmlReady($consumer['callback_uri']) ?>">
         </div>
-        
+
     <? if ($consumer['consumer_key']): ?>
         <div class="type-text">
             <label for="consumer_key"><?= _('Consumer Key')?></label>
@@ -69,7 +69,7 @@
             </div>
         <? endif; ?>
     </fieldset>
-    
+
     <fieldset>
         <legend><?= _('Applikation-Details') ?></legend>
 

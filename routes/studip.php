@@ -1,11 +1,11 @@
 <?php
 
-namespace RestIP;
+# namespace RestIP;
 
 /**
  *
  **/
-class StudipRoute implements \APIPlugin
+class StudipRoute implements APIPlugin
 {
     /**
      *
@@ -37,7 +37,7 @@ class StudipRoute implements \APIPlugin
                 'UNI_NAME_CLEAN'        => $GLOBALS['UNI_NAME_CLEAN'],
             ));
         });
-        
+
         $router->get('/studip/colors', function () use ($router) {
             $colors = array();
             foreach ($GLOBALS['THEME']['COLORS'] as $key => $color) {

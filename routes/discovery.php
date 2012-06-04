@@ -1,11 +1,11 @@
 <?php
 
-namespace RestIP;
+# namespace RestIP;
 
 /**
  *
  **/
-class DiscoveryRoute implements \APIPlugin
+class DiscoveryRoute implements APIPlugin
 {
     /**
      *
@@ -16,7 +16,7 @@ class DiscoveryRoute implements \APIPlugin
             '/discovery' => _('Schnittstellenbeschreibung'),
         );
     }
-    
+
     /**
      *
      **/

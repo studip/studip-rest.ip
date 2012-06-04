@@ -1,8 +1,8 @@
 <?php
-namespace RestIP;
-use \DBManager, \PDO, \Request;
+# namespace RestIP;
+# use \DBManager, \PDO, \Request;
 
-class ContactsGroupsRoute implements \APIPlugin
+class ContactsGroupsRoute implements APIPlugin
 {
     public function describeRoutes()
     {
@@ -69,7 +69,7 @@ class ContactsGroupsRoute implements \APIPlugin
             if (!ContactsGroups::exists($group_id)) {
                 $router->halt(404, 'Contact group "%s" not found', $group_id);
             }
-            $user = \User::find($user_id);
+            $user = User::find($user_id);
             if (!$user) {
                 $router->halt(404, 'User "%s" not found', $user_id);
             }
@@ -85,7 +85,7 @@ class ContactsGroupsRoute implements \APIPlugin
                 $router->halt(404, 'Contact group "%s" not found', $group_id);
             }
 
-            $user = \User::find($user_id);
+            $user = User::find($user_id);
             if (!$user) {
                 $router->halt(404, 'User "%s" not found', $user_id);
             }

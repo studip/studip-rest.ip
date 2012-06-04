@@ -1,5 +1,5 @@
 <?php
-namespace RestIP;
+#namespace RestIP;
 
 /**
  *
@@ -10,10 +10,10 @@ class Helper
     public static function UserHasAccessToRange($range_id, $user_id)
     {
         $user_id = $user_id ?: $GLOBALS['user']->id;
-        
+
         return true;
     }
-    
+
     /**
      *
      **/
@@ -21,7 +21,7 @@ class Helper
     {
         static $semesters;
         if (!isset($semesters)) {
-            $semesters = \SemesterData::GetSemesterArray();
+            $semesters = SemesterData::GetSemesterArray();
         }
 
         foreach ($semesters as $semester) {
@@ -32,7 +32,7 @@ class Helper
 
         return false;
     }
-    
+
     /**
      *
      **/
@@ -41,7 +41,7 @@ class Helper
         static $user_data;
         if (!is_array($user_data)) {
             $query = "SELECT val FROM user_data WHERE sid = ?";
-            $statement = \DBManager::get()->prepare($query);
+            $statement = DBManager::get()->prepare($query);
             $statement->execute(array($GLOBALS['user']->id));
             $user_data = unserialize($statement->fetchColumn() ?: 'a:0:{}');
         }
@@ -56,7 +56,7 @@ class Helper
         $query = "INSERT INTO user_data (sid, val)
                   VALUES (?, ?)
                   ON DUPLICATE KEY UPDATE val = VALUES(val)";
-        $statement = \DBManager::get()->prepare($query);
+        $statement = DBManager::get()->prepare($query);
         $statement->execute(array($GLOBALS['user']->id, serialize($user_data)));
 
     }
@@ -133,14 +133,14 @@ class Helper
                 $attributes .= ' ' . $key . '="' . $value . '"';
             }
 
-            $node = new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><' . $root_node . $attributes . ' />');
+            $node = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><' . $root_node . $attributes . ' />');
         }
 
         foreach ($array as $key => $value) {
             if (is_numeric($key)) {
-                throw new \Exception('Cannot compile numeric indexes');
+                throw new Exception('Cannot compile numeric indexes');
             } elseif (preg_match('/\W/', $key)) {
-                throw new \Exception(sprintf('Cannot compile index: "%s"', $key));
+                throw new Exception(sprintf('Cannot compile index: "%s"', $key));
             }
 
             if (self::isNumericIndexed($value)) {
