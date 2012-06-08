@@ -50,7 +50,7 @@ class UserRoute implements \APIPlugin
                 if (!$user[$field]
                     || !is_element_visible_for_user($GLOBALS['user']->id, $user_id, $visibilities[$visibility]))
                 {
-                    return false;
+                    return '';
                 }
                 return $user[$field]; 
             };
