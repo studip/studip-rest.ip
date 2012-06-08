@@ -12,7 +12,7 @@
         "avatar_medium": "http://studip.example.org/pictures/user/nobody_medium.png",
         "avatar_normal": "http://studip.example.org/pictures/user/nobody_normal.png",
         "phone": "+1-555-1234",
-        "homepage": false,
-        "privadr": false
+        "homepage": "",
+        "privadr": ""
     }
 }
