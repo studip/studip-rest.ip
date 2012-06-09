@@ -21,7 +21,24 @@ class ContactsGroupsRoute implements \APIPlugin
         // Get all contact groups
         $router->get('/contacts/groups', function () use ($router) {
             $groups = ContactsGroups::load($GLOBALS['user']->id);
-            $router->render(compact('groups'));
+
+            $users = array();
+            foreach ($groups as $index => $group) {
+                $members = ContactsGroups::loadMembers($GLOBALS['user']->id, $group['group_id']);
+                
+                if (!$router->compact()) {
+                    foreach ($members as $user_id) {
+                        if (!isset($users[$user_id])) {
+                            $user = $router->dispatch('get', '/user(/:user_id)', $user_id);
+                            $users[$user_id] = $user['user'];
+                        }
+                    }
+                }
+                
+                $groups[$index]['members'] = $members;
+            }
+            
+            $router->render($router->compact() ? compact('groups') : compact('groups', 'users'));
         });
 
         // Create new contact group
