@@ -17,3 +17,11 @@
     Liefert die Dateien und Ordner eines angegebenen Ordners einer Veranstaltung zurück.
 </p>
 {% highlight js linenos %}{% include examples/documents-range_id-folder.json %}{% endhighlight %}
+<p>Das Feld <em>permission</em> enthält ein Bitset, das die folgenden Stati abbildet:</p>
+<ul>
+    <li>Bit 0 (1) - "visible" - Sichtbarkeit (Ordner wird angezeigt)</li>
+    <li>Bit 1 (2) - "writable" - Schreiben (Dateien können heraufgeladen werden)</li>
+    <li>Bit 2 (4) - "readable" - Lesen (Dateien können heruntergeladen werden)</li>
+    <li>Bit 3 (8) - "extendable"? - Ordner erstellen (Alle Nutzer können Ordner erstellen)</li>
+</ul>
+<p>Es werden grundsätzlich nur Ordner zurückgegeben, bei denen mindestens ein Bit gesetzt ist, da ein Ordner sonst eh nicht nutzbar ist.</p>
