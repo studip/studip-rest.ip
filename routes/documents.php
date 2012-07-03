@@ -145,25 +145,27 @@ class Document
 
     static function loadFolders($folder_id)
     {
-        $query = "SELECT folder_id, user_id, name, description, mkdate, chdate
+        $query = "SELECT folder_id, user_id, name, description, mkdate, chdate, permission
                   FROM folder
-                  WHERE range_id IN (:folder_id, MD5(CONCAT(:folder_id, 'top_folder')))
+                  WHERE range_id IN (:folder_id, MD5(CONCAT(:folder_id, 'top_folder'))) AND permission > 0
                   
                   UNION
                   
-                  SELECT DISTINCT folder_id, folder.user_id, folder.name, folder.description, folder.mkdate, folder.chdate
+                  SELECT DISTINCT folder_id, folder.user_id, folder.name, folder.description,
+                                  folder.mkdate, folder.chdate, folder.permission
                   FROM themen AS th
                   LEFT JOIN themen_termine AS tt USING (issue_id) 
                   LEFT JOIN termine AS t USING (termin_id)
                   INNER JOIN folder ON (th.issue_id = folder.range_id)
-                  WHERE th.seminar_id = :folder_id
+                  WHERE th.seminar_id = :folder_id AND folder.permission > 0
                   
                   UNION
                   
-                  SELECT folder_id, folder.user_id, folder.name, folder.description, folder.mkdate, folder.chdate
+                  SELECT folder_id, folder.user_id, folder.name, folder.description, folder.mkdate,
+                         folder.chdate, folder.permission
                   FROM statusgruppen sg
                   INNER JOIN folder ON sg.statusgruppe_id = folder.range_id
-                  WHERE sg.range_id = :folder_id";
+                  WHERE sg.range_id = :folder_id AND folder.permission > 0";
         $statement = \DBManager::get()->prepare($query);
         $statement->bindParam(':folder_id', $folder_id);
         $statement->execute();
