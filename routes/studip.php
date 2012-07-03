@@ -1,6 +1,6 @@
 <?php
-
-# namespace RestIP;
+namespace RestIP;
+use \APIPlugin, \SemType, \SemClass;
 
 /**
  *
