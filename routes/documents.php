@@ -170,7 +170,17 @@ class Document
         $statement->bindParam(':folder_id', $folder_id);
         $statement->execute();
         $folders =  $statement->fetchAll(\PDO::FETCH_ASSOC);
-        
+
+        foreach ($folders as &$folder) {
+            $folder['permissions'] = array(
+                'visible'    => (bool)($folder['permission'] & 1),
+                'writable'   => (bool)($folder['permission'] & 2),
+                'readable'   => (bool)($folder['permission'] & 4),
+                'extendable' => (bool)($folder['permission'] & 8),
+            );
+            unset($folder['permission']);
+        }
+
         return $folders;
     }
 
