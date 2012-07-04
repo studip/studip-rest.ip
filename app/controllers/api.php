@@ -106,9 +106,6 @@ class ApiController extends StudipController
             $handler = $routes[$pattern][$method];
             $before  = sprintf('%s::before', $handler);
 
-#            var_dump($handler, $pattern, $method, $routes, is_callable($before));
-#            die('foo');
-
             if (is_callable($before)) {
                 call_user_func($before);
             }
