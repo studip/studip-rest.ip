@@ -7,7 +7,12 @@
             "description": "Ablage f\u00fcr allgemeine Ordner und Dokumente der Veranstaltung",
             "mkdate": "1326410202",
             "chdate": "1326410202",
-            "permission": "7"
+            "permissions": {
+                "visible": true,
+                "writeable": true,
+                "readable": true,
+                "extendable": false
+            }
         },
         {
             "folder_id": "842bf5a9fd34a5f7037b1a0c33def067",
@@ -16,7 +21,12 @@
             "description": "Dateiordner bezieht sich auf ein nicht mehr vorhandenes Thema.",
             "mkdate": "1334137141",
             "chdate": "1334137141",
-            "permission": "15"
+            "permissions": {
+                "visible": true,
+                "writeable": true,
+                "readable": true,
+                "extendable": true
+            }
         },
         {
             "folder_id": "3b5111cc46c90f103be55373bf246d41",
@@ -25,7 +35,12 @@
             "description": "Ablage f\u00fcr Ordner und Dokumente dieser Gruppe",
             "mkdate": "1335182781",
             "chdate": "1335182781",
-            "permission": "7"
+            "permissions": {
+                "visible": true,
+                "writeable": true,
+                "readable": true,
+                "extendable": false
+            }
         }
     ],
     "documents": [
