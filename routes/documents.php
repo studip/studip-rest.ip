@@ -125,7 +125,7 @@ class Document
         $statement->execute(array($range_id));
         return $statement->fetchColumn();
     }
-    
+
     static function folderBelongsToRange($range_id, $folder_id)
     {
         $top_folders = array(
@@ -161,24 +161,26 @@ class Document
         $query = "SELECT folder_id, user_id, name, description, mkdate, chdate, permission
                   FROM folder
                   WHERE range_id IN (:folder_id, MD5(CONCAT(:folder_id, 'top_folder'))) AND permission > 0
-                  
+
                   UNION
-                  
+
                   SELECT DISTINCT folder_id, folder.user_id, folder.name, folder.description,
                                   folder.mkdate, folder.chdate, folder.permission
                   FROM themen AS th
                   INNER JOIN folder ON (th.issue_id = folder.range_id)
                   WHERE th.seminar_id = :folder_id AND folder.permission > 0
-                  
+
                   UNION
-                  
+
                   SELECT folder_id, folder.user_id, folder.name, folder.description, folder.mkdate,
                          folder.chdate, folder.permission
                   FROM statusgruppen sg
-                  INNER JOIN folder ON sg.statusgruppe_id = folder.range_id
+                  INNER JOIN statusgruppe_user AS sgu ON (sgu.user_id = :user_id)
+                  INNER JOIN folder ON (sgu.statusgruppe_id = folder.range_id)
                   WHERE sg.range_id = :folder_id AND folder.permission > 0";
         $statement = DBManager::get()->prepare($query);
         $statement->bindParam(':folder_id', $folder_id);
+        $statement->bindParam(':user_id', $GLOBALS['user']->id);
         $statement->execute();
         $folders =  $statement->fetchAll(PDO::FETCH_ASSOC);
 
