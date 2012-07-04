@@ -189,7 +189,7 @@ class Course
 
         $query = "SELECT user_id
                   FROM seminar_user
-                  WHERE Seminar_id = ? AND status = ? AND visible = 'yes'
+                  WHERE Seminar_id = ? AND status = ? AND visible != 'no'
                   ORDER BY position ASC";
         $statement = DBManager::get()->prepare($query);
 
