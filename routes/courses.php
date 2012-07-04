@@ -6,7 +6,7 @@
 // TODO Nutzer anzeigen?
 
 namespace RestIP;
-use \DBManager, \PDO;
+use \DBManager, \PDO, \Modules, \StudipCacheFactory;
 
 class CoursesRoute implements \APIPlugin
 {
@@ -108,7 +108,7 @@ class CoursesRoute implements \APIPlugin
             foreach (words($status ?: 'students tutors teachers') as $status) {
                 $members[$status] = $course[$status];
             }
-            
+
             if (!$router->compact()) {
                 $users = CoursesRoute::extractUsers($members, $router);
             }
@@ -169,22 +169,23 @@ class Course
         $query = "SELECT sem.Seminar_id AS course_id, start_time,
                          duration_time,
                          Name AS title, Untertitel AS subtitle, sem.status AS type, modules,
-                         Beschreibung AS description, Ort AS location
-                  FROM seminare AS sem";
+                         Beschreibung AS description, Ort AS location, gruppe
+                  FROM seminare AS sem
+                  LEFT JOIN seminar_user AS su ON (sem.Seminar_id = su.seminar_id AND su.user_id = ?)";
+        $parameters = array($GLOBALS['user']->id);
+
         if (func_num_args() > 0) {
             $query .= " WHERE sem.Seminar_id IN (?)";
-            $parameter = $ids;
+            $parameters[] = $ids;
             if (is_array($ids) && count($ids) > 1) {
                 $query .= " ORDER BY start_time DESC";
             }
         } else {
-            $query .= " LEFT JOIN seminar_user AS su ON sem.Seminar_id = su.seminar_id
-                        WHERE user_id = ?";
-            $parameter = $GLOBALS['user']->id;
+            $query .= " WHERE su.user_id IS NOT NULL";
         }
 
         $statement = DBManager::get()->prepare($query);
-        $statement->execute(array($parameter));
+        $statement->execute($parameters);
         $courses = $statement->fetchAll(PDO::FETCH_ASSOC);
 
         $query = "SELECT user_id
@@ -193,7 +194,8 @@ class Course
                   ORDER BY position ASC";
         $statement = DBManager::get()->prepare($query);
 
-        $modules = new \Modules;
+        $modules = new Modules;
+        $colors  = self::loadColors();
 
         foreach ($courses as &$course) {
             $course['modules'] = $modules->getLocalModules($course['course_id'], 'sem');
@@ -214,10 +216,35 @@ class Course
             $statement->execute(array($course['course_id'], 'autor'));
             $course['students'] = $statement->fetchAll(PDO::FETCH_COLUMN) ?: array();
             $statement->closeCursor();
+
+            $course['color'] = $colors[$course['gruppe'] ?: 0];
+            unset($course['gruppe']);
         }
 
         return (func_num_args() === 0 || is_array($ids))
             ? $courses
             : reset($courses);
+    }
+
+    public static function loadColors()
+    {
+        $cache  = StudipCacheFactory::getCache();
+        $colors = unserialize($cache->read('/rest.ip/group_colors'));
+
+        if (!$colors) {
+            $colors = array();
+            $less = file_get_contents('assets/stylesheets/less/tables.less');
+
+            $matched = preg_match_all('/\.gruppe(\d) \{ background: (\#[a-f0-9]{3,6}); \}/', $less, $matches, PREG_SET_ORDER);
+            foreach ($matches as $match) {
+                if (strlen($match[2]) === 4) {
+                    $match[2] = '#' . $match[2][1] . $match[2][1] . $match[2][2] . $match[2][2] . $match[2][3] . $match[2][3];
+                }
+                $colors[$match[1]] = $match[2];
+            }
+
+            $cache->write('/rest.ip/group_colors', serialize($colors), 7 * 24 * 60 * 60);
+        }
+        return $colors;
     }
 }
