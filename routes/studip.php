@@ -47,6 +47,7 @@ class StudipRoute implements APIPlugin
                                            }, SemClass::getClasses()),
                 'TERMIN_TYP'            => $GLOBALS['TERMIN_TYP'],
                 'PERS_TERMIN_KAT'       => $GLOBALS['PERS_TERMIN_KAT'],
+                'SUPPORT_EMAIL'         => $GLOBALS['UNI_CONTACT'],
                 'TITLES'                => $GLOBALS['DEFAULT_TITLE_FOR_STATUS'],
                 'UNI_NAME_CLEAN'        => $GLOBALS['UNI_NAME_CLEAN'],
             ));
