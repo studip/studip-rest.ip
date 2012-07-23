@@ -55,7 +55,8 @@
             "filesize": "23031",
             "downloads": "0",
             "mime_type": "application/zip",
-            "icon": "http://studip.example.org/assets/images/icons/16/blue/file-archive.png"
+            "icon": "http://studip.example.org/assets/images/icons/16/blue/file-archive.png",
+            "protected": false
         },
         {
             "document_id": "9232571de085fd5b41f2b12768abd115",
@@ -68,7 +69,8 @@
             "filesize": "209695",
             "downloads": "1",
             "mime_type": "image/png",
-            "icon": "http://studip.example.org/assets/images/icons/16/blue/file-image.png"
+            "icon": "http://studip.example.org/assets/images/icons/16/blue/file-image.png",
+            "protected": true
         }
     ]
 }

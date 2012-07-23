@@ -10,6 +10,7 @@
         "filesize": "209695",
         "downloads": "1",
         "mime_type": "image/png",
-        "icon": "http://studip.example.org/assets/images/icons/16/blue/file-image.png"
+        "icon": "http://studip.example.org/assets/images/icons/16/blue/file-image.png",
+        "protected": false
     }
 }
