@@ -201,12 +201,12 @@ class Document
     {
         if ($type === 'folder') {
             $query = "SELECT dokument_id AS document_id, user_id, name, description, mkdate, chdate,
-                             filename, filesize, downloads
+                             filename, filesize, downloads, protected
                       FROM dokumente
                       WHERE range_id = ?";
         } else {
             $query = "SELECT dokument_id AS document_id, user_id, name, description, mkdate, chdate,
-                             filename, filesize, downloads
+                             filename, filesize, downloads, protected
                       FROM dokumente
                       WHERE dokument_id IN (?)";
         }
@@ -215,8 +215,9 @@ class Document
         $files =  $statement->fetchAll(PDO::FETCH_ASSOC);
 
         foreach ($files as &$file) {
+            $file['protected'] = !empty($file['protected']);
             $file['mime_type'] = get_mime_type($file['filename']);
-            $file['icon'] = Assets::image_path(GetFileIcon(getFileExtension($file['filename'])));
+            $file['icon']      = Assets::image_path(GetFileIcon(getFileExtension($file['filename'])));
         }
 
         return ($type !== 'folder' && !is_array($id)) ? reset($files) : $files;
