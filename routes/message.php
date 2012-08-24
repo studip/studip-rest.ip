@@ -186,7 +186,7 @@ class MessageRoute implements \APIPlugin
 
         // Destroy a message
         $router->delete('/messages/:message_id', function ($message_id) use ($router) {
-            $message = Message::load($message_id, array('dont_delete'));
+            $message = Message::load($message_id, array('mu.dont_delete'));
             if (!$message) {
                 $router->halt(404, sprintf('Message %s not found', $message_id));
             }
@@ -247,7 +247,9 @@ class Message
             return array();
         }
 
-        $additional_fields = implode(',', $additional_fields);
+        $additional_fields = empty($additional_fields)
+                           ? ''
+                           : ',' . implode(',', $additional_fields);
 
         $query = "SELECT DISTINCT m.message_id, autor_id AS sender_id, mu2.user_id AS receiver_id, subject,
                          message, m.mkdate, priority, 1 - mu.readed AS unread
