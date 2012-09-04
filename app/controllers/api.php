@@ -95,7 +95,7 @@ class ApiController extends StudipController
         }
 
         $env = $router->environment();
-        $env['PATH_INFO']   = '/' . $unconsumed;
+        $env['PATH_INFO']   = '/' . trim($unconsumed);
 
         $router->hook('slim.before.dispatch', function () use ($router) {
             $route   = reset($router->router()->getMatchedRoutes());
