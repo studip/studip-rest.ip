@@ -132,7 +132,7 @@ class MessageRoute implements \APIPlugin
                 $router->halt(406, 'No subject provided');
             }
 
-            // $message = trim($_POST['message'] ?: '');
+            $message = trim($_POST['message'] ?: '');
             // if (empty($message)) {
             //     $router->halt(406, 'No message provided');
             // }
@@ -207,7 +207,6 @@ class MessageRoute implements \APIPlugin
             if (!$message) {
                 $router->halt(404, sprintf('Message %s not found', $message_id));
             }
-//            $router->render($message);
 
             $messaging = new messaging;
             $messaging->set_read_message($message_id);
