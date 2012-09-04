@@ -132,10 +132,10 @@ class MessageRoute implements \APIPlugin
                 $router->halt(406, 'No subject provided');
             }
 
-            $message = trim($_POST['message'] ?: '');
-            if (empty($message)) {
-                $router->halt(406, 'No message provided');
-            }
+            // $message = trim($_POST['message'] ?: '');
+            // if (empty($message)) {
+            //     $router->halt(406, 'No message provided');
+            // }
 
             $usernames = array_map(function ($id) use ($router) {
                 $user = \User::find($id);
@@ -149,7 +149,7 @@ class MessageRoute implements \APIPlugin
 
             check_messaging_default();
             $messaging = new \messaging;
-            $result = $messaging->insert_message($message, $usernames,
+            $result = $messaging->insert_message($message ?: '', $usernames,
                                                  $GLOBALS['user']->id, time(),
                                                  $message_id, false, \Request::get('signature'),
                                                  $subject, \Request::int('email', 0));
@@ -164,8 +164,9 @@ class MessageRoute implements \APIPlugin
         // Load a message
         $router->get('/messages/:message_id', function ($message_id) use ($router) {
             $message = Message::load($message_id);
-            if (!$message) {
+            if (!$message || $message['deleted']) {
                 $router->halt(404, sprintf('Message %s not found', $message_id));
+                return;
             }
 
             if ($router->compact()) {
@@ -195,7 +196,7 @@ class MessageRoute implements \APIPlugin
             }
 
             $messaging = new messaging;
-            $messaging->delete_message($message_id);
+            $messaging->delete_message($message_id, $GLOBALS['user']->id, true);
 
             $router->halt(204);
         });
@@ -206,7 +207,7 @@ class MessageRoute implements \APIPlugin
             if (!$message) {
                 $router->halt(404, sprintf('Message %s not found', $message_id));
             }
-            $router->render($message);
+//            $router->render($message);
 
             $messaging = new messaging;
             $messaging->set_read_message($message_id);
@@ -252,7 +253,7 @@ class Message
                            : ',' . implode(',', $additional_fields);
 
         $query = "SELECT DISTINCT m.message_id, autor_id AS sender_id, mu2.user_id AS receiver_id, subject,
-                         message, m.mkdate, priority, 1 - mu.readed AS unread
+                         message, m.mkdate, priority, 1 - mu.readed AS unread, mu.deleted
                         {$additional_fields}
                   FROM message AS m
                   INNER JOIN message_user AS mu ON (m.message_id = mu.message_id AND mu.user_id = ?)
