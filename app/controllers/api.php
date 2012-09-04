@@ -43,8 +43,8 @@ class ApiController extends StudipController
                 throw new Exception('Unauthorized', 401);
             }
         } catch (Exception $e) {
-            $status = sprintf('HTTP/1.1 %u %s', $e->getCode(), $e->getMessage());
-            header($status, true, $e->getCode());
+            $status = sprintf('HTTP/1.1 %u %s', 401, 'Unauthorized');
+            header($status, true, 401);
             die($status);
         }
 
