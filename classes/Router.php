@@ -176,7 +176,7 @@ class Router
             $message = vsprintf($message, $arguments);
         }
 
-        $this->router->halt($status/* , $message */);
+        $this->router->halt($status, $status === 200 ? $message : '');
     }
 
     /**
