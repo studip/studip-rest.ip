@@ -1,8 +1,8 @@
 <?php
 namespace RestIP;
-use \DBManager, \PDO, \Request;
+use \APIPlugin, \DBManager, \PDO, \Request, \User;
 
-class ContactsGroupsRoute implements \APIPlugin
+class ContactsGroupsRoute implements APIPlugin
 {
     public function describeRoutes()
     {
@@ -75,6 +75,9 @@ class ContactsGroupsRoute implements \APIPlugin
 
         // Remove contact group
         $router->delete('/contacts/groups/:group_id', function ($group_id) use ($router) {
+            if ($group_id === 'unassigned') {
+                $router->halt(403, 'You cannot delete the group "unassigned"');
+            }
             if (!ContactsGroups::exists($group_id)) {
                 $router->halt(404, 'Contact group "%s" not found', $group_id);
             }
@@ -84,10 +87,13 @@ class ContactsGroupsRoute implements \APIPlugin
 
         // Put a user into contact group
         $router->put('/contacts/groups/:group_id/:user_id', function ($group_id, $user_id) use ($router) {
+            if ($group_id === 'unassigned') {
+                $router->halt(403, 'You cannot put a user into the group "unassigned". Remove him from all assigned contact groups instead.');
+            }
             if (!ContactsGroups::exists($group_id)) {
                 $router->halt(404, 'Contact group "%s" not found', $group_id);
             }
-            $user = \User::find($user_id);
+            $user = User::find($user_id);
             if (!$user) {
                 $router->halt(404, 'User "%s" not found', $user_id);
             }
@@ -99,11 +105,14 @@ class ContactsGroupsRoute implements \APIPlugin
 
         // Remove user from contact group
         $router->delete('/contacts/groups/:group_id/:user_id', function ($group_id, $user_id) use ($router) {
+            if ($group_id === 'unassigned') {
+                $router->halt(403, 'You cannot remove a user from the group "unassigned". Remove him from your contacts instead.');
+            }
             if (!ContactsGroups::exists($group_id)) {
                 $router->halt(404, 'Contact group "%s" not found', $group_id);
             }
 
-            $user = \User::find($user_id);
+            $user = User::find($user_id);
             if (!$user) {
                 $router->halt(404, 'User "%s" not found', $user_id);
             }
@@ -131,19 +140,47 @@ class ContactsGroups
         $query = "SELECT statusgruppe_id AS group_id, name FROM statusgruppen WHERE range_id = ? ORDER BY position ASC";
         $statement = DBManager::get()->prepare($query);
         $statement->execute(array($user_id));
-        return $statement->fetchAll(PDO::FETCH_ASSOC);
+        $groups = $statement->fetchAll(PDO::FETCH_ASSOC);
+        
+        $groups['unassigned'] = self::loadGroup('unassigned');
+        return $groups;
     }
 
     static function loadGroup($group_id)
     {
+        if ($group_id === 'unassigned') {
+            return array(
+                'group_id' => 'unassigned',
+                'name'     => _('Nicht zugeordnet'),
+            );
+        }
         $query = "SELECT statusgruppe_id AS group_id, name FROM statusgruppen WHERE statusgruppe_id = ?";
         $statement = DBManager::get()->prepare($query);
         $statement->execute(array($group_id));
         return $statement->fetch(PDO::FETCH_ASSOC);
     }
+    
+    static function loadUnassigned($user_id)
+    {
+        $query = "SELECT user_id
+                  FROM contact
+                  WHERE owner_id = :user_id AND user_id NOT IN(
+                      SELECT user_id
+                      FROM statusgruppen
+                      JOIN statusgruppe_user USING (statusgruppe_id)
+                      WHERE range_id = :user_id
+                  )";
+        $statement = DBManager::get()->prepare($query);
+        $statement->bindValue(':user_id', $user_id);
+        $statement->execute();
+        return $statement->fetchAll(PDO::FETCH_COLUMN);
+    }
 
     static function loadMembers($user_id, $group_id)
     {
+        if ($group_id === 'unassigned') {
+            return self::loadUnassigned($user_id);
+        }
         $query = "SELECT user_id
                   FROM statusgruppen
                   JOIN statusgruppe_user USING (statusgruppe_id)
@@ -152,5 +189,4 @@ class ContactsGroups
         $statement->execute(array($user_id, $group_id));
         return $statement->fetchAll(PDO::FETCH_COLUMN);
     }
-
 }
