@@ -20,7 +20,7 @@ class UserRoute implements \APIPlugin
 
     public static function before()
     {
-        require 'lib/classes/UserManagement.class.php';
+        require_once 'lib/classes/UserManagement.class.php';
     }
 
     /**
