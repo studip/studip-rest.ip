@@ -37,6 +37,7 @@ class ContactsGroupsRoute implements APIPlugin
 
                 $groups[$index]['members'] = $members;
             }
+            $groups = array_values($groups);
 
             $router->render($router->compact() ? compact('groups') : compact('groups', 'users'));
         });
