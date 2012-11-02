@@ -48,23 +48,25 @@ class ApiController extends StudipController
             die($status);
         }
 
-        // Fake user identity
-        $user = User::find($user_id);
+        if ($GLOBALS['user']->id === 'nobody') {
+            // Fake user identity
+            $user = User::find($user_id);
 
-        $GLOBALS['auth'] = new Seminar_Auth();
-        $GLOBALS['auth']->auth = array(
-            'uid'   => $user->user_id,
-            'uname' => $user->username,
-            'perm'  => $user->perms,
-        );
+            $GLOBALS['auth'] = new Seminar_Auth();
+            $GLOBALS['auth']->auth = array(
+                'uid'   => $user->user_id,
+                'uname' => $user->username,
+                'perm'  => $user->perms,
+            );
 
-        $GLOBALS['user'] = new Seminar_User();
-        $GLOBALS['user']->fake_user = true;
-        $GLOBALS['user']->register_globals = false;
-        $GLOBALS['user']->start($user->user_id);
+            $GLOBALS['user'] = new Seminar_User();
+            $GLOBALS['user']->fake_user = true;
+            $GLOBALS['user']->register_globals = false;
+            $GLOBALS['user']->start($user->user_id);
 
-        $GLOBALS['perm'] = new Seminar_Perm();
-        $GLOBALS['MAIL_VALIDATE_BOX'] = false;
+            $GLOBALS['perm'] = new Seminar_Perm();
+            $GLOBALS['MAIL_VALIDATE_BOX'] = false;
+        }
 
         setTempLanguage($GLOBALS['user']->id);
 
