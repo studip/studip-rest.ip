@@ -1,0 +1,119 @@
+.clearfix {
+  *zoom: 1;
+}
+.clearfix:before,
+.clearfix:after {
+  display: table;
+  content: "";
+  line-height: 0;
+}
+.clearfix:after {
+  clear: both;
+}
+.hide-text {
+  font: 0/0 a;
+  color: transparent;
+  text-shadow: none;
+  background-color: transparent;
+  border: 0;
+}
+.input-block-level {
+  display: block;
+  width: 100%;
+  min-height: 30px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+form.settings input[type=text],
+form.settings select,
+form.settings textarea {
+  width: 97.5%;
+}
+form.settings fieldset {
+  border: 0;
+  margin: 0 0 1em;
+  padding: 0;
+}
+form.settings fieldset legend {
+  background: #d1d1d1;
+  border-bottom: 1px solid #aaa;
+  display: block;
+  font-weight: bold;
+  padding: 4px;
+  text-align: center;
+  width: 99%;
+}
+form.settings fieldset > div {
+  padding: 0.5em 0.5em 0.5em 50%;
+  background: #f3f5f8;
+  border-bottom: 1px dotted #444;
+  overflow: hidden;
+  position: relative;
+}
+form.settings fieldset > div:nth-child(2n + 1) {
+  background: #e7ebf1;
+}
+form.settings fieldset > div:hover label {
+  background-color: #ffe;
+}
+form.settings fieldset > div.centered {
+  background-color: inherit;
+  padding: 1em 0.5em !important;
+  text-align: center;
+}
+form.settings fieldset > div.type-text,
+form.settings fieldset > div.type-checkbox,
+form.settings fieldset > div.type-select {
+  zoom: 1;
+}
+form.settings fieldset > div label {
+  background: #fff;
+  bottom: 0;
+  left: 0;
+  padding: 0.7em 0.5em 1em;
+  right: 51%;
+  position: absolute;
+  text-align: right;
+  top: 0;
+}
+form.settings fieldset > div label small {
+  color: #444;
+  display: none;
+}
+form.settings .type-button {
+  text-align: center;
+}
+form.settings.horizontal fieldset {
+  display: inline-block;
+  position: relative;
+  vertical-align: top;
+  width: 49%;
+}
+form.settings.horizontal fieldset > div {
+  padding-left: 25%;
+  width: 75%;
+}
+form.settings.horizontal fieldset > div.centered {
+  width: auto;
+}
+form.settings.horizontal fieldset label {
+  right: 77.5%;
+}
+.oauth-apps h2,
+.oauth-apps p {
+  margin: 0;
+}
+.oauth-apps p {
+  font-size: smaller;
+}
+.oauth-apps p + p {
+  font-size: inherit;
+  margin-top: 0.5em;
+}
+.oauth-apps td {
+  vertical-align: middle;
+}
+.oauth-apps td:last-child {
+  text-align: right;
+}
