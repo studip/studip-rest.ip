@@ -15,7 +15,7 @@ class RestipPlugin extends StudIPPlugin implements SystemPlugin, HomepagePlugin
     public function __construct()
     {
         parent::__construct();
-        
+
         $config = Config::getInstance();
         if (!$config['OAUTH_ENABLED']) {
             return;
@@ -42,8 +42,13 @@ class RestipPlugin extends StudIPPlugin implements SystemPlugin, HomepagePlugin
         require_once 'config_plugin.inc.php';
         require_once 'bootstrap.php';
 
-        $this->addStylesheet('assets/form-settings.less');
-        $this->addStylesheet('assets/oauth.less');
+        if (method_exists($this, 'addStylesheet')) {
+            $this->addStylesheet('assets/form-settings.less');
+            $this->addStylesheet('assets/oauth.less');
+        } else {
+            PageLayout::addStylesheet($this->getPluginURL() . '/assets/form-settings.css');
+            PageLayout::addStylesheet($this->getPluginURL() . '/assets/oauth.css');
+        }
         PageLayout::addScript($this->getPluginURL() . '/assets/oauth.js');
     }
 
@@ -68,7 +73,7 @@ class RestipPlugin extends StudIPPlugin implements SystemPlugin, HomepagePlugin
     {
         return null;
     }
-    
+
     /**
      *
      **/
