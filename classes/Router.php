@@ -1,7 +1,7 @@
 <?php
 namespace RestIP;
 
-use \APIPlugin;
+use \APIPlugin, \Slim\Slim;
 /**
  *
  **/
@@ -40,7 +40,7 @@ class Router
     {
         $this->template = $template;
         
-        $this->router = new \Slim();
+        $this->router = new Slim();
 
         restore_error_handler(); // @see handleErrors()
 
@@ -72,7 +72,7 @@ class Router
      **/
     public function handleErrors()
     {
-        set_error_handler(array('Slim', 'handleErrors'));
+        set_error_handler(array('\Slim\Slim', 'handleErrors'));
     }
 
     public function setMode($mode)

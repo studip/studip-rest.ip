@@ -70,7 +70,7 @@ class ApiController extends StudipController
 
         setTempLanguage($GLOBALS['user']->id);
 
-        \Slim_Route::setDefaultConditions(array(
+        Slim\Route::setDefaultConditions(array(
             'course_id'   => '[0-9a-f]{32}',
             'message_id'  => '[0-9a-f]{32}',
             'range_id'    => '[0-9a-f]{32}',
