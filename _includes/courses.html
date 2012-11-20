@@ -22,6 +22,16 @@
 <p>Liefert die eingetragenen Nutzer mit dem angegebenen Status einer Veranstaltung zurück.</p>
 {% highlight js linenos %}{% include examples/courses-course_id-members-status.json %}{% endhighlight %}
 
+<h4>/api/courses/<em>:course_id</em>/wiki - Alle Wikiseiten einer Veranstaltung</h4>
+<h5>GET</h5>
+<p>Liefert alle Schlüsselwörter der Wikiseiten einer Veranstaltung zurück.</p>
+{% highlight js linenos %}{% include examples/courses-course_id-wiki.json %}{% endhighlight %}
+
+<h4>/api/courses/<em>:course_id</em>/wiki/<em>:page</em>(/<em>:version</em>) - Eine Wikiseite einer Veranstaltung (in einer bestimmten Version)</h4>
+<h5>GET</h5>
+<p>Liefert eine bestimmte Wikiseite einer Veranstaltung (in einer bestimmten Version) zurück.</p>
+{% highlight js linenos %}{% include examples/courses-course_id-wiki-page.json %}{% endhighlight %}
+
 <h4>/api/courses/semester - Belegte Semester</h4>
 <h5>GET</h5>
 <p>

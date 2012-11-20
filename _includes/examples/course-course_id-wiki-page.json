@@ -1,0 +1,11 @@
+{
+  "page":{
+    "range_id":"25fc42f45366af2b6ab76c6763d6d4b6",
+    "user_id":"76ed43ef286fb55cf9e41beadb484a9f",
+    "keyword":"WikiWikiWeb",
+    "body":"<a class=\"link-extern\" href=\"http:\/\/google.de\" target=\"_blank\">foo<\/a><br><a href=\"\/wiki.php?keyword=andere+seite&amp;view=editnew\">andere seite(?)<\/a>",
+    "chdate":"1329120139",
+    "version":"5",
+    "body_original":"[foo]http:\/\/google.de\r\n[[andere seite]]"
+  }
+}
