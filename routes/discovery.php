@@ -22,8 +22,7 @@ class DiscoveryRoute implements \APIPlugin
      **/
     public function routes(&$router)
     {
-        $router->get('/discovery', function () use ($router)
-        {
+        $router->get('/discovery', function () use ($router) {
             $routes      = $router->getRoutes();
             $permissions = $router->getPermissions();
 

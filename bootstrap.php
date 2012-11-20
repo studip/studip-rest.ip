@@ -81,6 +81,7 @@ error_reporting($error_reporting);
 
 Slim\Slim::registerAutoloader();
 
+require_once 'app/controllers/plugin.php';
 require_once 'classes/Router.php';
 require_once 'classes/Helper.php';
 require_once 'classes/OAuth.php';

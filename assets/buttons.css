@@ -1,0 +1,154 @@
+.clearfix {
+  *zoom: 1;
+}
+.clearfix:before,
+.clearfix:after {
+  display: table;
+  content: "";
+  line-height: 0;
+}
+.clearfix:after {
+  clear: both;
+}
+.hide-text {
+  font: 0/0 a;
+  color: transparent;
+  text-shadow: none;
+  background-color: transparent;
+  border: 0;
+}
+.input-block-level {
+  display: block;
+  width: 100%;
+  min-height: 30px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+a.button,
+button.button {
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), color-stop(20%, #ccd4e1), to(#ccd4e1));
+  background-image: -webkit-linear-gradient(#ffffff, #ccd4e1 20%, #ccd4e1);
+  background-image: -moz-linear-gradient(top, #ffffff, #ccd4e1 20%, #ccd4e1);
+  background-image: -o-linear-gradient(#ffffff, #ccd4e1 20%, #ccd4e1);
+  background-image: linear-gradient(#ffffff, #ccd4e1 20%, #ccd4e1);
+  background-repeat: no-repeat;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#ffccd4e1', GradientType=0);
+  background-color: #ccd4e1;
+  border: 1px solid #899ab9;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  border-radius: 2px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  color: #1e3e70;
+  cursor: pointer;
+  display: inline-block;
+  font-family: "Helvetica Neue", "Helvetica", Arial, sans-serif;
+  font-size: 12px;
+  line-height: 130%;
+  margin: 0.8em 0.6em 0.8em 0;
+  min-width: 100px;
+  overflow: visible;
+  padding: 5px 15px;
+  position: relative;
+  text-align: center;
+  text-decoration: none;
+  text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.3);
+  vertical-align: middle;
+  white-space: nowrap;
+  width: auto;
+}
+a.button:hover,
+button.button:hover {
+  background-position: 0 -15px;
+  text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.6);
+}
+a.button:active,
+button.button:active {
+  background-image: none;
+  outline: 0;
+  -webkit-box-shadow: inset 0 2px 4px rgba(0,0,0,.15), 0 1px 2px rgba(0,0,0,.05);
+  -moz-box-shadow: inset 0 2px 4px rgba(0,0,0,.15), 0 1px 2px rgba(0,0,0,.05);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,.15), 0 1px 2px rgba(0,0,0,.05);
+}
+a.button:focus,
+button.button:focus {
+  outline: dotted 1px #000;
+}
+a.button::-moz-focus-inner,
+button.button::-moz-focus-inner {
+  border: 0;
+}
+a.button.disabled,
+button.button.disabled,
+a.button[disabled],
+button.button[disabled] {
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+  background: #e6e6e6 none;
+  cursor: default;
+  opacity: 0.65;
+}
+.button.accept,
+.button.cancel {
+  white-space: normal;
+}
+.button.accept:before,
+.button.cancel:before {
+  content: " ";
+  float: left;
+  height: 16px;
+  margin: -2px 8px 0 -4px;
+  width: 16px;
+}
+.button.accept:before {
+  background: url("../../../../assets/images/icons/16/blue/accept.png") no-repeat;
+}
+.button.cancel:before {
+  background: url("../../../../assets/images/icons/16/blue/decline.png") no-repeat;
+}
+/****************************************************************************/
+/* Grouped Buttons                                                          */
+/****************************************************************************/
+.button-group {
+  display: inline-block;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.button-group button,
+.button-group .button {
+  border-left: 1px solid #899ab9;
+  float: left;
+  margin-left: -1px;
+  margin-right: 0;
+}
+.button-group > button:first-child,
+.button-group > .button:first-child {
+  -webkit-border-bottom-right-radius: 2px;
+  -webkit-border-top-right-radius: 2px;
+  -moz-border-radius-bottomright: 2px;
+  -moz-border-radius-topright: 2px;
+  border-bottom-right-radius: 2px;
+  border-top-right-radius: 2px;
+  border-left: 1px solid #899ab9;
+  margin-left: 0;
+}
+.button-group > button:not(:first-child):not(:last-child),
+.button-group > .button:not(:first-child):not(:last-child) {
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  border-radius: 2px;
+}
+.button-group > button:last-child,
+.button-group > .button:last-child {
+  -webkit-border-bottom-left-radius: 0;
+  -webkit-border-top-left-radius: 0;
+  -moz-border-radius-bottomleft: 0;
+  -moz-border-radius-topleft: 0;
+  border-bottom-left-radius: 0;
+  border-top-left-radius: 0;
+}

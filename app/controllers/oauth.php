@@ -41,6 +41,14 @@ class OauthController extends Trails_Controller
      **/
     public function authorize_action()
     {
+        $path = $this->dispatcher->plugin->getPluginPath();
+
+        require_once $path . '/classes/buttons/Interactable.class.php';
+        require_once $path . '/classes/buttons/Button.class.php';
+        require_once $path . '/classes/buttons/LinkButton.class.php';
+
+        PageLayout::addStylesheet($this->dispatcher->plugin->getPluginURL() . '/assets/buttons.css');
+
         global $user, $auth;
 
         $auth->login_if($user->id == 'nobody');

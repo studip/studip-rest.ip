@@ -1,4 +1,4 @@
-# REST.ip
+# REST.ip for Stud.IP 2.2 (& PHP >= 5.3.0)
 
 ## Description
 

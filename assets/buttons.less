@@ -1,0 +1,108 @@
+@import "studip.less";
+@import "twitter-mixins.less";
+
+a.button, button.button {
+    #gradient > .vertical-three-colors(lighten(@brand-color-lighter, 50%), lighten(@brand-color-lighter, 21%), 20%, lighten(@brand-color-lighter, 21%));
+    background-color: lighten(@brand-color-lighter, 21%);
+    border: 1px solid @brand-color-lighter;
+    .border-radius(2px);
+    .box-sizing(border-box);
+    color: @brand-color-darker;
+    cursor: pointer;
+    display: inline-block;
+    font-family: @font-family;
+    font-size: 12px;
+    line-height: 130%;
+    margin: 0.8em 0.6em 0.8em 0;
+    min-width: 100px;
+    overflow: visible;
+    padding: 5px 15px;
+    position: relative;
+    text-align: center;
+    text-decoration: none;
+    text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.3);
+    vertical-align: middle;
+    white-space: nowrap;
+    width: auto;
+
+    &:hover  {
+      background-position: 0 -15px;
+      text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.6);
+    }
+    &:active {
+      background-image: none;
+      outline: 0;
+      .box-shadow(~"inset 0 2px 4px rgba(0,0,0,.15), 0 1px 2px rgba(0,0,0,.05)");
+    }
+    &:focus  { outline: dotted 1px #000; }
+    &::-moz-focus-inner { border: 0; }
+
+    &.disabled, &[disabled] {
+        .box-shadow(none);
+        background: #e6e6e6 none;
+        cursor: default;
+        opacity: 0.65;
+    }
+}
+
+.button.accept, .button.cancel {
+    white-space: normal;
+
+    &:before {
+        content: " ";
+        float: left;
+        height: 16px;
+        margin: -2px 8px 0 -4px;
+        width: 16px;
+    }
+}
+
+.button.accept {
+    &:before { background: url("@{icon-path}/blue/accept.png") no-repeat; }
+}
+
+.button.cancel {
+    &:before { background: url("@{icon-path}/blue/decline.png") no-repeat; }
+}
+
+/****************************************************************************/
+/* Grouped Buttons                                                          */
+/****************************************************************************/
+.button-group {
+    display: inline-block;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+    button, .button {
+        border-left: 1px solid @brand-color-lighter;
+        float: left;
+        margin-left: -1px;
+        margin-right: 0;
+    }
+
+    > button, > .button {
+        &:first-child {
+            -webkit-border-bottom-right-radius: 2px;
+            -webkit-border-top-right-radius: 2px;
+            -moz-border-radius-bottomright: 2px;
+            -moz-border-radius-topright: 2px;
+            border-bottom-right-radius: 2px;
+            border-top-right-radius: 2px;
+
+            border-left: 1px solid @brand-color-lighter;
+            margin-left: 0;
+        }
+        &:not(:first-child):not(:last-child) {
+            .border-radius(2px);
+        }
+        &:last-child {
+            -webkit-border-bottom-left-radius: 0;
+            -webkit-border-top-left-radius: 0;
+            -moz-border-radius-bottomleft: 0;
+            -moz-border-radius-topleft: 0;
+            border-bottom-left-radius: 0;
+            border-top-left-radius: 0;
+        }
+    }
+}

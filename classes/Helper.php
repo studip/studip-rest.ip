@@ -1,5 +1,6 @@
 <?php
 namespace RestIP;
+use \SemesterData, \SimpleXMLElement;
 
 /**
  *
@@ -129,8 +130,8 @@ class Helper
     public static function array_to_xml($array, &$node, $parameters)
     {
         if ($node === null) {
-            $root_node = $parameters['root_node'] ?: 'root';
-            $root_attributes = $parameters['root_attributes'] ?: array();
+            $root_node       = @$parameters['root_node'] ?: 'root';
+            $root_attributes = @$parameters['root_attributes'] ?: array();
 
             $attributes = '';
             foreach ($root_attributes as $key=>$value) {
@@ -144,6 +145,7 @@ class Helper
             if (is_numeric($key)) {
                 throw new \Exception('Cannot compile numeric indexes');
             } elseif (preg_match('/\W/', $key)) {
+                var_dump($array);
                 throw new \Exception(sprintf('Cannot compile index: "%s"', $key));
             }
 

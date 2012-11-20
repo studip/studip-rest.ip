@@ -3,7 +3,7 @@
 /**
  *
  **/
-class UserController extends StudipController
+class UserController extends PluginController
 {
     /**
      *

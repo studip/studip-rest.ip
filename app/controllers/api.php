@@ -45,6 +45,7 @@ class ApiController extends StudipController
         } catch (Exception $e) {
             $status = sprintf('HTTP/1.1 %u %s', 401, 'Unauthorized');
             header($status, true, 401);
+            var_dump($e->getMessage());
             die($status);
         }
 
@@ -81,11 +82,7 @@ class ApiController extends StudipController
         $router = RestIP\Router::getInstance(null, $template);
         $router->handleErrors();
 
-        if (Studip\ENV === 'development') {
-            error_reporting(E_ALL ^ (E_NOTICE | E_WARNING));
-        } else {
-            error_reporting(0);
-        }
+        error_reporting(0);
 
         if (Request::option('mode', 'compact') === 'complete') {
             $router->setMode(RestIP\Router::MODE_COMPLETE);

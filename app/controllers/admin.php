@@ -3,7 +3,7 @@
 /**
  *
  **/
-class AdminController extends StudipController
+class AdminController extends PluginController
 {
     /**
      *

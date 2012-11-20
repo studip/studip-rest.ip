@@ -152,12 +152,14 @@ class Router
             $this->route_result = $data;
             return;
         }
-        
+
         header('X-Server-Timestamp: ' . time());
         header_remove('x-powered-by');
         header_remove('set-cookie');
 
         $data = array_map_recursive('studip_utf8encode', $data);
+
+//        error_reporting(E_ALL);
 
         $this->template->data   = $data;
         $this->template->router = $this;
@@ -177,6 +179,7 @@ class Router
         }
 
         $this->router->halt($status, $status === 200 ? $message : '');
+        die;
     }
 
     /**
