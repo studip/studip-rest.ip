@@ -74,9 +74,12 @@ require_once 'vendor/trails/trails.php';
 require_once 'app/controllers/studip_controller.php';
 
 // Local includes
+
 $error_reporting = error_reporting();
 require 'vendor/Slim/Slim/Slim.php';
 error_reporting($error_reporting);
+
+Slim\Slim::registerAutoloader();
 
 require_once 'classes/Router.php';
 require_once 'classes/Helper.php';

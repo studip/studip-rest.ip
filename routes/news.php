@@ -1,7 +1,6 @@
 <?php
 # namespace RestIP;
-
-# use \Request;
+# use \Request, \DBManager, \PDO, \APIPlugin;
 
 /**
  *
@@ -209,6 +208,14 @@ class News
         $news['chdate_uid']    = trim($news['chdate_uid']);
 
         unset($news['author']);
+
+        // Add comment ids
+        if ($news['allow_comments']) {
+            $query = "SELECT comment_id FROM comments WHERE object_id = ? ORDER BY mkdate";
+            $statement = DBManager::get()->prepare($query);
+            $statement->execute(array($news['news_id']));
+            $news['comments'] = $statement->fetchAll(PDO::FETCH_COLUMN);
+        }
 
         return $news;
     }

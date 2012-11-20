@@ -20,7 +20,7 @@ class UserRoute implements APIPlugin
 
     public static function before()
     {
-        require 'lib/classes/UserManagement.class.php';
+        require_once 'lib/classes/UserManagement.class.php';
     }
 
     /**
@@ -50,7 +50,7 @@ class UserRoute implements APIPlugin
                 if (!$user[$field]
                     || !is_element_visible_for_user($GLOBALS['user']->id, $user_id, $visibilities[$visibility]))
                 {
-                    return false;
+                    return '';
                 }
                 return $user[$field];
             };
@@ -81,6 +81,21 @@ class UserRoute implements APIPlugin
                 'homepage'      => $get_field('Home', 'homepage'),
                 'privadr'       => $get_field('privadr', 'privadr'),
             );
+            
+            $query = "SELECT value
+                      FROM user_config
+                      WHERE field = ? AND user_id = ?";
+            $statement = DBManager::get()->prepare($query);
+            $statement->execute(array('SKYPE_NAME', $user_id));
+            $user['skype'] = $statement->fetchColumn() ?: '';
+            $statement->closeCursor();
+
+            if ($user['skype']) {
+                $statement->execute(array('SKYPE_ONLINE_STATUS', $user_id));
+                $user['skype_show'] = (bool)$statement->fetchColumn();
+            } else {
+                $user['skype_show'] = false;
+            }
 
             $router->render(compact('user'));
         });

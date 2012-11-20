@@ -1,6 +1,6 @@
 <?php
-
 # namespace RestIP;
+# use \APIPlugin, \SemType, \SemClass;
 
 /**
  *
@@ -29,9 +29,12 @@ class StudipRoute implements APIPlugin
                     'class' => $item['class'],
                 );
             }, SemType::getTypes());
-//            $mapper = function ($item) { return $item['name']; };
-            
+
+            $manifest = parse_ini_file(dirname(__FILE__) . '/../plugin.manifest');
+            $API_VERSION = $manifest['version'];
+
             $router->render(array(
+                'API_VERSION'           => $API_VERSION,
                 'ALLOW_CHANGE_USERNAME' => $GLOBALS['ALLOW_CHANGE_USERNAME'],
                 'ALLOW_CHANGE_EMAIL'    => $GLOBALS['ALLOW_CHANGE_EMAIL'],
                 'ALLOW_CHANGE_NAME'     => $GLOBALS['ALLOW_CHANGE_NAME'],
@@ -44,6 +47,7 @@ class StudipRoute implements APIPlugin
                                            }, SemClass::getClasses()),
                 'TERMIN_TYP'            => $GLOBALS['TERMIN_TYP'],
                 'PERS_TERMIN_KAT'       => $GLOBALS['PERS_TERMIN_KAT'],
+                'SUPPORT_EMAIL'         => $GLOBALS['UNI_CONTACT'],
                 'TITLES'                => $GLOBALS['DEFAULT_TITLE_FOR_STATUS'],
                 'UNI_NAME_CLEAN'        => $GLOBALS['UNI_NAME_CLEAN'],
             ));

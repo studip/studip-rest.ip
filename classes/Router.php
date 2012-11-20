@@ -1,7 +1,8 @@
 <?php
 # namespace RestIP;
 
-# use \APIPlugin;
+# use \APIPlugin, \Slim\Slim;
+
 /**
  *
  **/
@@ -72,7 +73,7 @@ class Router
      **/
     public function handleErrors()
     {
-        set_error_handler(array('Slim', 'handleErrors'));
+        set_error_handler(array('\Slim\Slim', 'handleErrors'));
     }
 
     public function setMode($mode)
@@ -176,7 +177,7 @@ class Router
             $message = vsprintf($message, $arguments);
         }
 
-        $this->router->halt($status, $message);
+        $this->router->halt($status, $status === 200 ? $message : '');
     }
 
     /**

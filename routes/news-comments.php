@@ -135,7 +135,7 @@ class NewsComments
     /* StudipComments does not really give us all the info we need */
     static function load($news_id, $comment_id)
     {
-        $query = "SELECT comment_id, content AS comment, mkdate, chdate, user_id
+        $query = "SELECT comment_id, content AS comment, mkdate, chdate, user_id, object_id AS news_id
                   FROM comments
                   WHERE object_id = ? AND comment_id = ?";
         $statement = DBManager::get()->prepare($query);
@@ -154,7 +154,7 @@ class NewsComments
 
     static function loadByNewsId($news_id)
     {
-        $query = "SELECT comment_id, content AS comment, mkdate, chdate, user_id
+        $query = "SELECT comment_id, content AS comment, mkdate, chdate, user_id, object_id AS news_id
                   FROM comments
                   WHERE object_id = ?
                   ORDER BY mkdate";

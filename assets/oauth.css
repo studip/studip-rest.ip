@@ -1,23 +1,30 @@
-.clearfix { *zoom:1; }
-.clearfix:before, .clearfix:after {
-  display:table;
-  content:"";
+.clearfix {
+  *zoom: 1;
 }
-.clearfix:after { clear:both; }
+.clearfix:before,
+.clearfix:after {
+  display: table;
+  content: "";
+  line-height: 0;
+}
+.clearfix:after {
+  clear: both;
+}
 .hide-text {
-  font:0 / 0 a;
-  color:transparent;
-  text-shadow:none;
-  background-color:transparent;
-  border:0;
+  font: 0/0 a;
+  color: transparent;
+  text-shadow: none;
+  background-color: transparent;
+  border: 0;
 }
 .input-block-level {
-  display:block;
-  width:100%;
-  min-height:28px;
-  -webkit-box-sizing:border-box;
-  -moz-box-sizing:border-box;
-  -ms-box-sizing:border-box;
-  box-sizing:border-box;
+  display: block;
+  width: 100%;
+  min-height: 30px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
 }
-.oauth.authorize p { text-align:center; }
+.oauth.authorize p {
+  text-align: center;
+}

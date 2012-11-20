@@ -1,5 +1,6 @@
 <?php
 # namespace RestIP;
+# use \APIPlugin, \Assets, \DBManager, \StudipDocument, \PDO;
 
 class DocumentsRoute implements APIPlugin
 {
@@ -127,13 +128,25 @@ class Document
 
     static function folderBelongsToRange($range_id, $folder_id)
     {
+        $top_folders = array(
+            $range_id,
+            md5($range_id . 'top_folder'),
+        );
+
+        $query = "SELECT issue_id FROM themen WHERE seminar_id = ?";
+        $statement = DBManager::get()->prepare($query);
+        $statement->execute(array($range_id));
+        $top_folders = array_merge($top_folders, $statement->fetchAll(PDO::FETCH_COLUMN));
+
+        $query = "SELECT statusgruppe_id FROM statusgruppen WHERE range_id = ?";
+        $statement = DBManager::get()->prepare($query);
+        $statement->execute(array($range_id));
+        $top_folders = array_merge($top_folders, $statement->fetchAll(PDO::FETCH_COLUMN));
+
         $query = "SELECT range_id FROM folder WHERE folder_id = ?";
         $statement = DBManager::get()->prepare($query);
 
-        $top_folder = md5($range_id . 'top_folder');
-        while ($folder_id
-            && $folder_id != $range_id
-            && $folder_id != $top_folder)
+        while ($folder_id && !in_array($folder_id, $top_folders))
         {
             $statement->execute(array($folder_id));
             $folder_id = $statement->fetchColumn();
@@ -145,29 +158,41 @@ class Document
 
     static function loadFolders($folder_id)
     {
-        $query = "SELECT folder_id, user_id, name, description, mkdate, chdate
+        $query = "SELECT folder_id, user_id, name, description, mkdate, chdate, permission
                   FROM folder
-                  WHERE range_id IN (:folder_id, MD5(CONCAT(:folder_id, 'top_folder')))
+                  WHERE range_id IN (:folder_id, MD5(CONCAT(:folder_id, 'top_folder'))) AND permission > 0
 
                   UNION
 
-                  SELECT DISTINCT folder_id, folder.user_id, folder.name, folder.description, folder.mkdate, folder.chdate
+                  SELECT DISTINCT folder_id, folder.user_id, folder.name, folder.description,
+                                  folder.mkdate, folder.chdate, folder.permission
                   FROM themen AS th
-                  LEFT JOIN themen_termine AS tt USING (issue_id)
-                  LEFT JOIN termine AS t USING (termin_id)
                   INNER JOIN folder ON (th.issue_id = folder.range_id)
-                  WHERE th.seminar_id = :folder_id
+                  WHERE th.seminar_id = :folder_id AND folder.permission > 0
 
                   UNION
 
-                  SELECT folder_id, folder.user_id, folder.name, folder.description, folder.mkdate, folder.chdate
+                  SELECT folder_id, folder.user_id, folder.name, folder.description, folder.mkdate,
+                         folder.chdate, folder.permission
                   FROM statusgruppen sg
-                  INNER JOIN folder ON sg.statusgruppe_id = folder.range_id
-                  WHERE sg.range_id = :folder_id";
+                  INNER JOIN statusgruppe_user AS sgu ON (sgu.user_id = :user_id)
+                  INNER JOIN folder ON (sgu.statusgruppe_id = folder.range_id)
+                  WHERE sg.range_id = :folder_id AND folder.permission > 0";
         $statement = DBManager::get()->prepare($query);
         $statement->bindParam(':folder_id', $folder_id);
+        $statement->bindParam(':user_id', $GLOBALS['user']->id);
         $statement->execute();
         $folders =  $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($folders as &$folder) {
+            $folder['permissions'] = array(
+                'visible'    => (bool)($folder['permission'] & 1),
+                'writable'   => (bool)($folder['permission'] & 2),
+                'readable'   => (bool)($folder['permission'] & 4),
+                'extendable' => (bool)($folder['permission'] & 8),
+            );
+            unset($folder['permission']);
+        }
 
         return $folders;
     }
@@ -176,12 +201,12 @@ class Document
     {
         if ($type === 'folder') {
             $query = "SELECT dokument_id AS document_id, user_id, name, description, mkdate, chdate,
-                             filename, filesize, downloads
+                             filename, filesize, downloads, protected
                       FROM dokumente
                       WHERE range_id = ?";
         } else {
             $query = "SELECT dokument_id AS document_id, user_id, name, description, mkdate, chdate,
-                             filename, filesize, downloads
+                             filename, filesize, downloads, protected
                       FROM dokumente
                       WHERE dokument_id IN (?)";
         }
@@ -190,8 +215,9 @@ class Document
         $files =  $statement->fetchAll(PDO::FETCH_ASSOC);
 
         foreach ($files as &$file) {
+            $file['protected'] = !empty($file['protected']);
             $file['mime_type'] = get_mime_type($file['filename']);
-            $file['icon'] = Assets::image_path(GetFileIcon(getFileExtension($file['filename'])));
+            $file['icon']      = Assets::image_path(GetFileIcon(getFileExtension($file['filename'])));
         }
 
         return ($type !== 'folder' && !is_array($id)) ? reset($files) : $files;
