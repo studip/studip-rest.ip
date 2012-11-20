@@ -60,7 +60,10 @@ class ApiController extends StudipController
                 'perm'  => $user->perms,
             );
 
-            $GLOBALS['user'] = new Seminar_User($user->user_id);
+            $GLOBALS['user'] = new Seminar_User();
+            $GLOBALS['user']->fake_user = true;
+            $GLOBALS['user']->register_globals = false;
+            $GLOBALS['user']->start($user->user_id);
 
             $GLOBALS['perm'] = new Seminar_Perm();
             $GLOBALS['MAIL_VALIDATE_BOX'] = false;
