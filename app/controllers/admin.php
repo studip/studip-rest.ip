@@ -34,18 +34,23 @@ class AdminController extends StudipController
             $back = sprintf('<a href="%s">%s</a>',
                            $this->url_for('admin'),
                            _('Zurück zur Übersicht'));
-            $this->addToInfobox('Aktionen', $back, 'icons/16/black/arr_1left');
+            $this->addToInfobox(_('Aktionen'), $back, 'icons/16/black/arr_1left');
         }
 
         $new = sprintf('<a href="%s">%s</a>',
                        $this->url_for('admin/edit'),
                        _('Neue Applikation registrieren'));
-        $this->addToInfobox('Aktionen', $new, 'icons/16/black/plus');
+        $this->addToInfobox(_('Aktionen'), $new, 'icons/16/black/plus');
 
-        $new = sprintf('<a href="%s">%s</a>',
-                       $this->url_for('admin/permissions'),
-                       _('Globale Zugriffseinstellungen'));
-        $this->addToInfobox('Aktionen', $new, 'icons/16/black/admin');
+        $global = sprintf('<a href="%s">%s</a>',
+                         $this->url_for('admin/permissions'),
+                         _('Globale Zugriffseinstellungen'));
+        $this->addToInfobox(_('Aktionen'), $global, 'icons/16/black/admin');
+
+        $config = sprintf('<a href="%s">%s</a>',
+                          $this->url_for('admin/config'),
+                          _('Konfiguration'));
+        $this->addToInfobox(_('Aktionen'), $config, 'icons/16/black/tools');
     }
 
     /**
@@ -182,5 +187,18 @@ class AdminController extends StudipController
         $this->descriptions = $this->router->getDescriptions();
         $this->permissions  = $this->router->getPermissions();
         $this->global       = $consumer_key ? RestIP\Router::getInstance()->getPermissions() : false;
+    }
+
+    public function config_action()
+    {
+        $this->config = Config::get();
+
+        if (Request::isPost()) {
+            $this->config->store('OAUTH_ENABLED', Request::int('active', 0));
+            $this->config->store('OAUTH_AUTH_PLUGIN', Request::option('auth'));
+
+            PageLayout::postMessage(MessageBox::success(_('Die Einstellungen wurden gespeichert.')));
+            $this->redirect('admin/config');
+        }
     }
 }
