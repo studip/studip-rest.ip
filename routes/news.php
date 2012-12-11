@@ -37,7 +37,7 @@ class NewsRoute implements APIPlugin
                 $router->halt(403, sprintf('User may not access range %s', $range_id));
             }
 
-            $news  = array_values(News::loadRange($range_id));
+            $news = array_values(News::loadRange($range_id));
 
             if ($router->compact()) {
                 $router->render(compact('news'));
@@ -236,6 +236,10 @@ class News
     {
         $news = \StudipNews::GetNewsByRange($range_id);
         $news = array_map('self::adjust', $news);
+        $news = array_filter($news, function ($item) {
+            $now = time();
+            return $item['date'] <= $now && $item['date'] + $item['expire'] >= $now;
+        });
 
         return $news;
     }
