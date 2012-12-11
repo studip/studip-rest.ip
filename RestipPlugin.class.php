@@ -16,6 +16,12 @@ class RestipPlugin extends StudIPPlugin implements SystemPlugin, HomepagePlugin
     {
         parent::__construct();
 
+        if ($GLOBALS['perm']->have_perm('root')) {
+            $navigation = new AutoNavigation(_('OAuth'));
+            $navigation->setURL(PluginEngine::getLink('restipplugin/admin'));
+            Navigation::addItem('/admin/config/oauth', $navigation);
+        }
+
         $config = Config::getInstance();
         if (!$config['OAUTH_ENABLED']) {
             return;
@@ -23,15 +29,10 @@ class RestipPlugin extends StudIPPlugin implements SystemPlugin, HomepagePlugin
 
         if ($GLOBALS['perm']->have_perm('autor')) {
             $navigation = new AutoNavigation(_('Apps'));
-            $navigation->setURL(PluginEngine::getLink($this, array(), 'user'));
+            $navigation->setURL(PluginEngine::getLink('restipplugin/user'));
             Navigation::addItem('/links/settings/oauth', $navigation);
         }
 
-        if ($GLOBALS['perm']->have_perm('root')) {
-            $navigation = new AutoNavigation(_('OAuth'));
-            $navigation->setURL(PluginEngine::getLink($this, array(), 'admin'));
-            Navigation::addItem('/admin/config/oauth', $navigation);
-        }
     }
 
     /**

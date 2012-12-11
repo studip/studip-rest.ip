@@ -51,7 +51,15 @@ class OauthController extends Trails_Controller
 
         global $user, $auth;
 
-        $auth->login_if($user->id == 'nobody');
+        $auth_plugin = Config::get()->OAUTH_AUTH_PLUGIN;
+        if ($GLOBALS['user']->id === 'nobody' && $auth_plugin !== 'Standard' && !Request::option('sso')) {
+            $params = $_GET;
+            $params['sso'] = $auth_plugin;
+            $this->redirect($this->url_for('oauth/authorize?' . http_build_query($params)));
+            return;
+        } else {
+            $auth->login_if($user->id === 'nobody');
+        }
 
         $user_id = OAuthUser::getMappedId($user->id);
 

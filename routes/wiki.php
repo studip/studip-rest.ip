@@ -47,6 +47,10 @@ class WikiRoute implements \APIPlugin
 
             $page['body_original'] = $page['body'];
             $page['body']          = wikiReady($page['body']);
+            
+            // Rename range_id to course_id
+            $page['course_id'] = $page['range_id'];
+            unset($page['range_id']);
 
             if ($router->compact()) {
                 $router->render(compact('page'));
