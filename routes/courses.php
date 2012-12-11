@@ -167,7 +167,7 @@ class Course
         }
 
         $query = "SELECT sem.Seminar_id AS course_id, start_time,
-                         duration_time,
+                         duration_time, VeranstaltungsNummer AS `number`,
                          Name AS title, Untertitel AS subtitle, sem.status AS type, modules,
                          Beschreibung AS description, Ort AS location, gruppe
                   FROM seminare AS sem
