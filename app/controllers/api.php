@@ -71,11 +71,11 @@ class ApiController extends StudipController
         setTempLanguage($GLOBALS['user']->id);
 
         Slim\Route::setDefaultConditions(array(
-            'course_id'   => '[0-9a-f]{32}',
-            'message_id'  => '[0-9a-f]{32}',
-            'range_id'    => '[0-9a-f]{32}',
-            'semester_id' => '[0-9a-f]{32}',
-            'user_id'     => '[0-9a-f]{32}',
+            'course_id'   => '[0-9a-f]{1,32}',
+            'message_id'  => '[0-9a-f]{1,32}',
+            'range_id'    => '[0-9a-f]{1,32}',
+            'semester_id' => '[0-9a-f]{1,32}',
+            'user_id'     => '[0-9a-f]{1,32}',
         ));
 
         $template_factory = new Flexi_TemplateFactory($this->dispatcher->plugin->getPluginPath());
