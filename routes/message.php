@@ -251,19 +251,19 @@ class Message
                            ? ''
                            : ',' . implode(',', $additional_fields);
 
-       $query = "SELECT DISTINCT m.message_id, mu.user_id AS sender_id, mu2.user_id AS receiver_id, subject,
-                        message, m.mkdate, priority, 1 - mu.readed AS unread, mu.deleted
-                       {$additional_fields}
-                 FROM message AS m
-                 INNER JOIN message_user AS mu ON (m.message_id = mu.message_id AND mu.user_id = ? AND mu.snd_rec = 'snd')
-                 INNER JOIN message_user AS mu2 ON (mu.message_id = mu2.message_id AND mu2.snd_rec = 'rec')
-                 WHERE m.message_id IN (?)";
+        $query = "SELECT DISTINCT m.message_id, mu.user_id AS sender_id, mu2.user_id AS receiver_id, subject,
+                         message, m.mkdate, priority, 1 - mu.readed AS unread, mu.deleted
+                         {$additional_fields}
+                  FROM message AS m
+                  INNER JOIN message_user AS mu ON (m.message_id = mu.message_id AND mu.user_id = ? AND mu.snd_rec = 'snd')
+                  INNER JOIN message_user AS mu2 ON (mu.message_id = mu2.message_id AND mu2.snd_rec = 'rec')
+                  WHERE m.message_id IN (?)";
         if (is_array($ids) and count($ids) > 1) {
             $query .= " ORDER BY m.mkdate DESC";
         }
 
         $statement = DBManager::get()->prepare($query);
-        $statement->execute(array($GLOBALS['user']->id, $ids));
+        $statement->execute(array($ids));
         $messages = $statement->fetchAll(PDO::FETCH_ASSOC);
 
         array_walk($messages, function (&$message) {
