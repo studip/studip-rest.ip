@@ -91,7 +91,7 @@ class RestipPlugin extends StudIPPlugin implements SystemPlugin, HomepagePlugin
             $details[] = _('Dies behindert die Kommunikation externer Applikationen mit dem System.');
             $details[] = sprintf(_('Klicken Sie <a href="%s">hier</a>, um die Rollenzuweisung zu bearbeiten.'),
                                URLHelper::getLink('dispatch.php/admin/role/assign_plugin_role/' . $pluginId));
-            PageLayout::postMessage(Messagebox::info($message, $details));
+            PageLayout::postMessage(MessageBox::info($message, $details));
         }
     }
 }

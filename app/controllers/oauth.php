@@ -73,7 +73,7 @@ class OauthController extends Trails_Controller
 
                 // No oauth_callback, show the user the result of the authorization
                 // ** your code here **
-                PageLayout::postMessage(Messagebox::success(_('Sie haben der Applikation Zugriff auf Ihre Daten gewährt.')));
+                PageLayout::postMessage(MessageBox::success(_('Sie haben der Applikation Zugriff auf Ihre Daten gewährt.')));
                 $this->redirect('user#' . $rs['consumer_key']);
            }
         } catch (OAuthException $e) {
