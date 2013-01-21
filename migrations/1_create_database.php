@@ -48,17 +48,24 @@ class CreateDatabase extends DBMigration
             )
         ");
 
-        // Create config entry
-        DBManager::get()
-            ->prepare("
-                INSERT INTO config (config_id, field, value, is_default, type, `range`, section, mkdate, chdate, description)
-                VALUES (MD5(?), ?, '1', 1, 'boolean', 'global', 'global', UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), ?)
-            ")
-            ->execute(array(
-                'OAUTH_ENABLED',
-                'OAUTH_ENABLED',
-                'Schaltet die OAuth-Schnittstelle ein',
-            ));
+        // Create config entries
+        $query = "INSERT INTO config (config_id, field, value, is_default, type, `range`, section, mkdate, chdate, description)
+                  VALUES (MD5(?), ?, '1', 1, 'boolean', 'global', 'global', UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), ?)";
+        $statement = DBManager::get()->prepare($query);
+        $statement->execute(array(
+            'OAUTH_ENABLED',
+            'OAUTH_ENABLED',
+            'Schaltet die OAuth-Schnittstelle ein',
+        ));
+
+        $query = "INSERT INTO config (config_id, field, value, is_default, type, `range`, section, mkdate, chdate, description)
+                  VALUES (MD5(?), ?, 'Standard', 1, 'string', 'global', 'global', UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), ?)";
+        $statement = DBManager::get()->prepare($query);
+        $statement->execute(array(
+            'OAUTH_AUTH_PLUGIN',
+            'OAUTH_AUTH_PLUGIN',
+            'Definiert das verwendete Authentifizierungsverfahren',
+        ));
     }
 
     /**
