@@ -87,7 +87,7 @@ class AdminController extends StudipController
         if (Request::isXhr()) {
             $this->render_text(implode('<br>', $details));
         } else {
-            PageLayout::postMessage(Messagebox::info(_('Die Schlüssel in den Details dieser Meldung sollten vertraulich behandelt werden!'), $details, true));
+            PageLayout::postMessage(MessageBox::info(_('Die Schlüssel in den Details dieser Meldung sollten vertraulich behandelt werden!'), $details, true));
             $this->redirect('admin/index#' . $key);
         }
     }
