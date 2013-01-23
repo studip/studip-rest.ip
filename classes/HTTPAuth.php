@@ -22,7 +22,6 @@ class HTTPAuth
             }
             $user_id = $check['uid'];
         }
-
         return $user_id;
     }
 }
