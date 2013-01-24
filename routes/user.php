@@ -79,7 +79,7 @@ class UserRoute implements \APIPlugin
                 'avatar_normal' => $avatar(Avatar::NORMAL),
                 'phone'         => $get_field('privatnr', 'private_phone'),
                 'homepage'      => $get_field('Home', 'homepage'),
-                'privadr'       => $get_field('privadr', 'privadr'),
+                'privadr'       => strip_tags($get_field('privadr', 'privadr')),
             );
             
             $query = "SELECT value
