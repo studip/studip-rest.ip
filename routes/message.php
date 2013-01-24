@@ -28,7 +28,7 @@ class MessageRoute implements \APIPlugin
             '/messages/:message_id/move/:folder' => _('Nachrichten verschieben'),
         );
     }
-    
+
     public static function before()
     {
         require_once 'lib/messaging.inc.php';
@@ -79,7 +79,7 @@ class MessageRoute implements \APIPlugin
             Helper::setUserData($val);
 
             $GLOBALS['user']->unregister('my_messaging_settings');
-            
+
             $router->halt(201);
         })->conditions(array('box' => '(in|out)'));
 
@@ -137,6 +137,14 @@ class MessageRoute implements \APIPlugin
             //     $router->halt(406, 'No message provided');
             // }
 
+            // Try to detect and convert utf-8 to windows-1252
+            if (mb_detect_encoding($subject, 'UTF-8')) {
+                $subject = utf8_decode($subject);
+            }
+            if (mb_detect_encoding($message, 'UTF-8')) {
+                $message = utf8_decode($message);
+            }
+
             $usernames = array_map(function ($id) use ($router) {
                 $user = \User::find($id);
                 if (!$user) {
@@ -147,7 +155,7 @@ class MessageRoute implements \APIPlugin
 
             $message_id = md5(uniqid('message', true));
 
-            check_messaging_default();
+//            check_messaging_default();
             $messaging = new \messaging;
             $result = $messaging->insert_message($message ?: '', $usernames,
                                                  $GLOBALS['user']->id, time(),
@@ -160,7 +168,7 @@ class MessageRoute implements \APIPlugin
 
             $router->render($router->dispatch('get', '/messages/:message_id', $message_id), 201);
         });
-        
+
         // Load a message
         $router->get('/messages/:message_id', function ($message_id) use ($router) {
             $message = Message::load($message_id);
@@ -213,7 +221,7 @@ class MessageRoute implements \APIPlugin
 
             $router->halt(204);
         });
-        
+
         $router->put('/messages/read', function () use ($router) {
             Message::readAll($GLOBALS['user']->id);
             $router->halt(200);
@@ -298,7 +306,7 @@ class Message
         $statement->execute(array($folder, $message_id, $GLOBALS['user']->id));
         return $statement->rowCount() > 0;
     }
-    
+
     static function readAll($user_id)
     {
         $query = "UPDATE message_user SET readed = 1 WHERE user_id = ?";
