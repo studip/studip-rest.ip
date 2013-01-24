@@ -155,7 +155,7 @@ class MessageRoute implements \APIPlugin
 
             $message_id = md5(uniqid('message', true));
 
-//            check_messaging_default();
+            check_messaging_default();
             $messaging = new \messaging;
             $result = $messaging->insert_message($message, $usernames,
                                                  $GLOBALS['user']->id, time(),
