@@ -12,18 +12,12 @@ class EventsRoute implements \APIPlugin
 
     public function routes(&$router)
     {
-        require_once $GLOBALS['RELATIVE_PATH_CALENDAR'] .
-'/lib/Calendar.class.php';
-        require_once $GLOBALS['RELATIVE_PATH_CALENDAR'] .
-'/lib/DbCalendarEventList.class.php';
-        require_once $GLOBALS['RELATIVE_PATH_CALENDAR'] .
-'/lib/SingleCalendar.class.php';
-        require_once $GLOBALS['RELATIVE_PATH_CALENDAR'] .
-'/lib/sync/CalendarExport.class.php';
-        require_once $GLOBALS['RELATIVE_PATH_CALENDAR'] .
-'/lib/sync/CalendarExportFile.class.php';
-        require_once $GLOBALS['RELATIVE_PATH_CALENDAR'] .
-'/lib/sync/CalendarWriterICalendar.class.php';
+        require_once $GLOBALS['RELATIVE_PATH_CALENDAR'] . '/lib/Calendar.class.php';
+        require_once $GLOBALS['RELATIVE_PATH_CALENDAR'] . '/lib/DbCalendarEventList.class.php';
+        require_once $GLOBALS['RELATIVE_PATH_CALENDAR'] . '/lib/SingleCalendar.class.php';
+        require_once $GLOBALS['RELATIVE_PATH_CALENDAR'] . '/lib/sync/CalendarExport.class.php';
+        require_once $GLOBALS['RELATIVE_PATH_CALENDAR'] . '/lib/sync/CalendarExportFile.class.php';
+        require_once $GLOBALS['RELATIVE_PATH_CALENDAR'] . '/lib/sync/CalendarWriterICalendar.class.php';
         require_once 'lib/classes/Seminar.class.php';
         require_once 'lib/raumzeit/raumzeit_functions.inc.php';
 
