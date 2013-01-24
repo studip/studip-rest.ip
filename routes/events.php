@@ -41,8 +41,7 @@ $start, $end, true, Calendar::getBindSeminare());
                     'title'       => $termin->getTitle(),
                     'description' => $termin->getDescription() ?: '',
                     'categories'  => $termin->toStringCategories() ?: '',
-                    'room'        => $singledate->getRoom() ?:
-$singledate->getFreeRoomText() ?: '',
+                    'room'        => strip_tags($singledate->getRoom() ?: $singledate->getFreeRoomText() ?: ''),
                 );
             }
 
@@ -85,7 +84,7 @@ $singledate->getFreeRoomText() ?: '',
                     'title'       => $temp['date'],
                     'description' => '',
                     'categories'  => $temp['art'] ?: '',
-                    'room'        => $temp['room'] ?: '',
+                    'room'        => strip_tags($temp['room'] ?: ''),
                 );
             }
 
