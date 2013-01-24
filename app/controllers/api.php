@@ -29,15 +29,14 @@ class ApiController extends StudipController
             $format = $match[1];
             $unconsumed = substr($unconsumed, 0, - strlen($match[0]));
         }
-
         // Get id from authorisation (either OAuth or standard)
         try {
             if (OAuth::isSigned()) {
                 $user_id = OAuth::verify();
-            } elseif (HTTPAuth::isSigned()) {
-                $user_id = HTTPAuth::verify();
             } elseif ($GLOBALS['user']->id !== 'nobody') {
                 $user_id = $GLOBALS['user']->id;
+            } elseif (HTTPAuth::isSigned()) {
+                $user_id = HTTPAuth::verify();
             }
             if (!$user_id) {
                 throw new Exception('Unauthorized', 401);
@@ -45,6 +44,7 @@ class ApiController extends StudipController
         } catch (Exception $e) {
             $status = sprintf('HTTP/1.1 %u %s', 401, 'Unauthorized');
             header($status, true, 401);
+            header("WWW-Authenticate: Basic");
             die($status);
         }
 
