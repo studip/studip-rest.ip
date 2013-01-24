@@ -255,15 +255,18 @@ class Message
                          message, m.mkdate, priority, 1 - mu2.readed AS unread, mu.deleted
                          {$additional_fields}
                   FROM message AS m
-                  INNER JOIN message_user AS mu ON (m.message_id = mu.message_id AND mu.user_id = ? AND mu.snd_rec = 'snd')
+                  INNER JOIN message_user AS mu ON (m.message_id = mu.message_id AND mu.snd_rec = 'snd')
                   INNER JOIN message_user AS mu2 ON (mu.message_id = mu2.message_id AND mu2.snd_rec = 'rec')
-                  WHERE m.message_id IN (?) AND ? IN (mu.user_id, mu2.user_id)";
+                  WHERE m.message_id IN (:ids) AND :user_id IN (mu.user_id, mu2.user_id)";
         if (is_array($ids) and count($ids) > 1) {
             $query .= " ORDER BY m.mkdate DESC";
         }
 
         $statement = DBManager::get()->prepare($query);
-        $statement->execute(array($ids, $GLOBALS['user']->id));
+        $statement->execute(array(
+            ':ids'     => $ids,
+            ':user_id' => $GLOBALS['user']->id
+        ));
         $messages = $statement->fetchAll(PDO::FETCH_ASSOC);
 
         array_walk($messages, function (&$message) {
