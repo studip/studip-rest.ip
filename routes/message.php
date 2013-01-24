@@ -1,7 +1,7 @@
 <?php
 namespace RestIP;
 
-use \DBManager, \PDO, \messaging;
+use \DBManager, \PDO, \messaging, \Request;
 
 /**
  * Message route for Rest.IP
@@ -59,7 +59,7 @@ class MessageRoute implements \APIPlugin
 
         // Create new folder
         $router->post('/messages/:box', function ($box) use ($router) {
-            $folder = trim(\Request::get('folder', ''));
+            $folder = trim(Request::get('folder', ''));
             $val = Helper::getUserData();
 
             if (empty($folder)) {
@@ -157,10 +157,16 @@ class MessageRoute implements \APIPlugin
 
 //            check_messaging_default();
             $messaging = new \messaging;
-            $result = $messaging->insert_message($message ?: '', $usernames,
+            $result = $messaging->insert_message($message, $usernames,
                                                  $GLOBALS['user']->id, time(),
-                                                 $message_id, false, \Request::get('signature'),
-                                                 $subject, \Request::int('email', 0));
+                                                 $message_id, false, Request::get('signature'),
+                                                 $subject, Request::int('email', 0));
+
+            if (Request::int('reading_confirmation')) {
+                $query = "UPDATE messages SET reading_confirmation = 1 WHERE message_id = ?";
+                $statement = DBManager::get()->prepare($query);
+                $statement->execute(array($message_id));
+            }
 
             if (!$result) {
                 $this->halt(500, 'Could not create message');
