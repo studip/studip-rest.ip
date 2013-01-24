@@ -41,8 +41,7 @@ $start, $end, true, Calendar::getBindSeminare());
                     'title'       => $termin->getTitle(),
                     'description' => $termin->getDescription() ?: '',
                     'categories'  => $termin->toStringCategories() ?: '',
-                    'room'        => $singledate->getRoom() ?:
-$singledate->getFreeRoomText() ?: '',
+                    'room'        => strip_tags($singledate->getRoom() ?: $singledate->getFreeRoomText() ?: ''),
                 );
             }
 
@@ -52,15 +51,14 @@ $singledate->getFreeRoomText() ?: '',
         $router->get('/events/ical', function () use ($router) {
             $extype = 'ALL_EVENTS';
             $export = new CalendarExport(new CalendarWriterICalendar());
-            $export->exportFromDatabase($GLOBALS['user']->id, 0,
-2114377200, 'ALL_EVENTS',
-                    Calendar::getBindSeminare($GLOBALS['user']->id));
+            $export->exportFromDatabase($GLOBALS['user']->id, 0, 2114377200, 'ALL_EVENTS', Calendar::getBindSeminare($GLOBALS['user']->id));
 
             if ($GLOBALS['_calendar_error']->getMaxStatus(ERROR_CRITICAL)) {
                 $router->halt(500);
             }
 
             $content = join($export->getExport());
+            $content = strip_tags($content);
             header('Content-Type: text/calendar');
             header('Content-Disposition: attachment; filename="studip.ics"');
             header('Content-Transfer-Encoding: binary');
@@ -86,7 +84,7 @@ $singledate->getFreeRoomText() ?: '',
                     'title'       => $temp['date'],
                     'description' => '',
                     'categories'  => $temp['art'] ?: '',
-                    'room'        => $temp['room'] ?: '',
+                    'room'        => strip_tags($temp['room'] ?: ''),
                 );
             }
 

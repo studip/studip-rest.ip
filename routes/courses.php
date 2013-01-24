@@ -219,6 +219,8 @@ class Course
 
             $course['color'] = $colors[$course['gruppe'] ?: 0];
             unset($course['gruppe']);
+
+            $course['location'] = strip_tags($course['location']);
         }
 
         return (func_num_args() === 0 || is_array($ids))
