@@ -93,7 +93,6 @@ class MessageRoute implements \APIPlugin
                 $router->halt(404, sprintf('Folder %s-%s not found', $box, $folder));
             }
 
-            error_reporting(E_ALL ^ (E_NOTICE | E_WARNING));
             $ids      = Message::folder($box == 'in' ? 'rec' : 'snd', $folder);
             $messages = Message::load($ids);
 
@@ -138,12 +137,8 @@ class MessageRoute implements \APIPlugin
             // }
 
             // Try to detect and convert utf-8 to windows-1252
-            if (mb_detect_encoding($subject, 'UTF-8')) {
-                $subject = utf8_decode($subject);
-            }
-            if (mb_detect_encoding($message, 'UTF-8')) {
-                $message = utf8_decode($message);
-            }
+            $subject = Helper::Sanitize($subject);
+            $message = Helper::Sanitize($message);
 
             $usernames = array_map(function ($id) use ($router) {
                 $user = \User::find($id);
