@@ -41,7 +41,7 @@ $start, $end, true, Calendar::getBindSeminare());
                     'title'       => $termin->getTitle(),
                     'description' => $termin->getDescription() ?: '',
                     'categories'  => $termin->toStringCategories() ?: '',
-                    'room'        => strip_tags($singledate->getRoom() ?: $singledate->getFreeRoomText() ?: ''),
+                    'room'        => html_entity_decode(strip_tags($singledate->getRoom() ?: $singledate->getFreeRoomText() ?: '')),
                 );
             }
 
@@ -58,7 +58,7 @@ $start, $end, true, Calendar::getBindSeminare());
             }
 
             $content = join($export->getExport());
-            $content = strip_tags($content);
+            $content = html_entity_decode(strip_tags($content));
             header('Content-Type: text/calendar');
             header('Content-Disposition: attachment; filename="studip.ics"');
             header('Content-Transfer-Encoding: binary');
@@ -84,7 +84,7 @@ $start, $end, true, Calendar::getBindSeminare());
                     'title'       => $temp['date'],
                     'description' => '',
                     'categories'  => $temp['art'] ?: '',
-                    'room'        => strip_tags($temp['room'] ?: ''),
+                    'room'        => html_entity_decode(strip_tags($temp['room'] ?: '')),
                 );
             }
 
