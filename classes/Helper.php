@@ -10,10 +10,10 @@ class Helper
     public static function UserHasAccessToRange($range_id, $user_id)
     {
         $user_id = $user_id ?: $GLOBALS['user']->id;
-        
+
         return true;
     }
-    
+
     /**
      *
      **/
@@ -36,7 +36,7 @@ class Helper
 
         return false;
     }
-    
+
     /**
      *
      **/
@@ -167,5 +167,13 @@ class Helper
                 $subnode->addAttribute('id', $key);
             }
         }
+    }
+
+    public static function Sanitize($value)
+    {
+        if (mb_detect_encoding($value, 'UTF-8')) {
+            $value = utf8_decode($value);
+        }
+        return $value;
     }
 }
