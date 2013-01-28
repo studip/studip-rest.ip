@@ -15,9 +15,9 @@ class OAuth
     /**
      *
      **/
-    public static function verify()
+    public static function verify($uri = null, $method = null, $params = null)
     {
-        $req = new OAuthRequestVerifier();
+        $req = new OAuthRequestVerifier($uri, $method, $params);
         $result = $req->verifyExtended('access');
         self::$consumer_key = $result['consumer_key'];
 
