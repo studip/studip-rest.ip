@@ -58,7 +58,7 @@ $start, $end, true, Calendar::getBindSeminare());
             }
 
             $content = join($export->getExport());
-            $content = strip_tags($content);
+            $content = html_entity_decode(strip_tags($content));
             header('Content-Type: text/calendar');
             header('Content-Disposition: attachment; filename="studip.ics"');
             header('Content-Transfer-Encoding: binary');
