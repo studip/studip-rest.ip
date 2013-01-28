@@ -39,7 +39,7 @@ class Router
     private function __construct($consumer_key, $template)
     {
         $this->template = $template;
-        
+
         $this->router = new Slim();
 
         restore_error_handler(); // @see handleErrors()
@@ -79,12 +79,12 @@ class Router
     {
         $this->mode = $mode;
     }
-    
+
     public function getMode()
     {
         return $this->mode;
     }
-    
+
     public function compact()
     {
         return $this->internal_dispatch || $this->mode === self::MODE_COMPACT;
@@ -94,7 +94,7 @@ class Router
     {
         return !$this->internal_dispatch && $this->mode === self::MODE_COMPLETE;
     }
-    
+
     /**
      * Returns a list of all available routes
      *
@@ -130,7 +130,7 @@ class Router
     }
 
     /**
-     * 
+     *
      */
     public function dispatch($method, $route)
     {
@@ -149,7 +149,7 @@ class Router
     }
 
     /**
-     * 
+     *
      */
     function render($data = array(), $status = 200)
     {
@@ -185,8 +185,7 @@ class Router
             $message = vsprintf($message, $arguments);
         }
 
-        $this->router->halt($status, $status === 200 ? $message : '');
-        die;
+        $this->router->halt($status, $message);
     }
 
     /**
@@ -217,4 +216,46 @@ class Router
 
         return call_user_func_array(array($this->router, $method), $arguments);
     }
+
+    public function url_for($path, $parameters = array())
+    {
+        $arguments = func_get_args();
+        if (is_array(end($arguments))) {
+            $parameters = array_pop($arguments);
+        } else {
+            $parameters = array();
+        }
+        $path = implode('/', $arguments);
+
+        $url = $path;
+        if (!empty($parameters)) {
+            $url .= '?' . http_build_query($parameters);
+        }
+        return $url;
+    }
+
+    public function paginate($total, $offset, $limit, $path, $parameters = array())
+    {
+        $url_arguments = array_slice(func_get_args(), 3);
+        $parameters = is_array(end($url_arguments))
+                    ? array_pop($url_arguments)
+                    : array();
+        if ($total < $limit) {
+            return false;
+        }
+
+        $pagination = compact('total');
+        if ($offset > 0) {
+            $args = $url_arguments;
+            $args[] = $parameters + array('offset' => $offset - $limit, 'limit' => $limit);
+            $pagination['previous'] = call_user_func_array(array($this, 'url_for'), $args);
+        }
+        if ($offset + $limit < $total) {
+            $args = $url_arguments;
+            $args[] = $parameters + array('offset' => $offset + $limit, 'limit' => $limit);
+            $pagination['next'] = call_user_func_array(array($this, 'url_for'), $args);
+        }
+        return $pagination;
+    }
+
 }
