@@ -124,6 +124,11 @@ class Router
         return $this->descriptions;
     }
 
+    public function response()
+    {
+        return $this->router->response();
+    }
+
     /**
      * 
      */
@@ -159,11 +164,13 @@ class Router
 
         $data = array_map_recursive('studip_utf8encode', $data);
 
-//        error_reporting(E_ALL);
-
-        $this->template->data   = $data;
-        $this->template->router = $this;
-        $result = $this->template->render();
+        if ($data !== false) {
+            $this->template->data   = $data;
+            $this->template->router = $this;
+            $result = $this->template->render();
+        } else {
+            $result = '';
+        }
 
         $this->halt($status, $result);
     }
@@ -187,7 +194,7 @@ class Router
      **/
     public function __call($method, $arguments)
     {
-        if (in_array($method, words('delete get post put'))) {
+        if (in_array($method, words('delete get post put head'))) {
             $backtrace = debug_backtrace();
             while ($trace = array_shift($backtrace) and $trace['class'] == __CLASS__);
             $class = ($trace and is_a($trace['class'], 'APIPlugin')) ? $trace['class'] : false;

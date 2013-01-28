@@ -175,7 +175,7 @@ class Document
                   SELECT folder_id, folder.user_id, folder.name, folder.description, folder.mkdate,
                          folder.chdate, folder.permission
                   FROM statusgruppen sg
-                  INNER JOIN statusgruppe_user AS sgu ON (sgu.user_id = :user_id)
+                  INNER JOIN statusgruppe_user AS sgu ON (sg.statusgruppe_id = sgu.statusgruppe_id AND sgu.user_id = :user_id)
                   INNER JOIN folder ON (sgu.statusgruppe_id = folder.range_id)
                   WHERE sg.range_id = :folder_id AND folder.permission > 0";
         $statement = DBManager::get()->prepare($query);
