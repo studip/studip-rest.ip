@@ -279,8 +279,8 @@ class Message
         $messages = $statement->fetchAll(PDO::FETCH_ASSOC);
 
         array_walk($messages, function (&$message) {
-            $message['message_original'] = $message['message'];
-            $message['message'] = formatReady($message['message']);
+            $message['message_original'] = $message['message'] ?: '';
+            $message['message']          = formatReady($message['message']) ?: '';
         });
 
         return is_array($ids) ? $messages : reset($messages);
