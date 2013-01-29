@@ -32,7 +32,10 @@ class ApiController extends StudipController
         // Get id from authorisation (either OAuth or standard)
         try {
             if (OAuth::isSigned()) {
-                $user_id = OAuth::verify(null, null, $GLOBALS['_' . $_SERVER['REQUEST_METHOD']]);
+                $parameters = (in_array($_SERVER['REQUEST_METHOD'], array('GET', 'POST')))
+                            ? null
+                            : $GLOBALS['_' . $_SERVER['REQUEST_METHOD']];
+                $user_id = OAuth::verify(null, null, $parameters);
             } elseif ($GLOBALS['user']->id !== 'nobody') {
                 $user_id = $GLOBALS['user']->id;
             } elseif (HTTPAuth::isSigned()) {
