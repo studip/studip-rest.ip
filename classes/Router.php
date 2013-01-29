@@ -196,7 +196,7 @@ class Router
         if (in_array($method, words('delete get post put head'))) {
             $backtrace = debug_backtrace();
             while ($trace = array_shift($backtrace) and $trace['class'] == __CLASS__);
-            $class = ($trace and is_a($trace['class'], 'APIPlugin')) ? $trace['class'] : false;
+            $class = ($trace and is_subclass_of($trace['class'], 'APIPlugin')) ? $trace['class'] : false;
 
             $route = reset($arguments);
 
