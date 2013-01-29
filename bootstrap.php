@@ -97,6 +97,8 @@ foreach (words('DELETE HEAD OPTIONS PUT') as $method) {
     if ($_SERVER['REQUEST_METHOD'] == $method) {  
         parse_str(file_get_contents('php://input'), $GLOBALS[$var]);
         foreach ($GLOBALS[$var] as $key => $value) {
+            $value = stripslashes($value);
+            $GLOBALS[$var][$key] = $value;
             Request::set($key, $value);
         }
         $_REQUEST = array_merge($_REQUEST, $GLOBALS[$var]);
