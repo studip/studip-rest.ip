@@ -244,7 +244,7 @@ class Router
             return false;
         }
 
-        $pagination = compact('total');
+        $pagination = compact('total', 'offset', 'limit');
         if ($offset > 0) {
             $args = $url_arguments;
             $args[] = $parameters + array('offset' => $offset - $limit, 'limit' => $limit);
