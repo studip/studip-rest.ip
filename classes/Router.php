@@ -40,7 +40,9 @@ class Router
     {
         $this->template = $template;
 
-        $this->router = new Slim();
+        $this->router = new Slim(array(
+            'debug' => false,
+        ));
 
         restore_error_handler(); // @see handleErrors()
 
@@ -158,7 +160,6 @@ class Router
             return;
         }
 
-        header('X-Server-Timestamp: ' . time());
         header_remove('x-powered-by');
         header_remove('set-cookie');
 
