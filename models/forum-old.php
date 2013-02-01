@@ -1,4 +1,7 @@
 <?php
+namespace RestIP;
+use \APIException, \DBManager, \PDO, \StudipPDO;
+
 class Forum
 {
     protected $course_id;
@@ -13,7 +16,104 @@ class Forum
         $this->course_id = $course_id;
     }
 
+    public function countForums()
+    {
+        return 1;
+    }
+
+    public function getForums()
+    {
+        $result = array(
+            array(
+                'forum_id' => $this->course_id,
+                'name'     =>  _('Forum der Veranstaltung'),
+            ),
+        );
+        return $result;
+    }
+    
+    public function getForum($forum_id)
+    {
+        if ($forum_id !== $this->course_id) {
+            throw new APIException('Not implemented', 501);
+        }
+        return array(
+            'forum_id' => $this->course_id,
+            'name'     => _('Forum der Veranstaltung'),
+        );
+    }
+    
+    public function setForum($forum_id, $title, $description)
+    {
+        throw new APIException('Not implemented', 501);
+    }
+    
+    public function deleteForum($forum_id)
+    {
+        throw new APIException('Not implemented', 501);
+    }
+
+    /* TOPICS */
+
     public function countTopics($forum_id)
+    {
+        return 1;
+    }
+
+    public function getTopics($forum_id, $offset = 0, $limit = 10)
+    {
+        $offset = (int) $offset;
+        $limit  = (int) $limit;
+
+        $result = array();
+        if ($offset === 0) {
+            $result[] = array(
+                'topic_id'  => $this->course_id,
+                'subject'   => _('Allgemeines Thema'),
+                'content'   => '',
+                'mkdate'    => 0,
+                'chdate'    => 0,
+                'user_id'   => '',
+                'anonymous' => 0,
+            );
+        }
+        return $result;
+    }
+
+    public function getTopic($forum_id, $topic_id)
+    {
+        if ($topic_id === $this->course_id) {
+            return array(
+                'topic_id'  => $this->course_id,
+                'subject'   => _('Allgemeines Thema'),
+                'content'   => '',
+                'mkdate'    => 0,
+                'chdate'    => 0,
+                'user_id'   => '',
+                'anonymous' => 0,
+            );
+        }
+        return false;
+    }
+
+    public function setTopic($forum_id, $topic_id, $subject, $content)
+    {
+        throw new APIException('Not implemented', 501);
+    }
+
+    public function insertTopic($forum_id, $subject, $content, $options = array())
+    {
+        throw new APIException('Not implemented', 501);
+    }
+
+    public function deleteTopic($forum_id, $topic_id, $with_replies = true)
+    {
+        throw new APIException('Not implemented', 501);
+    }
+
+    /* THREADS */
+    
+    public function countThreads($forum_id, $topic_id)
     {
         $query = "SELECT COUNT(*)
                   FROM px_topics
@@ -25,7 +125,7 @@ class Forum
         return $statement->fetchColumn() ?: 0;
     }
 
-    public function getTopics($forum_id, $offset = 0, $limit = 10)
+    public function getThreads($forum_id, $topic_id, $offset = 0, $limit = 10)
     {
         $offset = (int) $offset;
         $limit  = (int) $limit;
@@ -38,67 +138,67 @@ class Forum
         $statement = DBManager::get()->prepare($query);
         $statement->bindValue(':course_id', $this->course_id);
         $statement->execute();
-        $topics = $statement->fetchAll(PDO::FETCH_ASSOC);
+        $threads = $statement->fetchAll(PDO::FETCH_ASSOC);
 
-        foreach ($topics as $index => $topic) {
-            $topics[$index]['content_original'] = $topic['content'];
-            $topics[$index]['content']          = formatReady($topic['content']);
+        foreach ($threads as $index => $thread) {
+            $threads[$index]['content_original'] = $thread['content'];
+            $threads[$index]['content']          = formatReady($thread['content']);
         }
 
-        return $topics;
+        return $threads;
     }
 
-    public function getTopic($forum_id, $topic_id)
+    public function getThread($forum_id, $topic_id, $thread_id)
     {
-        return $this->getPost($forum_id, $topic_id, $topic_id);
+        return $this->getPost($forum_id, $topic_id, $topic_id, $thread_id);
     }
 
-    public function setTopic($forum_id, $topic_id, $subject, $content)
+    public function setThread($forum_id, $topic_id, $thread_id, $subject, $content)
     {
-        return $this->setPost($forum_id, $topic_id, $topic_id, $subject, $content);
+        return $this->setPost($forum_id, $topic_id, $topic_id, $thread_id, $subject, $content);
     }
 
-    public function insertTopic($forum_id, $subject, $content, $options = array())
+    public function insertThread($forum_id, $topic_id, $subject, $content, $options = array())
     {
-        $topic_id           = md5(uniqid('forum-post', true));
-        $options['post_id'] = $topic_id;
+        $thread_id            = md5(uniqid('forum-thread', true));
+        $options['thread_id'] = $thread_id;
 
-        return $this->insertPost($forum_id, $topic_id, $subject, $content, $options);
+        return $this->insertPost($forum_id, $topic_id, $thread_id, $subject, $content, $options);
     }
 
-    public function deleteTopic($forum_id, $topic_id, $with_replies = true)
+    public function deleteThread($forum_id, $topic_id, $thread_id, $with_replies = true)
     {
-        return $this->deletePost($forum_id, $topic_id, $topic_id, $with_replies);
+        return $this->deletePost($forum_id, $topic_id, $topic_id, $thread_id, $with_replies);
     }
 
     /* POSTS */
 
-    public function countPosts($forum_id, $topic_id)
+    public function countPosts($forum_id, $topic_id, $thread_id)
     {
         $query = "SELECT COUNT(*)
                   FROM px_topics
-                  WHERE Seminar_id = :course_id AND root_id = :topic_id AND parent_id != '0'";
+                  WHERE Seminar_id = :course_id AND root_id = :thread_id AND parent_id != '0'";
         $statement = DBManager::get()->prepare($query);
         $statement->bindValue(':course_id', $this->course_id);
-        $statement->bindValue(':topic_id', $topic_id);
+        $statement->bindValue(':thread_id', $thread_id);
         $statement->execute();
 
         return $statement->fetchColumn() ?: 0;
     }
 
-    public function getPosts($forum_id, $topic_id, $offset = 0, $limit = 10)
+    public function getPosts($forum_id, $topic_id, $thread_id, $offset = 0, $limit = 10)
     {
         $offset = (int) $offset;
         $limit  = (int) $limit;
 
-        $query = "SELECT topic_id AS post_id, name AS subject, description AS content, mkdate, chdate, parent_id, user_id, anonymous
+        $query = "SELECT topic_id AS post_id, name AS subject, description AS content, mkdate, chdate, user_id, anonymous
                   FROM px_topics
-                  WHERE Seminar_id = :course_id AND root_id = :topic_id AND parent_id != '0'
+                  WHERE Seminar_id = :course_id AND root_id = :thread_id AND parent_id != '0'
                   ORDER BY mkdate DESC
                   LIMIT {$offset}, {$limit}";
         $statement = DBManager::get()->prepare($query);
         $statement->bindValue(':course_id', $this->course_id);
-        $statement->bindValue(':topic_id', $topic_id);
+        $statement->bindValue(':thread_id', $thread_id);
         $statement->execute();
         $posts = $statement->fetchAll(PDO::FETCH_ASSOC);
 
@@ -110,14 +210,14 @@ class Forum
         return $posts;
     }
 
-    public function getPost($forum_id, $topic_id, $post_id)
+    public function getPost($forum_id, $topic_id, $thread_id, $post_id)
     {
-        $query = "SELECT topic_id AS post_id, name AS subject, description AS content, mkdate, chdate, parent_id, user_id, anonymous
+        $query = "SELECT topic_id AS post_id, name AS subject, description AS content, mkdate, chdate, user_id, anonymous
                   FROM px_topics
-                  WHERE Seminar_id = :course_id AND root_id = :topic_id AND topic_id = :post_id";
+                  WHERE Seminar_id = :course_id AND root_id = :thread_id AND topic_id = :post_id";
         $statement = DBManager::get()->prepare($query);
         $statement->bindValue(':course_id', $this->course_id);
-        $statement->bindValue(':topic_id', $topic_id);
+        $statement->bindValue(':thread_id', $thread_id);
         $statement->bindValue(':post_id', $post_id);
         $statement->execute();
         $post = $statement->fetch(PDO::FETCH_ASSOC);
@@ -130,37 +230,41 @@ class Forum
         return $post;
     }
 
-    public function postHasReplies($forum_id, $topic_id, $post_id)
+    public function postHasReplies($forum_id, $topic_id, $thread_id, $post_id)
     {
         $query = "SELECT 1
                   FROM px_topics
-                  WHERE Seminar_id = :course_id AND root_id = :topic_id AND parent_id = :post_id";
+                  WHERE Seminar_id = :course_id AND root_id = :thread_id AND parent_id = :post_id";
         $statement = DBManager::get()->prepare($query);
         $statement->bindValue(':course_id', $this->course_id);
-        $statement->bindValue(':topic_id', $topic_id);
+        $statement->bindValue(':thread_id', $thread_id);
         $statement->bindValue(':post_id', $post_id);
         $statement->execute();
 
         return $statement->fetchColumn() > 0;
     }
 
-    public function setPost($forum_id, $topic_id, $post_id, $subject, $content)
+    public function setPost($forum_id, $topic_id, $thread_id, $post_id, $subject, $content)
     {
+        if ($this->postHasReplies($forum_id, $topic_id, $thread_id, $post_id)) {
+            throw new APIException('Post cannot be updated since it already has replies.', 409);
+        }
+
         $query = "UPDATE px_topics
                   SET name = :subject, description = :content, chdate = UNIX_TIMESTAMP()
-                  WHERE Seminar_id = :course_id AND root_id = :topic_id AND topic_id = :post_id";
+                  WHERE Seminar_id = :course_id AND root_id = :thread_id AND topic_id = :post_id";
         $statement = DBManager::get()->prepare($query);
         $statement->bindValue(':subject', $subject);
         $statement->bindValue(':content', $content);
         $statement->bindValue(':course_id', $this->course_id);
-        $statement->bindValue(':topic_id', $topic_id);
+        $statement->bindValue(':thread_id', $thread_id);
         $statement->bindValue(':post_id', $post_id);
         $statement->execute();
 
         return $statement->rowCount() > 0;
     }
 
-    public function insertPost($forum_id, $topic_id, $subject, $content, $options = array())
+    public function insertPost($forum_id, $topic_id, $thread_id, $subject, $content, $options = array())
     {
         $parent_id = $options['parent_id'] ?: '0';
         $anonymous = $options['anonymous'] ?: false;
@@ -175,12 +279,12 @@ class Forum
         $query = "INSERT INTO px_topics
                     (topic_id, parent_id, root_id, name, description, mkdate, chdate, author, author_host,
                      Seminar_id, user_id, anonymous)
-                  VALUES (:post_id, :parent_id, :topic_id, :subject, :content, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(),
+                  VALUES (:post_id, :parent_id, :thread_id, :subject, :content, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(),
                           :author, :host, :course_id, :user_id, :anonymous)";
         $statement = DBManager::get()->prepare($query);
         $statement->bindValue(':post_id', $post_id);
         $statement->bindValue(':parent_id', $parent_id);
-        $statement->bindValue(':topic_id', $topic_id);
+        $statement->bindValue(':thread_id', $thread_id);
         $statement->bindValue(':subject', $subject);
         $statement->bindValue(':content', $content);
         $statement->bindValue(':author', $author);
@@ -195,13 +299,13 @@ class Forum
             : false;
     }
 
-    public function deletePost($forum_id, $topic_id, $post_id, $with_replies = true)
+    public function deletePost($forum_id, $topic_id, $thread_id, $post_id, $with_replies = true)
     {
         $query = "DELETE FROM px_topics
-                  WHERE Seminar_id = :course_id AND root_id = :topic_id AND topic_id = :post_id";
+                  WHERE Seminar_id = :course_id AND root_id = :thread_id AND topic_id = :post_id";
         $statement = DBManager::get()->prepare($query);
         $statement->bindValue(':course_id', $this->course_id);
-        $statement->bindValue(':topic_id', $topic_id);
+        $statement->bindValue(':thread_id', $thread_id);
         $statement->bindValue(':post_id', $post_id);
         $statement->execute();
         $result = $statement->rowCount() > 0;
@@ -212,16 +316,16 @@ class Forum
 
         $query = "SELECT topic_id
                   FROM px_topics
-                  WHERE Seminar_id = :course_id AND root_id = :topic_id AND parent_id IN (:parent_ids)";
+                  WHERE Seminar_id = :course_id AND root_id = :thread_id AND parent_id IN (:parent_ids)";
         $select_statement = DBManager::get()->prepare($query);
         $select_statement->bindValue(':course_id', $this->course_id);
-        $select_statement->bindValue(':topic_id', $topic_id);
+        $select_statement->bindValue(':thread_id', $thread_id);
 
         $query = "DELETE FROM px_topics
-                  WHERE Seminar_id = :course_id AND root_id = :topic_id AND topic_id IN (:post_ids)";
+                  WHERE Seminar_id = :course_id AND root_id = :thread_id AND topic_id IN (:post_ids)";
         $delete_statement = DBManager::get()->prepare($query);
         $delete_statement->bindValue(':course_id', $this->course_id);
-        $delete_statement->bindValue(':topic_id', $topic_id);
+        $delete_statement->bindValue(':thread_id', $thread_id);
 
         $parent_ids = array($post_id);
         while (count($parent_ids) > 0) {
