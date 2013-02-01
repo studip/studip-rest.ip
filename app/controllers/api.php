@@ -83,8 +83,8 @@ class ApiController extends StudipController
 
         $router = RestIP\Router::getInstance(null, $template);
         $router->error(function (Exception $e) use ($router) {
-            if ($e->getCode() == 501) {
-                $router->halt(501, $e->getMessage());
+            if ($e instanceof APIException) {
+                $router->halt($e->getCode(), $e->getMessage());
             } else {
                 $router->halt(500, $e->getMessage());
             }
