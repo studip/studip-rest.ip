@@ -85,7 +85,13 @@ class ApiController extends StudipController
         $template =  $template_factory->open('app/views/api/' . $format . '.php');
 
         $router = RestIP\Router::getInstance(null, $template);
-        $router->handleErrors();
+        $router->error(function (Exception $e) use ($router) {
+            if ($e instanceof APIException) {
+                $router->halt($e->getCode(), $e->getMessage());
+            } else {
+                $router->halt(500, $e->getMessage());
+            }
+        });
 
         error_reporting(0);
 
@@ -112,8 +118,6 @@ class ApiController extends StudipController
             }
         });
 
-        $router->run();
-
         $router->hook('slim.after.dispatch', function () use ($router) {
             $route   = reset($router->router()->getMatchedRoutes());
             $pattern = rtrim($route->getPattern(), '?');
@@ -127,6 +131,8 @@ class ApiController extends StudipController
                 call_user_func($after);
             }
         });
+
+        $router->run();
 
         restoreLanguage();
 

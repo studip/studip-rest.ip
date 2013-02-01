@@ -173,7 +173,7 @@ class Helper
 
     public static function Sanitize($value)
     {
-        if (mb_detect_encoding($value, 'UTF-8')) {
+        if (mb_detect_encoding($value, 'UTF-8', true)) {
             $value = utf8_decode($value);
         }
         return $value;
