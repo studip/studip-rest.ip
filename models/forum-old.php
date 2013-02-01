@@ -27,6 +27,7 @@ class Forum
             array(
                 'forum_id' => $this->course_id,
                 'name'     =>  _('Forum der Veranstaltung'),
+                'position' => 0,
             ),
         );
         return $result;
@@ -34,13 +35,10 @@ class Forum
     
     public function getForum($forum_id)
     {
-        if ($forum_id !== $this->course_id) {
+        if ($forum_id != $this->course_id) {
             throw new APIException('Not implemented', 501);
         }
-        return array(
-            'forum_id' => $this->course_id,
-            'name'     => _('Forum der Veranstaltung'),
-        );
+        return reset($this->getForums());
     }
     
     public function setForum($forum_id, $title, $description)
@@ -83,15 +81,7 @@ class Forum
     public function getTopic($forum_id, $topic_id)
     {
         if ($topic_id === $this->course_id) {
-            return array(
-                'topic_id'  => $this->course_id,
-                'subject'   => _('Allgemeines Thema'),
-                'content'   => '',
-                'mkdate'    => 0,
-                'chdate'    => 0,
-                'user_id'   => '',
-                'anonymous' => 0,
-            );
+            return reset($this->getTopics($forum_id));
         }
         return false;
     }
@@ -150,25 +140,26 @@ class Forum
 
     public function getThread($forum_id, $topic_id, $thread_id)
     {
-        return $this->getPost($forum_id, $topic_id, $topic_id, $thread_id);
+        return $this->getPost($forum_id, $topic_id, $thread_id, $thread_id);
     }
 
     public function setThread($forum_id, $topic_id, $thread_id, $subject, $content)
     {
-        return $this->setPost($forum_id, $topic_id, $topic_id, $thread_id, $subject, $content);
+        return $this->setPost($forum_id, $topic_id, $thread_id, $thread_id, $subject, $content);
     }
 
     public function insertThread($forum_id, $topic_id, $subject, $content, $options = array())
     {
         $thread_id            = md5(uniqid('forum-thread', true));
         $options['thread_id'] = $thread_id;
+        $options['post_id']   = $thread_id;
 
         return $this->insertPost($forum_id, $topic_id, $thread_id, $subject, $content, $options);
     }
 
     public function deleteThread($forum_id, $topic_id, $thread_id, $with_replies = true)
     {
-        return $this->deletePost($forum_id, $topic_id, $topic_id, $thread_id, $with_replies);
+        return $this->deletePost($forum_id, $topic_id, $thread_id, $thread_id, $with_replies);
     }
 
     /* POSTS */
