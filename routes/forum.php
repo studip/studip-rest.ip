@@ -168,7 +168,7 @@ class ForumRoute implements APIPlugin
             $forum     = Forum::get($course_id);
             $subject   = Helper::Sanitize(Request::get('subject'));
             $content   = Helper::Sanitize(Request::get('content'));
-            $parent_id = Request::option('parent_id', $topic_id);
+            $parent_id = Request::option('parent_id', '0');
             $anonymous = Request::int('anonymous', 0) > 0;
 
             $thread_id = $forum->insertThread($forum_id, $topic_id, $subject, $content, compact('parent_id', 'anonymous'));
