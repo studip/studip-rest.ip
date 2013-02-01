@@ -40,7 +40,9 @@ class Router
     {
         $this->template = $template;
 
-        $this->router = new Slim();
+        $this->router = new Slim(array(
+            'debug' => false,
+        ));
 
         restore_error_handler(); // @see handleErrors()
 
@@ -158,7 +160,6 @@ class Router
             return;
         }
 
-        header('X-Server-Timestamp: ' . time());
         header_remove('x-powered-by');
         header_remove('set-cookie');
 
@@ -240,9 +241,6 @@ class Router
         $parameters = is_array(end($url_arguments))
                     ? array_pop($url_arguments)
                     : array();
-        if ($total < $limit) {
-            return false;
-        }
 
         $pagination = compact('total', 'offset', 'limit');
         if ($offset > 0) {
