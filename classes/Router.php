@@ -241,9 +241,6 @@ class Router
         $parameters = is_array(end($url_arguments))
                     ? array_pop($url_arguments)
                     : array();
-        if ($total < $limit) {
-            return false;
-        }
 
         $pagination = compact('total', 'offset', 'limit');
         if ($offset > 0) {
