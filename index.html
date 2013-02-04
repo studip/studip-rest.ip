@@ -29,6 +29,10 @@
             <dd><a href="#api-discovery">Informationen über die API</a></dd>
             <dt><a href="#api-courses">/api/courses</a></dt>
             <dd><a href="#api-courses">Veranstaltungen</a></dd>
+            <dt><a href="#api-forum">/api/courses/forum</a></dt>
+            <dd><a href="#api-forum">Forum</a></dd>
+            <dt><a href="#api-wiki">/api/courses/wiki</a></dt>
+            <dd><a href="#api-wiki">Wiki</a></dd>
             <dt><a href="#api-documents">/api/documents</a></dt>
             <dd><a href="#api-documents">Dateien</a></dd>
             <dt><a href="#api-messages">/api/messages</a></dt>
@@ -129,6 +133,8 @@
 
         {% include discovery.html %}
         {% include courses.html %}
+        {% include forum.html %}
+        {% include wiki.html %}
         {% include documents.html %}
         {% include messages.html %}
         {% include news.html %}

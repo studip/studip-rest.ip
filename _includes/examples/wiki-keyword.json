@@ -1,0 +1,11 @@
+{
+  "page":{
+    "user_id":"c2fd13b5fc964d2a75afcf269c1bac17",
+    "keyword":"LoremIpsum",
+    "body":"Test<br><br>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.",
+    "chdate":"1355605353",
+    "version":"2",
+    "body_original":"Test\r\n\r\nLorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.",
+    "course_id":"834499e2b8a2cd71637890e5de31cba3"
+  }
+}
