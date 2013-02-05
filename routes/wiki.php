@@ -30,8 +30,14 @@ class WikiRoute implements \APIPlugin
 
             $router->render(compact('keywords'));
         })->conditions(array('course_id' => '[0-9a-f]{32}'));
+        
+        $router->post('/courses/:course_id/wiki', function ($course_id) use ($router) {
+            $router->halt(501);
+        });
 
         $router->get('/courses/:course_id/wiki/:page(/:version)', function ($course_id, $page, $version = null) use ($router) {
+            $page = Helper::Sanitize($page);
+
             $query = "SELECT *
                       FROM wiki
                       WHERE range_id = ? AND keyword = ? AND version = IFNULL(?, version)
@@ -61,6 +67,11 @@ class WikiRoute implements \APIPlugin
             $users[$page['user_id']] = reset($router->dispatch('get', '/user(/:user_id)', $page['user_id']));
 
             $router->render(compact('page', 'users'));
+        });
+        
+        $router->put('/courses/:course_id/wiki/:page', function ($course_id, $page) use ($router) {
+            $page = Helper::Sanitize($page);
+            $router->halt(501);
         });
     }
 }
