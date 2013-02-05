@@ -14,7 +14,9 @@ class UserRoute implements \APIPlugin
     public function describeRoutes()
     {
         return array(
-            '/user(/:user_id)'         => _('Nutzerdaten'),
+            '/user(/:user_id)'          => _('Nutzerdaten'),
+            '/user/:user_id/institutes' => _('Einrichtung eines Nutzers'),
+            '/user/:user_id/courses'    => _('Veranstaltungen eines Nutzers'),
         );
     }
 
@@ -38,21 +40,21 @@ class UserRoute implements \APIPlugin
                 $router->halt(404, sprintf('User %s not found', $user_id));
                 return;
             }
-            
+
             $visibilities = get_local_visibility_by_id($user_id, 'homepage');
             if (is_array(json_decode($visibilities, true))) {
                 $visibilities = json_decode($visibilities, true);
             } else {
                 $visibilities = array();
             }
-            
+
             $get_field = function ($field, $visibility) use ($user_id, $user, $visibilities) {
                 if (!$user[$field]
                     || !is_element_visible_for_user($GLOBALS['user']->id, $user_id, $visibilities[$visibility]))
                 {
                     return '';
                 }
-                return $user[$field]; 
+                return $user[$field];
             };
 
             $avatar = function ($size) use ($user_id, $visibilities) {
@@ -81,7 +83,7 @@ class UserRoute implements \APIPlugin
                 'homepage'      => $get_field('Home', 'homepage'),
                 'privadr'       => strip_tags($get_field('privadr', 'privadr')),
             );
-            
+
             $query = "SELECT value
                       FROM user_config
                       WHERE field = ? AND user_id = ?";
@@ -109,5 +111,56 @@ class UserRoute implements \APIPlugin
             }
             $router->halt($user->deleteUser() ? 200 : 500);
         });
+
+        $router->get('/user/:user_id/institutes', function ($user_id) use ($router) {
+            $query = "SELECT Institut_id AS institute_id, Name AS name,
+                             inst_perms AS perms, sprechzeiten AS consultation,
+                             raum AS room, ui.telefon AS phone, ui.fax
+                      FROM user_inst AS ui
+                      JOIN Institute USING (Institut_id)
+                      WHERE visible = 1 AND user_id = :user_id
+                      ORDER BY priority ASC";
+            $statement = DBManager::get()->prepare($query);
+            $statement->bindValue(':user_id', $user_id);
+            $statement->execute();
+
+            $institutes = array(
+                'work'  => array(),
+                'study' => array(),
+            );
+            foreach ($statement->fetchAll(PDO::FETCH_ASSOC) as $row) {
+                $index = $row['inst_perms'] === 'user'
+                       ? 'study'
+                       : 'work';
+                $institutes[$index][] = $row;
+            }
+
+            $router->render(compact('institutes'));
+        });
+
+        $router->get('/user/:user_id/courses', function ($user_id) use ($router) {
+            $query = "SELECT Seminar_id AS course_id, su.status AS perms,
+                             Veranstaltungsnummer AS event_number,
+                             s.Name AS name, Untertitel AS subtitle,
+                             sd.semester_id, sd.name AS semester_name
+                      FROM seminar_user AS su
+                      JOIN seminare AS s USING (Seminar_id)
+                      LEFT JOIN semester_data AS sd ON (s.start_time BETWEEN sd.beginn AND sd.ende)
+                      WHERE user_id = :user_id AND su.visible != 'no'
+                      ORDER BY s.start_time DESC";
+            $statement = DBManager::get()->prepare($query);
+            $statement->bindValue(':user_id', $user_id);
+            $statement->execute();
+
+            $courses = array();
+            foreach ($statement->fetchAll(PDO::FETCH_ASSOC) as $row) {
+                $index = $row['perms'] === 'user'
+                       ? 'study'
+                       : 'work';
+                $courses[$index][] = $row;
+            }
+            $router->render(compact('courses'));
+        });
+
     }
 }
