@@ -17,7 +17,7 @@ class RestipPlugin extends StudIPPlugin implements SystemPlugin, HomepagePlugin
         parent::__construct();
 
         if ($GLOBALS['perm']->have_perm('root')) {
-            $navigation = new AutoNavigation(_('OAuth'));
+            $navigation = new AutoNavigation(_('Rest-API'));
             $navigation->setURL(PluginEngine::getLink('restipplugin/admin'));
             Navigation::addItem('/admin/config/oauth', $navigation);
         }
