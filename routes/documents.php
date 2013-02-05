@@ -158,13 +158,16 @@ class Document
 
     static function loadFolders($folder_id)
     {
-        $query = "SELECT folder_id, user_id, name, description, mkdate, chdate, permission
+        $query = "SELECT folder_id, user_id, name, mkdate, chdate, permission,
+                         IFNULL(description, '') AS description
                   FROM folder
-                  WHERE range_id IN (:folder_id, MD5(CONCAT(:folder_id, 'top_folder'))) AND permission > 0
+                  WHERE range_id IN (:folder_id, MD5(CONCAT(:folder_id, 'top_folder')))
+                    AND permission > 0
 
                   UNION
 
-                  SELECT DISTINCT folder_id, folder.user_id, folder.name, folder.description,
+                  SELECT DISTINCT folder_id, folder.user_id, folder.name,
+                                  IFNULL(folder.description, '') AS description,
                                   folder.mkdate, folder.chdate, folder.permission
                   FROM themen AS th
                   INNER JOIN folder ON (th.issue_id = folder.range_id)
@@ -172,10 +175,12 @@ class Document
 
                   UNION
 
-                  SELECT folder_id, folder.user_id, folder.name, folder.description, folder.mkdate,
-                         folder.chdate, folder.permission
+                  SELECT folder_id, folder.user_id, folder.name,
+                         IFNULL(folder.description, '') AS description,
+                         folder.mkdate, folder.chdate, folder.permission
                   FROM statusgruppen sg
-                  INNER JOIN statusgruppe_user AS sgu ON (sg.statusgruppe_id = sgu.statusgruppe_id AND sgu.user_id = :user_id)
+                  INNER JOIN statusgruppe_user AS sgu
+                     ON (sg.statusgruppe_id = sgu.statusgruppe_id AND sgu.user_id = :user_id)
                   INNER JOIN folder ON (sgu.statusgruppe_id = folder.range_id)
                   WHERE sg.range_id = :folder_id AND folder.permission > 0";
         $statement = DBManager::get()->prepare($query);
@@ -200,13 +205,17 @@ class Document
     static function loadFiles($id, $type = 'file')
     {
         if ($type === 'folder') {
-            $query = "SELECT dokument_id AS document_id, user_id, name, description, mkdate, chdate,
-                             filename, filesize, downloads, protected
+            $query = "SELECT dokument_id AS document_id, user_id, name,
+                             IFNULL(description, '') AS description,
+                             mkdate, chdate, filename, filesize, downloads,
+                             protected
                       FROM dokumente
                       WHERE range_id = ?";
         } else {
-            $query = "SELECT dokument_id AS document_id, user_id, name, description, mkdate, chdate,
-                             filename, filesize, downloads, protected
+            $query = "SELECT dokument_id AS document_id, user_id, name,
+                             IFNULL(description, '') AS description,
+                             mkdate, chdate, filename, filesize, downloads,
+                             protected
                       FROM dokumente
                       WHERE dokument_id IN (?)";
         }
