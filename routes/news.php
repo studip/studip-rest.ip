@@ -29,17 +29,23 @@ class NewsRoute implements APIPlugin
     public function routes(&$router)
     {
         // Get news of a range id
-        $router->get('/news(/range/:range_id)', function ($range_id = false) use ($router)
-        {
-            $range_id = $range_id ?: $GLOBALS['user']->id;
+        $router->get('/news(/range/:range_id)', function ($range_id = false) use ($router) {
+            $offset = Request::int('offset', 0);
+            $limit  = Request::int('limit', 10) ?: 10;
+            $total  = News::countRange($range_id);
 
+            $range_id = $range_id ?: $GLOBALS['user']->id;
             if (!Helper::UserHasAccessToRange($range_id)) {
-                $router->halt(403, sprintf('User may not access range %s', $range_id));
+                $router->halt(403, sprintf('User may not access range "%s"', $range_id));
             }
 
-            $news = array_values(News::loadRange($range_id));
+            $result = array(
+                'news'       => News::loadRange($range_id, $offset, $limit),
+                'pagination' => $router->paginate($total, $offset, $limit, '/news/range', $range_id),
+            );
+            
 
-            $router->render(compact('news'));
+            $router->render($result);
         })->conditions(array('range_id' => '(studip|[a-f0-9]{32})'));
 
         // Create news for a specific range
@@ -185,14 +191,39 @@ class News
         return is_array($id) ? $result : reset($result);
     }
 
-    static function loadRange($range_id)
+    public static function countRange($range_id)
     {
-        $news = \StudipNews::GetNewsByRange($range_id);
+        $query = "SELECT COUNT(*)
+                  FROM news_range
+                  INNER JOIN news USING (news_id)
+                  WHERE range_id = :range_id
+                    AND UNIX_TIMESTAMP() BETWEEN `date` AND `date` + expire";
+        $statement = DBManager::get()->prepare($query);
+        $statement->bindValue(':range_id', $range_id);
+        $statement->execute();
+
+        return $statement->fetchColumn();
+    }
+
+    public static function loadRange($range_id, $offset = 0, $limit = 10)
+    {
+        $offset = (int) $offset;
+        $limit  = (int) $limit;
+
+        $query = "SELECT news_id, topic, body, `date`, user_id, expire,
+                         allow_comments, chdate, chdate_uid, mkdate
+                  FROM news_range
+                  INNER JOIN news USING (news_id)
+                  WHERE range_id = :range_id
+                    AND UNIX_TIMESTAMP() BETWEEN `date` AND `date` + expire
+                  ORDER BY `date` DESC, chdate DESC, topic ASC
+                  LIMIT {$offset}, {$limit}";
+        $statement = DBManager::get()->prepare($query);
+        $statement->bindValue(':range_id', $range_id);
+        $statement->execute();
+
+        $news = $statement->fetchAll(PDO::FETCH_ASSOC);
         $news = array_map('self::adjust', $news);
-        $news = array_filter($news, function ($item) {
-            $now = time();
-            return $item['date'] <= $now && $item['date'] + $item['expire'] >= $now;
-        });
 
         return $news;
     }
