@@ -39,20 +39,7 @@ class NewsRoute implements APIPlugin
 
             $news = array_values(News::loadRange($range_id));
 
-            if ($router->compact()) {
-                $router->render(compact('news'));
-                return;
-            }
-
-            foreach ($news as $index => $n) {
-                if ($n['allow_comments']) {
-                    $comments = $router->dispatch('get', '/news/:news_id/comments', $n['news_id']);
-                    $news[$index]['comments'] = $comments['comments'];
-                }
-            }
-            $users = array_values(NewsRoute::extractUsers($news, $router));
-
-            $router->render(compact('news', 'users'));
+            $router->render(compact('news'));
         })->conditions(array('range_id' => '(studip|[a-f0-9]{32})'));
 
         // Create news for a specific range
@@ -98,22 +85,13 @@ class NewsRoute implements APIPlugin
                 $router->halt(404, sprintf('News %s not found', $news_id));
             }
 
-            if ($router->compact()) {
-                $router->render(compact('news'));
-                return;
-            }
-
-            $users = NewsRoute::extractUsers(array($news), $router);
-            if ($news['allow_comments']) {
-                $news['comments'] = reset($router->dispatch('get', '/news/:news_id/comments', $news_id));
-            }
-            $router->render(compact('news', 'users'));
+            $router->render(compact('news'));
         });
 
         // Update news
         $router->put('/news/:news_id', function ($news_id) use ($router) {
             global $_PUT;
-            
+
             $news = new \StudipNews($news_id);
             if (!$news) {
                 $router->halt(404, sprintf('News %s not found', $news_id));
@@ -167,31 +145,6 @@ class NewsRoute implements APIPlugin
             $news->delete();
             $router->halt(200, sprintf('Deleted news %s.', $news_id));
         });
-    }
-
-    static function extractUsers($collection, $router)
-    {
-        $users = array();
-        foreach ((array)$collection as $item) {
-            if (!empty($item['comments'])) {
-                foreach ($item['comments'] as $comment) {
-                    if (!isset($users[$comment['user_id']])) {
-                        $user = $router->dispatch('get', '/user(/:user_id)', $comment['user_id']);
-                        $users[$comment['user_id']] = $user['user'];
-                    }
-                }
-            }
-
-            if (!isset($users[$item['user_id']])) {
-                $user = $router->dispatch('get', '/user(/:user_id)', $item['user_id']);
-                $users[$item['user_id']] = $user['user'];
-            }
-            if ($item['chdate_uid'] && !isset($users[$item['chdate_uid']])) {
-                $user = $router->dispatch('get', '/user(/:user_id)', $item['chdate_uid']);
-                $users[$item['chdate_uid']] = $user['user'];
-            }
-        }
-        return $users;
     }
 }
 
