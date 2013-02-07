@@ -44,13 +44,7 @@ class NewsCommentsRoute implements \APIPlugin
 
             $comments = NewsComments::loadByNewsId($news_id);
 
-            if ($router->compact()) {
-                $router->render(compact('comments'));
-                return;
-            }
-            
-            $users = NewsCommentsRoute::extractUsers($comments, $router);
-            $router->render(compact('comments', 'users'));
+            $router->render(compact('comments'));
         });
         
         // Create comment for a news
@@ -88,13 +82,7 @@ class NewsCommentsRoute implements \APIPlugin
                 $router->halt(404, 'Comment "%s" for news "%s" not found', $comment, $news_id);
             }
 
-            if ($router->compact()) {
-                $router->render(compact('comment'));
-                return;
-            }
-
-            $users = NewsCommentsRoute::extractUsers(array($comments), $router);
-            $router->render(compact('comment', 'users'));
+            $router->render(compact('comment'));
         });
         
         // Remove news comment
@@ -115,18 +103,6 @@ class NewsCommentsRoute implements \APIPlugin
 
             $router->halt(200, 'Deleted comment "%s" for news "%s"', $comment_id, $news_id);
         });
-    }
-
-    static function extractUsers($collection, $router)
-    {
-        $users = array();
-        foreach ((array)$collection as $item) {
-            if (!isset($users[$item['user_id']])) {
-                $user = $router->dispatch('get', '/user(/:user_id)', $item['user_id']);
-                $users[$item['user_id']] = $user['user'];
-            }
-        }
-        return array_values($users);
     }
 }
 
