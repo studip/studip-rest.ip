@@ -178,8 +178,9 @@ class News
     {
         $result = array();
         foreach ((array)$id as $i) {
-            $news = StudipNews::find($i);
-            $news = self::adjust($news);
+            if ($news = StudipNews::find($i)) {
+                $news = self::adjust($news);
+            }
             $result[] = $news;
         }
 
