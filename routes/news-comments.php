@@ -46,7 +46,6 @@ class NewsCommentsRoute implements APIPlugin
             $limit  = Request::int('limit', 10) ?: 10;
             $total  = NewsComments::countByNewsId($news_id);
 
-
             $result = array(
                 'comments'   => NewsComments::loadByNewsId($news_id, $offset, $limit),
                 'pagination' => $router->paginate($total, $offset, $limit, '/news', $news_id, 'comments'),

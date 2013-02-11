@@ -1,7 +1,7 @@
 <?php
 namespace RestIP;
 
-use \DBManager, \PDO, \messaging, \Request;
+use \APIPlugin, \DBManager, \PDO, \messaging, \Request, \User;
 
 /**
  * Message route for Rest.IP
@@ -12,7 +12,7 @@ use \DBManager, \PDO, \messaging, \Request;
  * @subpackage Rest.IP
  * @license    GPL
  **/
-class MessageRoute implements \APIPlugin
+class MessageRoute implements APIPlugin
 {
     /**
      * Return human readable descriptions of all routes
@@ -146,7 +146,7 @@ class MessageRoute implements \APIPlugin
             $message = Helper::Sanitize($message);
 
             $usernames = array_map(function ($id) use ($router) {
-                $user = \User::find($id);
+                $user = User::find($id);
                 if (!$user) {
                     $router->halt(404, sprintf('Receiver user id %s not found', $id));
                 }
@@ -156,7 +156,7 @@ class MessageRoute implements \APIPlugin
             $message_id = md5(uniqid('message', true));
 
 //            check_messaging_default();
-            $messaging = new \messaging;
+            $messaging = new messaging;
             $result = $messaging->insert_message($message, $usernames,
                                                  $GLOBALS['user']->id, time(),
                                                  $message_id, false, Request::get('signature'),
