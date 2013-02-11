@@ -54,7 +54,16 @@ class MessageRoute implements \APIPlugin
 
             $folders = $folders[$box];
 
-            $router->render(compact('folders'));
+            $offset = Request::int('offset', 0);
+            $limit  = Request::int('limit', 10) ?: 10;
+            $total  = count($folders);
+
+            $result = array(
+                'folders'    => array_slice($folders, $offset, $limit),
+                'pagination' => $router->paginate($total, $offset, $limit, '/messages', $box),
+            );
+
+            $router->render($result);
         })->conditions(array('box' => '(in|out)'));
 
         // Create new folder
@@ -93,10 +102,21 @@ class MessageRoute implements \APIPlugin
                 $router->halt(404, sprintf('Folder %s-%s not found', $box, $folder));
             }
 
-            $ids      = Message::folder($box == 'in' ? 'rec' : 'snd', $folder);
+            $ids = Message::folder($box == 'in' ? 'rec' : 'snd', $folder);
+
+            $offset = Request::int('offset', 0);
+            $limit  = Request::int('limit', 10) ?: 10;
+            $total  = count($ids);
+
+            $ids    = array_slice($ids, $offset, $limit);
             $messages = Message::load($ids);
 
-            $router->render(compact('messages'));
+            $result = array(
+                'messages'   => $messages,
+                'pagination' => $router->paginate($total, $offset, $limit, '/messages', $box, $folder),
+            );
+
+            $router->render($result);
         })->conditions((array('box' => '(in|out)', array('folder' => '\d+'))));
 
     // Direct access to messages
@@ -262,7 +282,8 @@ class Message
     {
         $query = "SELECT message_id
                   FROM message_user
-                  WHERE snd_rec = ? AND folder = ? AND user_id = ? AND deleted = 0";
+                  WHERE snd_rec = ? AND folder = ? AND user_id = ? AND deleted = 0
+                  ORDER BY mkdate DESC";
         $statement = DBManager::get()->prepare($query);
         $statement->execute(array(
             $sndrec,
