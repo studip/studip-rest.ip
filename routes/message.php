@@ -96,22 +96,7 @@ class MessageRoute implements \APIPlugin
             $ids      = Message::folder($box == 'in' ? 'rec' : 'snd', $folder);
             $messages = Message::load($ids);
 
-            if ($router->compact()) {
-                $router->render(compact('messages'));
-                return;
-            }
-
-            $users    = array();
-            foreach ($messages as $message) {
-                if ($message['sender_id'] != '____%system%____' && !isset($users[$message['sender_id']])) {
-                    $users[$message['sender_id']] = reset($router->dispatch('get', '/user(/:user_id)', $message['sender_id']));
-                }
-                if ($message['receiver_id'] != '____%system%____' && !isset($users[$message['receiver_id']])) {
-                    $users[$message['receiver_id']] = reset($router->dispatch('get', '/user(/:user_id)', $message['receiver_id']));
-                }
-            }
-
-            $router->render(compact('messages', 'users'));
+            $router->render(compact('messages'));
         })->conditions((array('box' => '(in|out)', array('folder' => '\d+'))));
 
     // Direct access to messages
@@ -178,20 +163,7 @@ class MessageRoute implements \APIPlugin
                 return;
             }
 
-            if ($router->compact()) {
-                $router->render(compact('message'));
-                return;
-            }
-
-            $users = array();
-            if ($message['sender_id'] != '____%system%____' && !isset($users[$message['sender_id']])) {
-                $users[$message['sender_id']] = reset($router->dispatch('get', '/user(/:user_id)', $message['sender_id']));
-            }
-            if ($message['receiver_id'] != '____%system%____' && !isset($users[$message['receiver_id']])) {
-                $users[$message['receiver_id']] = reset($router->dispatch('get', '/user(/:user_id)', $message['receiver_id']));
-            }
-
-            $router->render(compact('message', 'users'));
+            $router->render(compact('message'));
         });
 
         // Destroy a message
