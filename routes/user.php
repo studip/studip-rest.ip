@@ -113,11 +113,15 @@ class UserRoute implements \APIPlugin
         });
 
         $router->get('/user/:user_id/institutes', function ($user_id) use ($router) {
-            $query = "SELECT Institut_id AS institute_id, Name AS name,
+            $query = "SELECT i0.Institut_id AS institute_id, i0.Name AS name,
                              inst_perms AS perms, sprechzeiten AS consultation,
-                             raum AS room, ui.telefon AS phone, ui.fax
+                             raum AS room, ui.telefon AS phone, ui.fax,
+                             i0.Strasse AS street, i0.Plz AS city,
+                             i1.Name AS faculty_name, i1.Strasse AS faculty_street,
+                             i1.Plz AS faculty_city
                       FROM user_inst AS ui
-                      JOIN Institute USING (Institut_id)
+                      JOIN Institute AS i0 USING (Institut_id)
+                      LEFT JOIN Institute AS i1 ON (i0.fakultaets_id = i1.Institut_id)
                       WHERE visible = 1 AND user_id = :user_id
                       ORDER BY priority ASC";
             $statement = DBManager::get()->prepare($query);
