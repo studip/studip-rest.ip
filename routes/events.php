@@ -24,9 +24,7 @@ class EventsRoute implements \APIPlugin
         $router->get('/events', function () use ($router) {
             $start = time();
             $end   = strtotime('+2 weeks');
-            $list = @new DbCalendarEventList(new
-SingleCalendar($GLOBALS['user']->id, Calendar::PERMISSION_OWN),
-$start, $end, true, Calendar::getBindSeminare());
+            $list = @new DbCalendarEventList(new SingleCalendar($GLOBALS['user']->id, Calendar::PERMISSION_OWN), $start, $end, true, Calendar::getBindSeminare());
 
             $events = array();
             while ($termin = $list->nextEvent()) {
@@ -34,8 +32,7 @@ $start, $end, true, Calendar::getBindSeminare());
 
                 $events[] = array(
                     'event_id'    => $termin->id,
-                    'course_id'   => (strtolower(get_class($termin))
-=== 'seminarevent') ? $termin->getSeminarId() : '',
+                    'course_id'   => (strtolower(get_class($termin)) === 'seminarevent') ? $termin->getSeminarId() : '',
                     'start'       => $termin->getStart(),
                     'end'         => $termin->getEnd(),
                     'title'       => $termin->getTitle(),
@@ -68,8 +65,7 @@ $start, $end, true, Calendar::getBindSeminare());
             die($content);
         });
 
-        $router->get('/courses/:course_id/events', function
-($course_id) use ($router) {
+        $router->get('/courses/:course_id/events', function ($course_id) use ($router) {
             $seminar = new Seminar($course_id);
             $dates = getAllSortedSingleDates($seminar);
 
