@@ -19,3 +19,10 @@
     <li><code>404</code> falls der Nutzer nicht existiert</li>
     <li><code>500</code> falls der Nutzer nicht gelöscht werden konnte</li>
 </ul>
+
+<h4>/api/user/<em>:user_id</em>/institutes</h4>
+<h5>GET</h5>
+<p>
+    Liefert die Einrichtungen zurück, an denen ein Nutzer arbeitet bzw. studiert.
+</p>
+{% highlight js linenos %}{% include examples/user-institutes.json %}{% endhighlight %}

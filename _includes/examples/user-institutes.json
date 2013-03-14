@@ -1,0 +1,37 @@
+{
+  "institutes":{
+    "work":[
+      {
+        "institute_id":"2560f7c7674942a7dce8eeb238e15d93",
+        "name":"Test Einrichtung",
+        "perms":"dozent",
+        "consultation":"Mo 14-18",
+        "room":"A-123b",
+        "phone":"+49-123-456789",
+        "fax":"",
+        "street":"",
+        "city":"",
+        "faculty_name":"Test Fakultät",
+        "faculty_street":"Some Street 123a",
+        "faculty_city":"54321 Somewhere"
+      },
+      {
+        "institute_id":"f02e2b17bc0e99fc885da6ac4c2532dc",
+        "name":"Test Abteilung",
+        "perms":"dozent",
+        "consultation":"",
+        "room":"",
+        "phone":"",
+        "fax":"",
+        "street":"",
+        "city":"",
+        "faculty_name":"Test Fakultät",
+        "faculty_street":"Some Street 123a",
+        "faculty_city":"54321 Somewhere"
+      }
+    ],
+    "study":[
+      
+    ]
+  }
+}
