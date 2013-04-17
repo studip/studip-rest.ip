@@ -1,7 +1,7 @@
 <?php
 namespace RestIP;
 
-use \DBManager, \PDO, \messaging, \Request;
+use \APIPlugin, \DBManager, \PDO, \messaging, \Request, \User;
 
 /**
  * Message route for Rest.IP
@@ -12,7 +12,7 @@ use \DBManager, \PDO, \messaging, \Request;
  * @subpackage Rest.IP
  * @license    GPL
  **/
-class MessageRoute implements \APIPlugin
+class MessageRoute implements APIPlugin
 {
     /**
      * Return human readable descriptions of all routes
@@ -54,7 +54,16 @@ class MessageRoute implements \APIPlugin
 
             $folders = $folders[$box];
 
-            $router->render(compact('folders'));
+            $offset = Request::int('offset', 0);
+            $limit  = Request::int('limit', 10) ?: 10;
+            $total  = count($folders);
+
+            $result = array(
+                'folders'    => array_slice($folders, $offset, $limit),
+                'pagination' => $router->paginate($total, $offset, $limit, '/messages', $box),
+            );
+
+            $router->render($result);
         })->conditions(array('box' => '(in|out)'));
 
         // Create new folder
@@ -93,25 +102,21 @@ class MessageRoute implements \APIPlugin
                 $router->halt(404, sprintf('Folder %s-%s not found', $box, $folder));
             }
 
-            $ids      = Message::folder($box == 'in' ? 'rec' : 'snd', $folder);
+            $ids = Message::folder($box == 'in' ? 'rec' : 'snd', $folder);
+
+            $offset = Request::int('offset', 0);
+            $limit  = Request::int('limit', 10) ?: 10;
+            $total  = count($ids);
+
+            $ids    = array_slice($ids, $offset, $limit);
             $messages = Message::load($ids);
 
-            if ($router->compact()) {
-                $router->render(compact('messages'));
-                return;
-            }
+            $result = array(
+                'messages'   => $messages,
+                'pagination' => $router->paginate($total, $offset, $limit, '/messages', $box, $folder),
+            );
 
-            $users    = array();
-            foreach ($messages as $message) {
-                if ($message['sender_id'] != '____%system%____' && !isset($users[$message['sender_id']])) {
-                    $users[$message['sender_id']] = reset($router->dispatch('get', '/user(/:user_id)', $message['sender_id']));
-                }
-                if ($message['receiver_id'] != '____%system%____' && !isset($users[$message['receiver_id']])) {
-                    $users[$message['receiver_id']] = reset($router->dispatch('get', '/user(/:user_id)', $message['receiver_id']));
-                }
-            }
-
-            $router->render(compact('messages', 'users'));
+            $router->render($result);
         })->conditions((array('box' => '(in|out)', array('folder' => '\d+'))));
 
     // Direct access to messages
@@ -141,7 +146,7 @@ class MessageRoute implements \APIPlugin
             $message = Helper::Sanitize($message);
 
             $usernames = array_map(function ($id) use ($router) {
-                $user = \User::find($id);
+                $user = User::find($id);
                 if (!$user) {
                     $router->halt(404, sprintf('Receiver user id %s not found', $id));
                 }
@@ -178,20 +183,7 @@ class MessageRoute implements \APIPlugin
                 return;
             }
 
-            if ($router->compact()) {
-                $router->render(compact('message'));
-                return;
-            }
-
-            $users = array();
-            if ($message['sender_id'] != '____%system%____' && !isset($users[$message['sender_id']])) {
-                $users[$message['sender_id']] = reset($router->dispatch('get', '/user(/:user_id)', $message['sender_id']));
-            }
-            if ($message['receiver_id'] != '____%system%____' && !isset($users[$message['receiver_id']])) {
-                $users[$message['receiver_id']] = reset($router->dispatch('get', '/user(/:user_id)', $message['receiver_id']));
-            }
-
-            $router->render(compact('message', 'users'));
+            $router->render(compact('message'));
         });
 
         // Destroy a message
@@ -290,7 +282,8 @@ class Message
     {
         $query = "SELECT message_id
                   FROM message_user
-                  WHERE snd_rec = ? AND folder = ? AND user_id = ? AND deleted = 0";
+                  WHERE snd_rec = ? AND folder = ? AND user_id = ? AND deleted = 0
+                  ORDER BY mkdate DESC";
         $statement = DBManager::get()->prepare($query);
         $statement->execute(array(
             $sndrec,

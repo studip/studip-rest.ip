@@ -1,12 +1,12 @@
 <?php
 namespace RestIP;
 
-use \Request;
+use \APIPlugin, \Request, \DBManager, \PDO, \StudipNews;
 
 /**
  *
  **/
-class NewsCommentsRoute implements \APIPlugin
+class NewsCommentsRoute implements APIPlugin
 {
     /**
      *
@@ -33,52 +33,55 @@ class NewsCommentsRoute implements \APIPlugin
     // Comments
         // Load comments for a news
         $router->get('/news/:news_id/comments', function ($news_id) use ($router) {
-            $news = \StudipNews::find($news_id);
+            $news = StudipNews::find($news_id);
             if (!$news) {
                 $router->halt(404, sprintf('News "%s" not found', $news_id));
             }
-            
+
             if (!$news->allow_comments) {
                 $router->halt(406, sprintf('Comments are disabled for news "%s"', $news_id));
             }
 
-            $comments = NewsComments::loadByNewsId($news_id);
+            $offset = Request::int('offset', 0);
+            $limit  = Request::int('limit', 10) ?: 10;
+            $total  = NewsComments::countByNewsId($news_id);
 
-            if ($router->compact()) {
-                $router->render(compact('comments'));
-                return;
-            }
-            
-            $users = NewsCommentsRoute::extractUsers($comments, $router);
-            $router->render(compact('comments', 'users'));
+            $result = array(
+                'comments'   => NewsComments::loadByNewsId($news_id, $offset, $limit),
+                'pagination' => $router->paginate($total, $offset, $limit, '/news', $news_id, 'comments'),
+            );
+
+            $router->render($result);
         });
-        
+
         // Create comment for a news
         $router->post('/news/:news_id/comments', function ($news_id) use ($router) {
-            $content = trim(Request::get('content'));
-            if (empty($content)) {
-                $router->halt(406, 'No comment provided');
-            }
-            
-            $news = \StudipNews::find($news_id);
+            $news = StudipNews::find($news_id);
             if (!$news) {
                 $router->halt(404, sprintf('News "%s" not found', $news_id));
             }
 
-            $comment = new \StudipComments();
+            $comment = new StudipComments();
             $comment->object_id = $news_id;
             $comment->user_id   = $GLOBALS['user']->id;
-            $comment->content   = $content;
+            $comment->content   = Helper::Sanitize(Request::get('content'));
+
+            if (empty($comment->content)) {
+                $router->halt(406, 'No comment provided');
+            }
+
             if (!$comment->store()) {
                 $router->halt(500, 'Could not create comment for news "%s"', $news_id);
             }
 
-            $router->render($router->dispatch('get', '/news/:news_id/comments/:comment_id', $news_id, $comment->comment_id), 201);
+            $comment = NewsComments::load($news_id, $comment->comment_id);
+
+            $router->render(compact('comment'), 201);
         });
-        
+
         // Load comment
         $router->get('/news/:news_id/comments/:comment_id', function ($news_id, $comment_id) use ($router) {
-            $news = \StudipNews::find($news_id);
+            $news = StudipNews::find($news_id);
             if (!$news) {
                 $router->halt(404, 'News "%s" not found', $news_id);
             }
@@ -88,23 +91,17 @@ class NewsCommentsRoute implements \APIPlugin
                 $router->halt(404, 'Comment "%s" for news "%s" not found', $comment, $news_id);
             }
 
-            if ($router->compact()) {
-                $router->render(compact('comment'));
-                return;
-            }
-
-            $users = NewsCommentsRoute::extractUsers(array($comments), $router);
-            $router->render(compact('comment', 'users'));
+            $router->render(compact('comment'));
         });
-        
+
         // Remove news comment
         $router->delete('/news/:news_id/comments/:comment_id', function ($news_id, $comment_id) use ($router) {
-            $news = \StudipNews::find($news_id);
+            $news = StudipNews::find($news_id);
             if (!$news) {
                 $router->halt(404, 'News "%s" not found', $news_id);
             }
 
-            $comment = \StudipComments::find($comment_id);
+            $comment = StudipComments::find($comment_id);
             if (!$comment) {
                 $router->halt(404, 'Comment "%s" for news "%s" not found', $comment_id, $news_id);
             }
@@ -113,20 +110,8 @@ class NewsCommentsRoute implements \APIPlugin
                 $router->halt(500, 'Comment "%s" for news "%s" could not be deleted.', $comment_id, $news_id);
             }
 
-            $router->halt(200, 'Deleted comment "%s" for news "%s"', $comment_id, $news_id);
+            $router->render(array('comment' => null), 205);
         });
-    }
-
-    static function extractUsers($collection, $router)
-    {
-        $users = array();
-        foreach ((array)$collection as $item) {
-            if (!isset($users[$item['user_id']])) {
-                $user = $router->dispatch('get', '/user(/:user_id)', $item['user_id']);
-                $users[$item['user_id']] = $user['user'];
-            }
-        }
-        return array_values($users);
     }
 }
 
@@ -138,9 +123,9 @@ class NewsComments
         $query = "SELECT comment_id, content AS comment, mkdate, chdate, user_id, object_id AS news_id
                   FROM comments
                   WHERE object_id = ? AND comment_id = ?";
-        $statement = \DBManager::get()->prepare($query);
+        $statement = DBManager::get()->prepare($query);
         $statement->execute(array($news_id, $comment_id));
-        $comment = $statement->fetch(\PDO::FETCH_ASSOC);
+        $comment = $statement->fetch(PDO::FETCH_ASSOC);
 
         if (!$comment) {
             return false;
@@ -152,15 +137,31 @@ class NewsComments
         return $comment;
     }
 
-    static function loadByNewsId($news_id)
+    public static function countByNewsId($news_id)
     {
+        $query = "SELECT COUNT(*)
+                  FROM comments
+                  WHERE object_id = :news_id";
+        $statement = DBManager::get()->prepare($query);
+        $statement->bindValue(':news_id', $news_id);
+        $statement->execute();
+        return $statement->fetchColumn() ?: 0;
+    }
+
+    public static function loadByNewsId($news_id, $offset = 0, $limit = 10)
+    {
+        $offset = (int) $offset;
+        $limit  = (int) $limit;
+
         $query = "SELECT comment_id, content AS comment, mkdate, chdate, user_id, object_id AS news_id
                   FROM comments
-                  WHERE object_id = ?
-                  ORDER BY mkdate";
-        $statement = \DBManager::get()->prepare($query);
-        $statement->execute(array($news_id));
-        $comments = $statement->fetchAll(\PDO::FETCH_ASSOC);
+                  WHERE object_id = :news_id
+                  ORDER BY mkdate
+                  LIMIT {$offset}, {$limit}";
+        $statement = DBManager::get()->prepare($query);
+        $statement->bindValue(':news_id', $news_id);
+        $statement->execute();
+        $comments = $statement->fetchAll(PDO::FETCH_ASSOC);
 
         foreach ($comments as &$comment) {
             $comment['comment_original'] = $comment['comment'];

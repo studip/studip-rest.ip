@@ -31,17 +31,9 @@ class CoursesRoute implements \APIPlugin
         $router->get('/courses', function () use ($router)
         {
             $courses = Course::load();
-            $courses   = array_values($courses);
+            $courses = array_values($courses);
 
-            if ($router->compact()) {
-                $router->render(compact('courses'));
-                return;
-            }
-
-            $semesters = CoursesRoute::extractSemesters($courses, $router);
-            $users     = CoursesRoute::extractUsers($courses, $router);
-
-            $router->render(compact('courses', 'semesters', 'users'));
+            $router->render(compact('courses'));
         });
 
         //
@@ -55,26 +47,17 @@ class CoursesRoute implements \APIPlugin
 
         //
         $router->get('/courses/semester/:semester_id', function ($semester_id) use ($router) {
-            $temp = $router->dispatch('get', '/semesters/:semester_id', $semester_id);
-            $semester = $temp['semester'];
+            $temp        = $router->dispatch('get', '/semesters/:semester_id', $semester_id);
+            $semester    = $temp['semester'];
+            $semester_id = $semester['semester_id'];
 
             $courses  = Course::load();
+            $courses = array_filter($courses, function ($x) use ($semester_id) {
+                return $x['semester_id'] === $semester_id;
+            });
             $courses = array_values($courses);
 
-            if ($router->compact()) {
-                $router->render(compact('courses'));
-                return;
-            }
-
-            foreach ($courses as &$course) {
-                if ($course['semester_id'] != $semester_id) {
-                    unset($course);
-                }
-            }
-
-            $users = CoursesRoute::extractUsers($courses, $router);
-
-            $router->render(compact('courses', 'semester', 'users'));
+            $router->render(compact('courses'));
         });
 
         //
@@ -84,14 +67,7 @@ class CoursesRoute implements \APIPlugin
                 $router->halt(404, sprintf('Course %s not found', $course_id));
             }
 
-            if ($router->compact()) {
-                $router->render(compact('course'));
-            }
-
-            $semesters = CoursesRoute::extractSemesters($course, $router);
-            $users     = CoursesRoute::extractUsers($course, $router);
-
-            $router->render(compact('course', 'semesters', 'users'));
+            $router->render(compact('course'));
         });
 
         $router->get('/courses/:course_id/members(/:status)', function ($course_id, $status = null) use ($router) {
@@ -109,36 +85,8 @@ class CoursesRoute implements \APIPlugin
                 $members[$status] = $course[$status];
             }
 
-            if (!$router->compact()) {
-                $users = CoursesRoute::extractUsers($members, $router);
-            }
-
-            if (count($members) == 1) {
-                $members = reset($members);
-            }
-
-            $router->render($router->compact() ? compact('members') : compact('members', 'users'));
+            $router->render(compact('members'));
         });
-    }
-
-    public static function extractUsers($collection, $router)
-    {
-        if (isset($collection['students']) or isset($collection['tutors']) or isset($collection['teachers'])) {
-            $collection = array($collection);
-        }
-
-        $users = array();
-        foreach ($collection as $item) {
-            foreach (words('students tutors teachers') as $status) {
-                foreach ($item[$status] as $user_id) {
-                    if (!isset($users[$user_id])) {
-                        $user = $router->dispatch('get', '/user(/:user_id)', $user_id);
-                        $users[$user_id] = $user['user'];
-                    }
-                }
-            }
-        }
-        return array_values($users);
     }
 
     public static function extractSemesters($collection, $router)
