@@ -133,7 +133,7 @@ class UserRoute implements \APIPlugin
                 'study' => array(),
             );
             foreach ($statement->fetchAll(PDO::FETCH_ASSOC) as $row) {
-                $index = $row['inst_perms'] === 'user'
+                $index = ($row['inst_perms'] !== 'dozent')
                        ? 'study'
                        : 'work';
                 $institutes[$index][] = $row;
