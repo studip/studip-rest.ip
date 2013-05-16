@@ -273,9 +273,22 @@ class Message
         array_walk($messages, function (&$message) {
             $message['message_original'] = $message['message'] ?: '';
             $message['message']          = formatReady($message['message']) ?: '';
+            $message['attachments']      = Message::loadAttachments($message['message_id']);
         });
 
         return is_array($ids) ? $messages : reset($messages);
+    }
+
+    static function loadAttachments($id)
+    {
+        $query = "SELECT dokument_id, name, filesize
+                  FROM dokumente
+                  WHERE range_id = :msg_id AND user_id = seminar_id
+                  ORDER BY filename ASC";
+        $statement = DBManager::get()->prepare($query);
+        $statement->bindValue(':msg_id', $id);
+        $statement->execute();
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 
     static function folder($sndrec, $folder)

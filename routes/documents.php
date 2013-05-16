@@ -64,7 +64,7 @@ class DocumentsRoute implements APIPlugin
 
         $router->get('/documents/:document_id', function($document_id) use ($router) {
             $document = new StudipDocument($document_id);
-            if (!$document->checkAccess($GLOBALS['user']->id)) {
+            if (!$document->checkAccess($GLOBALS['user']->id) && $document->seminar_id != $GLOBALS['user']->id) {
                 $router->halt(403, sprintf('User may not access file %s', $document_id));
             }
 
@@ -83,7 +83,7 @@ class DocumentsRoute implements APIPlugin
         // See public/sendfile.php
         $router->get('/documents/:document_id/download', function($document_id) use ($router) {
             $document = new StudipDocument($document_id);
-            if (!$document->checkAccess($GLOBALS['user']->id)) {
+            if (!$document->checkAccess($GLOBALS['user']->id) && $document->seminar_id != $GLOBALS['user']->id) {
                 $router->halt(403, sprintf('User may not access file %s', $document_id));
             }
 
