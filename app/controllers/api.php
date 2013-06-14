@@ -109,9 +109,12 @@ class ApiController extends StudipController
         $env['PATH_INFO']   = '/' . trim($unconsumed);
 
         $router->hook('slim.before.dispatch', function () use ($router) {
-            $route   = reset($router->router()->getMatchedRoutes());
+            $routes  = $router->router()->getMatchedRoutes();
+            $route   = reset($routes);
             $pattern = rtrim($route->getPattern(), '?');
-            $method  = strtolower(reset($route->getHttpMethods()));
+
+            $methods = $route->getHttpMethods();
+            $method  = strtolower(reset($methods));
 
             $routes  = $router->getRoutes();
             $handler = $routes[$pattern][$method];
