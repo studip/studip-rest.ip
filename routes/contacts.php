@@ -75,7 +75,9 @@ class Contacts
 {
     static function locate($user_id, $contact_id)
     {
-        $query = "SELECT contact_id FROM contact WHERE owner_id = ? AND user_id = ?";
+        $query = "SELECT contact_id
+                  FROM contact
+                  WHERE owner_id = ? AND user_id = ?";
         $statement = DBManager::get()->prepare($query);
         $statement->execute(array($user_id, $contact_id));
         return $statement->fetchColumn();
@@ -83,7 +85,11 @@ class Contacts
 
     static function load($user_id)
     {
-        $query = "SELECT user_id FROM contact WHERE owner_id = ?";
+        $query = "SELECT user_id
+                  FROM contact
+                  JOIN auth_user_md5 USING (user_id)
+                  WHERE owner_id = ?
+                  ORDER BY Nachname ASC, Vorname ASC";
         $statement = DBManager::get()->prepare($query);
         $statement->execute(array($user_id));
         return $statement->fetchAll(PDO::FETCH_COLUMN);

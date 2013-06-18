@@ -30,7 +30,7 @@ class CoursesRoute implements \APIPlugin
         //
         $router->get('/courses', function () use ($router)
         {
-            $courses = Course::load();
+            $courses = Course::load(null, @$_REQUEST['order'] == 'name');
             $courses = array_values($courses);
 
             $router->render(compact('courses'));
@@ -38,7 +38,7 @@ class CoursesRoute implements \APIPlugin
 
         //
         $router->get('/courses/semester', function () use ($router) {
-            $courses = Course::load();
+            $courses = Course::load(null, @$_REQUEST['order'] == 'name');
 
             $semesters = CoursesRoute::extractSemesters($courses, $router);
 
@@ -51,7 +51,7 @@ class CoursesRoute implements \APIPlugin
             $semester    = $temp['semester'];
             $semester_id = $semester['semester_id'];
 
-            $courses  = Course::load();
+            $courses  = Course::load(null, @$_REQUEST['order'] == 'name');
             $courses = array_filter($courses, function ($x) use ($semester_id) {
                 return $x['semester_id'] === $semester_id;
             });
@@ -62,7 +62,7 @@ class CoursesRoute implements \APIPlugin
 
         //
         $router->get('/courses/:course_id', function ($course_id) use ($router) {
-            $course = Course::load($course_id);
+            $course = Course::load($course_id, @$_REQUEST['order'] == 'name');
             if (!$course) {
                 $router->halt(404, sprintf('Course %s not found', $course_id));
             }
@@ -71,7 +71,7 @@ class CoursesRoute implements \APIPlugin
         });
 
         $router->get('/courses/:course_id/members(/:status)', function ($course_id, $status = null) use ($router) {
-            $course = Course::load($course_id);
+            $course = Course::load($course_id, @$_REQUEST['order'] == 'name');
             if (!$course) {
                 $router->halt(404, sprintf('Course %s not found', $course_id));
             }
@@ -108,7 +108,7 @@ class CoursesRoute implements \APIPlugin
 
 class Course
 {
-    static function load($ids = null)
+    static function load($ids = null, $order_by_name = false)
     {
         if (is_array($ids) && empty($ids)) {
             return array();
@@ -126,10 +126,12 @@ class Course
             $query .= " WHERE sem.Seminar_id IN (?)";
             $parameters[] = $ids;
             if (is_array($ids) && count($ids) > 1) {
-                $query .= " ORDER BY start_time DESC";
+                $query .= $order_by_name
+                        ? " ORDER BY title ASC"
+                        : " ORDER BY start_time DESC";
             }
         } else {
-            $query .= " WHERE su.user_id IS NOT NULL";
+            $query .= " WHERE su.user_id IS NOT NULL ORDER BY title ASC";
         }
 
         $statement = DBManager::get()->prepare($query);
@@ -138,8 +140,13 @@ class Course
 
         $query = "SELECT user_id
                   FROM seminar_user
-                  WHERE Seminar_id = ? AND status = ? AND visible != 'no'
-                  ORDER BY position ASC";
+                  JOIN auth_user_md5 USING (user_id)
+                  WHERE Seminar_id = ? AND status = ? AND visible != 'no'";
+        if ($order_by_name) {
+            $query .= " ORDER BY Nachname ASC, Vorname ASC";
+        } else {
+            $query .= " ORDER BY position ASC";
+        }
         $statement = DBManager::get()->prepare($query);
 
         $modules = new Modules;
