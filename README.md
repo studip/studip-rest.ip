@@ -7,6 +7,12 @@ implementing authentication by OAuth.
 
 ## Integration in Stud.IP
 
+### Installation
+
+Clone this repository including it's submodules: `git clone --recursive git@github.com:studip/studip-rest.ip.git`
+
+Create a zip archive of the directory and install it via Stud.IP's plugin manager.
+
 ### API location
 
 The API is located at ***installation_url*/plugins.php/restipplugin/api** for now.
