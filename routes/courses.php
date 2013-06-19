@@ -141,7 +141,7 @@ class Course
         $query = "SELECT user_id
                   FROM seminar_user
                   JOIN auth_user_md5 USING (user_id)
-                  WHERE Seminar_id = ? AND status = ? AND visible != 'no'";
+                  WHERE Seminar_id = ? AND status = ? AND seminar_user.visible != 'no'";
         if ($order_by_name) {
             $query .= " ORDER BY Nachname ASC, Vorname ASC";
         } else {
