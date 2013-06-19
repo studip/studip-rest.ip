@@ -179,10 +179,14 @@ class MessageRoute implements APIPlugin
         // Load a message
         $router->get('/messages/:message_id', function ($message_id) use ($router) {
             $message = Message::load($message_id);
-            if (!$message || $message['deleted']) {
+            if (!$message
+               || ($message['sender_id'] === $GLOBALS['user']->id && $message['deleted'])
+               || ($messages['receiver_id'] === $GLOBALS['user']->id && $message['deleted2']))
+            {
                 $router->halt(404, sprintf('Message %s not found', $message_id));
                 return;
             }
+            unset($message['deleted2']);
 
             $router->render(compact('message'));
         });
@@ -254,7 +258,7 @@ class Message
                            : ',' . implode(',', $additional_fields);
 
         $query = "SELECT DISTINCT m.message_id, mu.user_id AS sender_id, mu2.user_id AS receiver_id, subject,
-                         message, m.mkdate, priority, 1 - mu2.readed AS unread, mu.deleted
+                         message, m.mkdate, priority, 1 - mu2.readed AS unread, mu.deleted, mu2.deleted AS deleted2
                          {$additional_fields}
                   FROM message AS m
                   INNER JOIN message_user AS mu ON (m.message_id = mu.message_id AND mu.snd_rec = 'snd')
