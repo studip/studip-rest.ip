@@ -178,7 +178,7 @@ class Course
             $course['location'] = strip_tags($course['location']);
         }
 
-        return (func_num_args() === 0 || is_array($ids))
+        return (func_num_args() === 0 || is_array($ids) || $ids === null)
             ? $courses
             : reset($courses);
     }
