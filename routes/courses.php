@@ -122,7 +122,7 @@ class Course
                   LEFT JOIN seminar_user AS su ON (sem.Seminar_id = su.seminar_id AND su.user_id = ?)";
         $parameters = array($GLOBALS['user']->id);
 
-        if (func_num_args() > 0) {
+        if ($ids !== null) {
             $query .= " WHERE sem.Seminar_id IN (?)";
             $parameters[] = $ids;
             if (is_array($ids) && count($ids) > 1) {
