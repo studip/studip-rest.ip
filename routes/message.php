@@ -1,7 +1,7 @@
 <?php
 namespace RestIP;
 
-use \APIPlugin, \DBManager, \PDO, \messaging, \Request, \User;
+use \APIPlugin, \DBManager, \PDO, \messaging, \Request, \User, \UserConfig;
 
 /**
  * Message route for Rest.IP
@@ -45,8 +45,7 @@ class MessageRoute implements APIPlugin
     // Inbox and outbox
         // List folders
         $router->get('/messages/:box', function ($box) use ($router) {
-            $val = Helper::getUserData();
-            $settings = $val['my_messaging_settings'] ?: array();
+            $settings = UserConfig::get($GLOBALS['user']->id)->MESSAGING_SETTINGS ?: array();
             $folders = $settings['folder'];
 
             $folders['in'][0]  = _('Posteingang');
@@ -69,7 +68,7 @@ class MessageRoute implements APIPlugin
         // Create new folder
         $router->post('/messages/:box', function ($box) use ($router) {
             $folder = trim(Request::get('folder', ''));
-            $val = Helper::getUserData();
+            $settings = UserConfig::get($GLOBALS['user']->id)->MESSAGING_SETTINGS ?: array();
 
             if (empty($folder)) {
                 $router->halt(406, 'No folder name provided');
@@ -77,17 +76,15 @@ class MessageRoute implements APIPlugin
             if (false and preg_match('/[^a-z0-9]/', $folder)) {
                 $router->halt(406, 'Invalid folder name provided');
             }
-            if (in_array($folder, $val['my_messaging_settings']['folder'][$box])
+            if (in_array($folder, $settings['folder'][$box])
               || ($box === 'in' and $folder === _('Posteingang'))
               || ($box === 'out' and $folder === _('Postausgang')))
             {
                 $router->halt(409, 'Duplicate');
             }
 
-            $val['my_messaging_settings']['folder'][$box][] = $folder;
-            Helper::setUserData($val);
-
-            $GLOBALS['user']->unregister('my_messaging_settings');
+            $settings['folder'][$box][] = $folder;
+            UserConfig::get($GLOBALS['user']->id)->store('MESSAGING_SETTINGS', $settings);
 
             $router->halt(201);
         })->conditions(array('box' => '(in|out)'));
@@ -95,8 +92,7 @@ class MessageRoute implements APIPlugin
     // Folders
         // List messages
         $router->get('/messages/:box/:folder', function ($box, $folder) use ($router) {
-            $val = Helper::getUserData();
-            $settings = $val['my_messaging_settings'] ?: array();
+            $settings = UserConfig::get($GLOBALS['user']->id)->MESSAGING_SETTINGS ?: array();
 
             if ($folder != 0 && !isset($settings['folder'][$box][$folder])) {
                 $router->halt(404, sprintf('Folder %s-%s not found', $box, $folder));
@@ -226,8 +222,7 @@ class MessageRoute implements APIPlugin
 
         // Move message
         $router->put('/messages/:message_id/move/:folder', function ($folder, $message_id) use ($router) {
-            $val = Helper::getUserData();
-            $settings = $val['my_messaging_settings'] ?: array();
+            $settings = UserConfig::get($GLOBALS['user']->id)->MESSAGING_SETTINGS ?: array();
 
             if ($folder != 0 && !isset($settings['folder'][$box][$folder])) {
                 $router->halt(404, sprintf('Folder %s-%s not found', $box, $folder));

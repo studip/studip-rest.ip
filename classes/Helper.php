@@ -37,34 +37,6 @@ class Helper
         return false;
     }
 
-    /**
-     *
-     **/
-    public static function getUserData()
-    {
-        static $user_data;
-        if (!is_array($user_data)) {
-            $query = "SELECT val FROM user_data WHERE sid = ?";
-            $statement = \DBManager::get()->prepare($query);
-            $statement->execute(array($GLOBALS['user']->id));
-            $user_data = unserialize($statement->fetchColumn() ?: 'a:0:{}');
-        }
-        return $user_data;
-    }
-
-    /**
-     *
-     **/
-    public static function setUserData($user_data)
-    {
-        $query = "INSERT INTO user_data (sid, val)
-                  VALUES (?, ?)
-                  ON DUPLICATE KEY UPDATE val = VALUES(val)";
-        $statement = \DBManager::get()->prepare($query);
-        $statement->execute(array($GLOBALS['user']->id, serialize($user_data)));
-
-    }
-
     public static function isNumericIndexed($array) {
         return (is_array($array) && count(array_filter(array_keys($array), 'is_string')) == 0);
     }

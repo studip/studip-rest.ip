@@ -79,7 +79,11 @@ $error_reporting = error_reporting();
 require 'vendor/Slim/Slim/Slim.php';
 error_reporting($error_reporting);
 
-Slim\Slim::registerAutoloader();
+if (class_exists('StudipAutoloader')) {
+    StudipAutoloader::addAutoloadPath(__DIR__ . '/vendor/Slim');
+} else {
+    Slim\Slim::registerAutoloader();
+}
 
 require_once 'classes/APIException.php';
 require_once 'classes/Router.php';
