@@ -55,14 +55,14 @@ class ApiController extends StudipController
             // Fake user identity
             $user = User::find($user_id);
 
+            $GLOBALS['user'] = new Seminar_User($user->user_id);
+
             $GLOBALS['auth'] = new Seminar_Auth();
             $GLOBALS['auth']->auth = array(
                 'uid'   => $user->user_id,
                 'uname' => $user->username,
                 'perm'  => $user->perms,
             );
-
-            $GLOBALS['user'] = new Seminar_User($user->user_id);
 
             $GLOBALS['perm'] = new Seminar_Perm();
             $GLOBALS['MAIL_VALIDATE_BOX'] = false;
