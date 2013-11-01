@@ -91,9 +91,9 @@ class ApiController extends StudipController
         });
 
         if (Studip\ENV === 'development') {
-            error_reporting(E_ALL ^ (E_NOTICE | E_WARNING));
+            // error_reporting(E_ALL ^ (E_NOTICE | E_WARNING));
         } else {
-            error_reporting(0);
+            // error_reporting(0);
         }
 
         if (Request::option('mode', 'compact') === 'complete') {
