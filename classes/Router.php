@@ -258,4 +258,16 @@ class Router
         return $pagination;
     }
 
+    public function getCurrentRouteAndMethod()
+    {
+        $routes  = $this->router()->getMatchedRoutes($this->request()->getMethod(), $this->request()->getResourceUri());
+        $route   = reset($routes);
+        $pattern = rtrim($route->getPattern(), '?');
+
+        $methods = $route->getHttpMethods();
+        $method  = strtolower(reset($methods));
+
+        return array($pattern, $method);
+    }
+
 }

@@ -105,13 +105,12 @@ class ApiController extends StudipController
         $env = $router->environment();
         $env['PATH_INFO']   = '/' . trim($unconsumed);
 
-        $router->hook('slim.before.dispatch', function () use ($router) {
-            $routes  = $router->router()->getMatchedRoutes($router->request()->getMethod(), $router->request()->getResourceUri());
-            $route   = reset($routes);
-            $pattern = rtrim($route->getPattern(), '?');
 
-            $methods = $route->getHttpMethods();
-            $method  = strtolower(reset($methods));
+
+        // call matched route's #before method
+        $router->hook('slim.before.dispatch', function () use ($router) {
+
+            list($pattern, $method) = $router->getCurrentRouteAndMethod();
 
             $routes  = $router->getRoutes();
             $handler = $routes[$pattern][$method];
@@ -120,6 +119,15 @@ class ApiController extends StudipController
             if (is_callable($before)) {
                 call_user_func($before);
             }
+        });
+
+        // send notification before dispatching
+        $router->hook('slim.before.dispatch', function () use ($router) {
+            list($pattern, $method) = $router->getCurrentRouteAndMethod();
+            $pattern = join('-', explode('/', trim($pattern, '/?')));
+            $pattern = preg_replace('/[^\w-_]/', '', $pattern);
+            $metric_path = sprintf('restip.%s.%s', $pattern, $method);
+            \NotificationCenter::postNotification($metric_path, $router);
         });
 
         $router->hook('slim.after.dispatch', function () use ($router) {
