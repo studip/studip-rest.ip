@@ -117,12 +117,15 @@ class DocumentsRoute implements APIPlugin
                 header('Cache-Control: no-store, no-cache, must-revalidate');   // HTTP/1.1
             }
             header('Cache-Control: post-check=0, pre-check=0', false);
-            header(sprintf('Content-Type: %s; name="%s"',
-                           get_mime_type($document->getValue('filename')),
-                           $document->getValue('filename')));
+            // header('Content-Type: ' . get_mime_type($filename) . '; name="' . $filename . '"');
+            header('Content-Type: ' . get_mime_type($filename));
             header('Content-Description: File Transfer');
+            header('Content-Disposition: attachment; filename="' . $filename . '"');
             header('Content-Transfer-Encoding: binary');
-            header('Content-Length: ' . filesize($file));
+            if (is_int($filesize)) {
+                header('Content-Length: ' . $filesize);
+            }
+            header('ETag: "' . $document_id . '"');
             @readfile_chunked($path_file);
             TrackAccess($document_id, 'dokument');
             die;
