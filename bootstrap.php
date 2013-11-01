@@ -86,6 +86,7 @@ if (true || !class_exists('StudipAutoloader')) {
     require_once 'vendor/Slim/Slim/Http/Request.php';
     require_once 'vendor/Slim/Slim/Http/Response.php';
     require_once 'vendor/Slim/Slim/Http/Headers.php';
+    require_once 'vendor/Slim/Slim/Http/Util.php';
     require_once 'vendor/Slim/Slim/Middleware.php';
     require_once 'vendor/Slim/Slim/Middleware/ContentTypes.php';
     require_once 'vendor/Slim/Slim/Middleware/Flash.php';
