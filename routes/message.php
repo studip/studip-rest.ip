@@ -172,7 +172,10 @@ class MessageRoute implements APIPlugin
                 $this->halt(500, 'Could not create message');
             }
 
-            $router->render($router->dispatch('get', '/messages/:message_id', $message_id), 201);
+            $message = Message::load($message_id);
+            unset($message['deleted2']);
+
+            $router->render(compact('message'), 201);
         });
 
         // Load a message
