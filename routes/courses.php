@@ -6,7 +6,7 @@
 // TODO Nutzer anzeigen?
 
 namespace RestIP;
-use \DBManager, \PDO, \Modules, \StudipCacheFactory;
+use \DBManager, \PDO, \Modules, \StudipCacheFactory, \AutoInsert, \Semester;
 
 class CoursesRoute implements \APIPlugin
 {
@@ -114,6 +114,9 @@ class Course
             return array();
         }
 
+        $semester_cur = Semester::findCurrent();
+        $semester_old = Semester::findByTimestamp(time() - 365 * 24 * 60 * 60);
+
         $query = "SELECT sem.Seminar_id AS course_id, start_time,
                          duration_time, VeranstaltungsNummer AS `number`,
                          Name AS title, Untertitel AS subtitle, sem.status AS type, modules,
@@ -123,7 +126,7 @@ class Course
         $parameters = array($GLOBALS['user']->id);
 
         if ($ids !== null) {
-            $query .= " WHERE sem.Seminar_id IN (?)";
+            $query .= " WHERE sem.Seminar_id IN (?) AND start_time <= ? AND (? <= start_time + duration_time OR duration_time = -1)";
             $parameters[] = $ids;
             if (is_array($ids) && count($ids) > 1) {
                 $query .= $order_by_name
@@ -131,9 +134,11 @@ class Course
                         : " ORDER BY start_time DESC";
             }
         } else {
-            $query .= " WHERE su.user_id IS NOT NULL ORDER BY title ASC";
+            $query .= " WHERE su.user_id IS NOT NULL AND start_time <= ? AND (? <= start_time + duration_time OR duration_time = -1) ORDER BY title ASC";
         }
 
+        $parameters[] = $semester_cur->beginn;
+        $parameters[] = $semester_old->beginn;
         $statement = DBManager::get()->prepare($query);
         $statement->execute($parameters);
         $courses = $statement->fetchAll(PDO::FETCH_ASSOC);
@@ -141,12 +146,14 @@ class Course
         $query = "SELECT user_id
                   FROM seminar_user
                   JOIN auth_user_md5 USING (user_id)
-                  WHERE Seminar_id = ? AND status = ? AND seminar_user.visible != 'no'";
+                  WHERE Seminar_id = ? AND status = ? AND seminar_user.visible = 'yes'";
         if ($order_by_name) {
             $query .= " ORDER BY Nachname ASC, Vorname ASC";
         } else {
             $query .= " ORDER BY position ASC";
         }
+        // limit list to 500 users max
+        $query .= ' LIMIT 500';
         $statement = DBManager::get()->prepare($query);
 
         $modules = new Modules;
@@ -168,9 +175,13 @@ class Course
             $course['tutors'] = $statement->fetchAll(PDO::FETCH_COLUMN) ?: array();
             $statement->closeCursor();
 
-            $statement->execute(array($course['course_id'], 'autor'));
-            $course['students'] = $statement->fetchAll(PDO::FETCH_COLUMN) ?: array();
-            $statement->closeCursor();
+            if (AutoInsert::checkSeminar($course['course_id'])) {
+                $course['students'] = array();
+            } else {
+                $statement->execute(array($course['course_id'], 'autor'));
+                $course['students'] = $statement->fetchAll(PDO::FETCH_COLUMN) ?: array();
+                $statement->closeCursor();
+            }
 
             $course['color'] = $colors[$course['gruppe'] ?: 0];
             unset($course['gruppe']);
