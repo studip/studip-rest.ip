@@ -59,6 +59,8 @@ class DocumentsRoute implements APIPlugin
                 }
             }
 
+            header('Cache-Control: private');
+            $router->expires('+10 minutes');
             $router->render(compact('folders', 'documents', 'users'));
         });
 

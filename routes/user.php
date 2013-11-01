@@ -99,6 +99,8 @@ class UserRoute implements \APIPlugin
                 $user['skype_show'] = false;
             }
 
+            header('Cache-Control: private');
+            $router->expires('+1 day');
             $router->render(compact('user'));
         });
 

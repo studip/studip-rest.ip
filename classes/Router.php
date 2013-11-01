@@ -162,6 +162,8 @@ class Router
 
         header_remove('x-powered-by');
         header_remove('set-cookie');
+        header_remove('Pragma');
+        header_remove('Expires');
 
         $data = array_map_recursive('studip_utf8encode', $data);
 

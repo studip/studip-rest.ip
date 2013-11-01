@@ -62,6 +62,8 @@ class MessageRoute implements APIPlugin
                 'pagination' => $router->paginate($total, $offset, $limit, '/messages', $box),
             );
 
+            header('Cache-Control: private');
+            $router->expires('+1 day');
             $router->render($result);
         })->conditions(array('box' => '(in|out)'));
 
@@ -112,6 +114,8 @@ class MessageRoute implements APIPlugin
                 'pagination' => $router->paginate($total, $offset, $limit, '/messages', $box, $folder),
             );
 
+            header('Cache-Control: private');
+            $router->expires('+10 minutes');
             $router->render($result);
         })->conditions((array('box' => '(in|out)', array('folder' => '\d+'))));
 
