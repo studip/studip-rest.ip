@@ -89,11 +89,24 @@ class DocumentsRoute implements APIPlugin
                 $router->halt(403, sprintf('User may not access file %s', $document_id));
             }
 
-            $file = $path_file = get_upload_file_path($document_id);
-            if (!file_exists($file)) {
-                $router->halt(404, sprintf('File contents for file %s not found', $document_id));
+            // check if linked file is obtainable
+            if ($document->url) {
+                $path_file = $document->url;
+                $link_data = parse_link($path_file);
+                if ($link_data['response_code'] != 200) {
+                    $router->halt(404, sprintf('File contents for file %s not found', $document_id));
+                }
+                $filesize = $link_data['Content-Length'];
+            } else {
+                $path_file = get_upload_file_path($document_id);
+                $filesize = @filesize($path_file);
+
+                if (!file_exists($path_file)) {
+                    $router->halt(404, sprintf('File contents for file %s not found', $document_id));
+                }
             }
 
+            $filename = $document->getValue('filename');
             header('Expires: Mon, 12 Dec 2001 08:00:00 GMT');
             header('Last-Modified: ' . gmdate ('D, d M Y H:i:s') . ' GMT');
             if ($_SERVER['HTTPS'] == 'on'){
