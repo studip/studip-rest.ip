@@ -160,7 +160,7 @@ class Document
     {
         $query = "SELECT * FROM (
                     SELECT folder_id, user_id, name, mkdate, chdate, permission,
-                           IFNULL(description, '') AS description
+                         IFNULL(description, '') AS description
                     FROM folder
                     WHERE range_id IN (:folder_id, MD5(CONCAT(:folder_id, 'top_folder')))
                       AND permission > 0
@@ -168,8 +168,8 @@ class Document
                     UNION
 
                     SELECT DISTINCT folder_id, folder.user_id, folder.name,
-                                    IFNULL(folder.description, '') AS description,
-                                    folder.mkdate, folder.chdate, folder.permission
+                                    folder.mkdate, folder.chdate, folder.permission,
+                                    IFNULL(folder.description, '') AS description
                     FROM themen AS th
                     INNER JOIN folder ON (th.issue_id = folder.range_id)
                     WHERE th.seminar_id = :folder_id AND folder.permission > 0
@@ -177,8 +177,8 @@ class Document
                     UNION
 
                     SELECT folder_id, folder.user_id, folder.name,
-                           IFNULL(folder.description, '') AS description,
-                           folder.mkdate, folder.chdate, folder.permission
+                           folder.mkdate, folder.chdate, folder.permission,
+                           IFNULL(folder.description, '') AS description
                     FROM statusgruppen sg
                     INNER JOIN statusgruppe_user AS sgu
                        ON (sg.statusgruppe_id = sgu.statusgruppe_id AND sgu.user_id = :user_id)
