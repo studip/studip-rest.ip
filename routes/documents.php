@@ -186,8 +186,8 @@ class Document
                     UNION
 
                     SELECT DISTINCT folder_id, folder.user_id, folder.name,
-                                    IFNULL(folder.description, '') AS description,
-                                    folder.mkdate, folder.chdate, folder.permission
+                                    folder.mkdate, folder.chdate, folder.permission,
+                                    IFNULL(folder.description, '') AS description
                     FROM themen AS th
                     INNER JOIN folder ON (th.issue_id = folder.range_id)
                     WHERE th.seminar_id = :folder_id AND folder.permission > 0
@@ -195,8 +195,8 @@ class Document
                     UNION
 
                     SELECT folder_id, folder.user_id, folder.name,
-                           IFNULL(folder.description, '') AS description,
-                           folder.mkdate, folder.chdate, folder.permission
+                           folder.mkdate, folder.chdate, folder.permission,
+                           IFNULL(folder.description, '') AS description
                     FROM statusgruppen sg
                     INNER JOIN statusgruppe_user AS sgu
                        ON (sg.statusgruppe_id = sgu.statusgruppe_id AND sgu.user_id = :user_id)
