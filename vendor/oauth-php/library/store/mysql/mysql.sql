@@ -4,7 +4,7 @@
 # I have commented the constraints out, just look for 'usa_id_ref' to enable them.
 #
 # The --SPLIT-- markers are used by the install.php script
-#   
+#
 # @version $Id: mysql.sql 188 2011-02-25 14:40:26Z scherpenisse $
 # @author Marc Worrell
 #
@@ -15,10 +15,10 @@
 #           ALTER TABLE oauth_consumer_token MODIFY oct_token varchar(255) binary not null;
 #           ALTER TABLE oauth_consumer_token MODIFY oct_token_secret varchar(255) binary not null;
 #
-# 2010-09-15 
+# 2010-09-15
 #			ALTER TABLE oauth_server_token MODIFY ost_referrer_host varchar(128) not null default '';
 #
-# 2010-07-22 
+# 2010-07-22
 #			ALTER TABLE oauth_consumer_registry DROP INDEX ocr_consumer_key;
 #			ALTER TABLE oauth_consumer_registry ADD UNIQUE ocr_consumer_key(ocr_consumer_key,ocr_usa_id_ref,ocr_server_uri)
 #
@@ -32,11 +32,11 @@
 #
 # 2008-10-15 (on r48) Added ttl to consumer and server tokens, added named server tokens
 #
-#			ALTER TABLE oauth_server_token 
+#			ALTER TABLE oauth_server_token
 #			ADD ost_token_ttl datetime not null default '9999-12-31',
 #			ADD KEY (ost_token_ttl);
 #
-#			ALTER TABLE oauth_consumer_token 
+#			ALTER TABLE oauth_consumer_token
 #			ADD oct_name varchar(64) binary not null default '',
 #			ADD oct_token_ttl datetime not null default '9999-12-31',
 #			DROP KEY oct_usa_id_ref,
@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS oauth_log (
     key (olg_ocr_consumer_key, olg_id),
     key (olg_oct_token, olg_id),
     key (olg_usa_id_ref, olg_id)
-    
+
 #   , foreign key (olg_usa_id_ref) references any_user_auth (usa_id_ref)
 #       on update cascade
 #       on delete cascade
@@ -145,7 +145,7 @@ CREATE TABLE IF NOT EXISTS oauth_consumer_token (
 
 #   , foreign key (oct_usa_id_ref) references any_user_auth (usa_id_ref)
 #       on update cascade
-#       on delete cascade           
+#       on delete cascade
 ) engine=InnoDB default charset=utf8;
 
 #--SPLIT--
@@ -155,7 +155,7 @@ CREATE TABLE IF NOT EXISTS oauth_consumer_token (
 # ////////////////// SERVER SIDE /////////////////
 #
 
-# Table holding consumer key/secret combos an user issued to consumers. 
+# Table holding consumer key/secret combos an user issued to consumers.
 # Used for verification of incoming requests.
 
 CREATE TABLE IF NOT EXISTS oauth_server_registry (
@@ -233,7 +233,7 @@ CREATE TABLE IF NOT EXISTS oauth_server_token (
 
 #   , foreign key (ost_usa_id_ref) references any_user_auth (usa_id_ref)
 #       on update cascade
-#       on delete cascade           
+#       on delete cascade
 ) engine=InnoDB default charset=utf8;
 
 
