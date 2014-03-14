@@ -28,19 +28,21 @@ class EventsRoute implements \APIPlugin
             $list = @new DbCalendarEventList(new SingleCalendar($GLOBALS['user']->id, Calendar::PERMISSION_OWN), $start, $end, true, Calendar::getBindSeminare());
 
             $events = array();
-            while ($termin = $list->nextEvent()) {
-                $singledate = new SingleDate($termin->id);
+            if ($list->existEvent()) {
+                while ($termin = $list->nextEvent()) {
+                    $singledate = new SingleDate($termin->id);
 
-                $events[] = array(
-                    'event_id'    => $termin->id,
-                    'course_id'   => (strtolower(get_class($termin)) === 'seminarevent') ? $termin->getSeminarId() : '',
-                    'start'       => $termin->getStart(),
-                    'end'         => $termin->getEnd(),
-                    'title'       => $termin->getTitle(),
-                    'description' => $termin->getDescription() ?: '',
-                    'categories'  => $termin->toStringCategories() ?: '',
-                    'room'        => html_entity_decode(strip_tags($singledate->getRoom() ?: $singledate->getFreeRoomText() ?: '')),
-                );
+                    $events[] = array(
+                        'event_id'    => $termin->id,
+                        'course_id'   => (strtolower(get_class($termin)) === 'seminarevent') ? $termin->getSeminarId() : '',
+                        'start'       => $termin->getStart(),
+                        'end'         => $termin->getEnd(),
+                        'title'       => $termin->getTitle(),
+                        'description' => $termin->getDescription() ?: '',
+                        'categories'  => $termin->toStringCategories() ?: '',
+                        'room'        => html_entity_decode(strip_tags($singledate->getRoom() ?: $singledate->getFreeRoomText() ?: '')),
+                    );
+                }
             }
 
             $router->render(compact('events'));
