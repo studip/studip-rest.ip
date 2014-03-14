@@ -134,9 +134,7 @@ class Course
                         : " ORDER BY start_time DESC";
             }
         } else {
-            $query .= " WHERE su.user_id IS NOT NULL AND start_time <= ? AND (? <= start_time + duration_time OR duration_time = -1) ORDER BY title ASC";
-            $parameters[] = $semester_cur->beginn;
-            $parameters[] = $semester_old->beginn;
+            $query .= " WHERE su.user_id IS NOT NULL ORDER BY title ASC";
         }
 
         $statement = DBManager::get()->prepare($query);
