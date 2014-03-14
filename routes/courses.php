@@ -126,7 +126,7 @@ class Course
         $parameters = array($GLOBALS['user']->id);
 
         if ($ids !== null) {
-            $query .= " WHERE sem.Seminar_id IN (?) AND start_time <= ? AND (? <= start_time + duration_time OR duration_time = -1)";
+            $query .= " WHERE sem.Seminar_id IN (?)";
             $parameters[] = $ids;
             if (is_array($ids) && count($ids) > 1) {
                 $query .= $order_by_name
@@ -135,10 +135,10 @@ class Course
             }
         } else {
             $query .= " WHERE su.user_id IS NOT NULL AND start_time <= ? AND (? <= start_time + duration_time OR duration_time = -1) ORDER BY title ASC";
+            $parameters[] = $semester_cur->beginn;
+            $parameters[] = $semester_old->beginn;
         }
 
-        $parameters[] = $semester_cur->beginn;
-        $parameters[] = $semester_old->beginn;
         $statement = DBManager::get()->prepare($query);
         $statement->execute($parameters);
         $courses = $statement->fetchAll(PDO::FETCH_ASSOC);
