@@ -114,9 +114,6 @@ class Course
             return array();
         }
 
-        $semester_cur = Semester::findCurrent();
-        $semester_old = Semester::findByTimestamp(time() - 365 * 24 * 60 * 60);
-
         $query = "SELECT sem.Seminar_id AS course_id, start_time,
                          duration_time, VeranstaltungsNummer AS `number`,
                          Name AS title, Untertitel AS subtitle, sem.status AS type, modules,
@@ -134,7 +131,15 @@ class Course
                         : " ORDER BY start_time DESC";
             }
         } else {
-            $query .= " WHERE su.user_id IS NOT NULL ORDER BY title ASC";
+            $semester_cur = Semester::findCurrent();
+            if (time() >= $semester_cur->vorles_ende) {
+                $semester_cur = Semester::findNext();
+            }
+            $semester_old = Semester::findByTimestamp(time() - 365 * 24 * 60 * 60);
+
+            $query .= " WHERE su.user_id IS NOT NULL AND start_time <= ? AND (? <= start_time + duration_time OR duration_time = -1) ORDER BY title ASC";
+            $parameters[] = $semester_cur->beginn;
+            $parameters[] = $semester_old->beginn;
         }
 
         $statement = DBManager::get()->prepare($query);
