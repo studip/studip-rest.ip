@@ -30,6 +30,15 @@ class OAuth
             throw new Exception('Precondition failed', 412);
         }
 
+        // Update last access for statistic purposes
+        $query = "UPDATE oauth_mapping
+                  SET last_access = UNIX_TIMESTAMP()
+                  WHERE oauth_id = :oauth_id AND user_id = :user_id";
+        $statement = DBManager::get()->prepare($query);
+        $statement->bindValue(':oauth_id', $result['user_id']);
+        $statement->bindValue(':user_id', $user_id);
+        $statement->execute();
+
         return $user_id;
     }
 }
