@@ -17,7 +17,7 @@ class RestipPlugin extends StudIPPlugin implements SystemPlugin, HomepagePlugin
         parent::__construct();
 
         if ($GLOBALS['perm']->have_perm('root')) {
-            $navigation = new AutoNavigation(_('Rest-API'));
+            $navigation = new AutoNavigation(_('Rest-API-Plugin'));
             $navigation->setURL(PluginEngine::getLink('restipplugin/admin'));
             Navigation::addItem('/admin/config/oauth', $navigation);
         }
@@ -86,7 +86,7 @@ class RestipPlugin extends StudIPPlugin implements SystemPlugin, HomepagePlugin
         $role_names       = array_map(function ($role) { return $role->getRolename(); }, $plugin_roles);
 
         if (!in_array('Nobody', $role_names)) {
-            $message   = _('Das OAuth-Plugin ist aktiviert, aber nicht für die Rolle "Nobody" freigegeben.');
+            $message   = _('Das OAuth-Plugin ist aktiviert, aber nicht fï¿½r die Rolle "Nobody" freigegeben.');
             $details   = array();
             $details[] = _('Dies behindert die Kommunikation externer Applikationen mit dem System.');
             $details[] = sprintf(_('Klicken Sie <a href="%s">hier</a>, um die Rollenzuweisung zu bearbeiten.'),

@@ -59,6 +59,8 @@ class DocumentsRoute implements APIPlugin
                 }
             }
 
+            header('Cache-Control: private');
+            $router->expires('+10 minutes');
             $router->render(compact('folders', 'documents', 'users'));
         });
 
@@ -87,11 +89,24 @@ class DocumentsRoute implements APIPlugin
                 $router->halt(403, sprintf('User may not access file %s', $document_id));
             }
 
-            $file = $path_file = get_upload_file_path($document_id);
-            if (!file_exists($file)) {
-                $router->halt(404, sprintf('File contents for file %s not found', $document_id));
+            // check if linked file is obtainable
+            if ($document->url) {
+                $path_file = $document->url;
+                $link_data = parse_link($path_file);
+                if ($link_data['response_code'] != 200) {
+                    $router->halt(404, sprintf('File contents for file %s not found', $document_id));
+                }
+                $filesize = $link_data['Content-Length'];
+            } else {
+                $path_file = get_upload_file_path($document_id);
+                $filesize = @filesize($path_file);
+
+                if (!file_exists($path_file)) {
+                    $router->halt(404, sprintf('File contents for file %s not found', $document_id));
+                }
             }
 
+            $filename = $document->getValue('filename');
             header('Expires: Mon, 12 Dec 2001 08:00:00 GMT');
             header('Last-Modified: ' . gmdate ('D, d M Y H:i:s') . ' GMT');
             if ($_SERVER['HTTPS'] == 'on'){
@@ -102,12 +117,15 @@ class DocumentsRoute implements APIPlugin
                 header('Cache-Control: no-store, no-cache, must-revalidate');   // HTTP/1.1
             }
             header('Cache-Control: post-check=0, pre-check=0', false);
-            header(sprintf('Content-Type: %s; name="%s"',
-                           get_mime_type($document->getValue('filename')),
-                           $document->getValue('filename')));
+            // header('Content-Type: ' . get_mime_type($filename) . '; name="' . $filename . '"');
+            header('Content-Type: ' . get_mime_type($filename));
             header('Content-Description: File Transfer');
+            header('Content-Disposition: attachment; filename="' . $filename . '"');
             header('Content-Transfer-Encoding: binary');
-            header('Content-Length: ' . filesize($file));
+            if (is_int($filesize)) {
+                header('Content-Length: ' . $filesize);
+            }
+            header('ETag: "' . $document_id . '"');
             @readfile_chunked($path_file);
             TrackAccess($document_id, 'dokument');
             die;
@@ -160,7 +178,7 @@ class Document
     {
         $query = "SELECT * FROM (
                     SELECT folder_id, user_id, name, mkdate, chdate, permission,
-                           IFNULL(description, '') AS description
+                         IFNULL(description, '') AS description
                     FROM folder
                     WHERE range_id IN (:folder_id, MD5(CONCAT(:folder_id, 'top_folder')))
                       AND permission > 0
@@ -168,8 +186,8 @@ class Document
                     UNION
 
                     SELECT DISTINCT folder_id, folder.user_id, folder.name,
-                                    IFNULL(folder.description, '') AS description,
-                                    folder.mkdate, folder.chdate, folder.permission
+                                    folder.mkdate, folder.chdate, folder.permission,
+                                    IFNULL(folder.description, '') AS description
                     FROM themen AS th
                     INNER JOIN folder ON (th.issue_id = folder.range_id)
                     WHERE th.seminar_id = :folder_id AND folder.permission > 0
@@ -177,8 +195,8 @@ class Document
                     UNION
 
                     SELECT folder_id, folder.user_id, folder.name,
-                           IFNULL(folder.description, '') AS description,
-                           folder.mkdate, folder.chdate, folder.permission
+                           folder.mkdate, folder.chdate, folder.permission,
+                           IFNULL(folder.description, '') AS description
                     FROM statusgruppen sg
                     INNER JOIN statusgruppe_user AS sgu
                        ON (sg.statusgruppe_id = sgu.statusgruppe_id AND sgu.user_id = :user_id)

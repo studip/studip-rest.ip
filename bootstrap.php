@@ -74,13 +74,27 @@ require_once 'vendor/trails/trails.php';
 require_once 'app/controllers/studip_controller.php';
 
 // Local includes
-
-$error_reporting = error_reporting();
-require 'vendor/Slim/Slim/Slim.php';
-error_reporting($error_reporting);
-
-if (class_exists('StudipAutoloader')) {
-    StudipAutoloader::addAutoloadPath(__DIR__ . '/vendor/Slim');
+if (true || !class_exists('StudipAutoloader')) {
+#    StudipAutoloader::addAutoloadPath(__DIR__ . '/vendor/Slim/');
+    require_once 'vendor/Slim/Slim/Environment.php';
+    require_once 'vendor/Slim/Slim/Log.php';
+    require_once 'vendor/Slim/Slim/LogWriter.php';
+    require_once 'vendor/Slim/Slim/Route.php';
+    require_once 'vendor/Slim/Slim/Router.php';
+    require_once 'vendor/Slim/Slim/Slim.php';
+    require_once 'vendor/Slim/Slim/View.php';
+    require_once 'vendor/Slim/Slim/Http/Request.php';
+    require_once 'vendor/Slim/Slim/Http/Response.php';
+    require_once 'vendor/Slim/Slim/Http/Headers.php';
+    require_once 'vendor/Slim/Slim/Http/Util.php';
+    require_once 'vendor/Slim/Slim/Middleware.php';
+    require_once 'vendor/Slim/Slim/Middleware/ContentTypes.php';
+    require_once 'vendor/Slim/Slim/Middleware/Flash.php';
+    require_once 'vendor/Slim/Slim/Middleware/MethodOverride.php';
+    require_once 'vendor/Slim/Slim/Middleware/PrettyExceptions.php';
+    require_once 'vendor/Slim/Slim/Middleware/SessionCookie.php';
+    require_once 'vendor/Slim/Slim/Exception/Stop.php';
+    require_once 'vendor/Slim/Slim/Exception/Pass.php';
 } else {
     Slim\Slim::registerAutoloader();
 }

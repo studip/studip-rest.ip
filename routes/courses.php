@@ -6,7 +6,7 @@
 // TODO Nutzer anzeigen?
 
 namespace RestIP;
-use \DBManager, \PDO, \Modules, \StudipCacheFactory;
+use \DBManager, \PDO, \Modules, \StudipCacheFactory, \AutoInsert, \Semester;
 
 class CoursesRoute implements \APIPlugin
 {
@@ -17,6 +17,7 @@ class CoursesRoute implements \APIPlugin
             '/courses/:course_id'            => _('Veranstaltungsinformationen'),
             '/courses/semester'              => _('Belegte Semester'),
             '/courses/semester/:semester_id' => _('Veranstaltungen eines Semesters'),
+            '/courses/overview'              => _('Übersicht Veranstaltungsinhalte'),
         );
     }
 
@@ -87,6 +88,82 @@ class CoursesRoute implements \APIPlugin
 
             $router->render(compact('members'));
         });
+
+        $router->get('/courses/overview', function () use ($router)
+        {
+            require_once 'lib/meine_seminare_func.inc.php';
+            $courses = Course::load(null, @$_REQUEST['order'] == 'name');
+            $my_sem = array();
+            foreach($courses as $course) {
+                unset($course['teachers']);
+                unset($course['tutors']);
+                unset($course['students']);
+                $my_sem[$course['course_id']] = array(
+                    'name'       => $course['title'],
+                    'chdate'     => $course['chdate'],
+                    'start_time' => $course['start_time'],
+                    'modules'    => $course['modules'],
+                    'visitdate'  => $course['visitdate'],
+                    'status'     => $course['status'],
+                    'obj_type'   => 'sem');
+            }
+            \get_my_obj_values($my_sem, $GLOBALS['user']->id);
+            $slot_mapper = array(
+                    'files' => "documents",
+                    'elearning' => "elearning_interface"
+                );
+            foreach($courses as $course_key => $course) {
+                unset($courses[$course_key]['teachers']);
+                unset($courses[$course_key]['tutors']);
+                unset($courses[$course_key]['students']);
+                unset($courses[$course_key]['modules']);
+                $navigation = array();
+                $active_modules = array();
+                if (function_exists('getPluginNavigationForSeminar')) { //since 2.4
+                    $sem_class = $GLOBALS['SEM_CLASS'][$GLOBALS['SEM_TYPE'][$course['status']]['class']];
+                    $plugin_navigation = getPluginNavigationForSeminar($course['course_id'], $course['visitdate']);
+                    foreach (words('forum participants files news scm schedule wiki vote literature elearning') as $key) {
+                        if ($sem_class) {
+                            $slot = isset($slot_mapper[$key]) ? $slot_mapper[$key] : $key;
+                            $module = $sem_class->getModule($slot);
+                            if (is_a($module, "StandardPlugin")) {
+                                $navigation[$key] = $plugin_navigation[get_class($module)];
+                                unset($plugin_navigation[get_class($module)]);
+                            } else {
+                                $navigation[$key] = $my_obj_values[$key];
+                            }
+                        } else {
+                            $navigation[$key] = $my_obj_values[$key];
+                        }
+                    }
+                    $navigation = array_merge($navigation, $plugin_navigation);
+
+                } else {
+                    foreach (words('forum participants files news scm schedule wiki vote literature elearning') as $key) {
+                        $navigation[$key] = $my_sem[$course['course_id']][$key];
+                    }
+                    foreach (\PluginEngine::getPlugins('StandardPlugin', $course['course_id']) as $plugin) {
+                        $navigation[] = $plugin->getIconNavigation($course['course_id'], $my_sem[$course['course_id']]['visitdate']);
+                    }
+                }
+
+                foreach ($navigation as $key => $nav) {
+                    if (isset($nav) && $nav->isVisible(true)) {
+                        $url = \UrlHelper::getUrl($course['url'] . '&redirect_to=' . strtr($nav->getURL(), '?', '&'));
+                        $image = $nav->getImage();
+                        $icon = $image['src'];
+                        $text = $image['title'];
+                        $badge_number = method_exists($nav, 'getBadgeNumber') ? $nav->getBadgeNumber() : false;
+                        $new = strpos($icon,'/red/') !== false || $badge_number > 0;
+                        $active_modules[$key] = compact('url','icon','text','new','badge_number');
+                    }
+                }
+
+                $courses[$course_key]['active_modules'] = $active_modules;
+            }
+            $router->render(compact('courses'));
+        });
+
     }
 
     public static function extractSemesters($collection, $router)
@@ -114,12 +191,14 @@ class Course
             return array();
         }
 
-        $query = "SELECT sem.Seminar_id AS course_id, start_time,
+        $query = "SELECT sem.Seminar_id AS course_id, start_time, sem.chdate,
                          duration_time, VeranstaltungsNummer AS `number`,
                          Name AS title, Untertitel AS subtitle, sem.status AS type, modules,
-                         Beschreibung AS description, Ort AS location, gruppe
+                         Beschreibung AS description, Ort AS location, gruppe,
+                         IFNULL(visitdate, 0) AS visitdate, su.status
                   FROM seminare AS sem
-                  LEFT JOIN seminar_user AS su ON (sem.Seminar_id = su.seminar_id AND su.user_id = ?)";
+                  LEFT JOIN seminar_user AS su ON (sem.Seminar_id = su.seminar_id AND su.user_id = ?)
+                  LEFT JOIN object_user_visits ouv ON (ouv.object_id = su.seminar_id AND ouv.user_id = su.user_id AND ouv.type = 'sem')";
         $parameters = array($GLOBALS['user']->id);
 
         if ($ids !== null) {
@@ -131,7 +210,15 @@ class Course
                         : " ORDER BY start_time DESC";
             }
         } else {
-            $query .= " WHERE su.user_id IS NOT NULL ORDER BY title ASC";
+            $semester_cur = Semester::findCurrent();
+            if (time() >= $semester_cur->vorles_ende) {
+                $semester_cur = Semester::findNext();
+            }
+            $semester_old = Semester::findByTimestamp(time() - 365 * 24 * 60 * 60);
+
+            $query .= " WHERE su.user_id IS NOT NULL AND start_time <= ? AND (? <= start_time + duration_time OR duration_time = -1) ORDER BY title ASC";
+            $parameters[] = $semester_cur->beginn;
+            $parameters[] = $semester_old->beginn;
         }
 
         $statement = DBManager::get()->prepare($query);
@@ -141,19 +228,21 @@ class Course
         $query = "SELECT user_id
                   FROM seminar_user
                   JOIN auth_user_md5 USING (user_id)
-                  WHERE Seminar_id = ? AND status = ? AND seminar_user.visible != 'no'";
+                  WHERE Seminar_id = ? AND status = ? AND seminar_user.visible = 'yes'";
         if ($order_by_name) {
             $query .= " ORDER BY Nachname ASC, Vorname ASC";
         } else {
             $query .= " ORDER BY position ASC";
         }
+        // limit list to 500 users max
+        $query .= ' LIMIT 500';
         $statement = DBManager::get()->prepare($query);
 
         $modules = new Modules;
         $colors  = self::loadColors();
 
         foreach ($courses as &$course) {
-            $course['modules'] = $modules->getLocalModules($course['course_id'], 'sem');
+            $course['modules'] = $modules->getLocalModules($course['course_id'], 'sem', $course['modules'], $course['type']);
             foreach ($course['modules'] as &$module) {
                 $module = (bool)$module;
             }
@@ -168,11 +257,18 @@ class Course
             $course['tutors'] = $statement->fetchAll(PDO::FETCH_COLUMN) ?: array();
             $statement->closeCursor();
 
-            $statement->execute(array($course['course_id'], 'autor'));
-            $course['students'] = $statement->fetchAll(PDO::FETCH_COLUMN) ?: array();
-            $statement->closeCursor();
+            if (AutoInsert::checkSeminar($course['course_id'])) {
+                $course['students'] = array();
+            } else {
+                $statement->execute(array($course['course_id'], 'autor'));
+                $course['students'] = $statement->fetchAll(PDO::FETCH_COLUMN) ?: array();
+                $statement->closeCursor();
+            }
 
             $course['color'] = $colors[$course['gruppe'] ?: 0];
+
+            $course['url'] = $GLOBALS['ABSOLUTE_URI_STUDIP']."seminar_main.php?auswahl=".$course['course_id'];
+
             unset($course['gruppe']);
 
             $course['location'] = strip_tags($course['location']);
