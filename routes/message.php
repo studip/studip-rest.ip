@@ -62,6 +62,8 @@ class MessageRoute implements APIPlugin
                 'pagination' => $router->paginate($total, $offset, $limit, '/messages', $box),
             );
 
+            header('Cache-Control: private');
+            $router->expires('+1 day');
             $router->render($result);
         })->conditions(array('box' => '(in|out)'));
 
@@ -112,6 +114,8 @@ class MessageRoute implements APIPlugin
                 'pagination' => $router->paginate($total, $offset, $limit, '/messages', $box, $folder),
             );
 
+            header('Cache-Control: private');
+            $router->expires('+10 minutes');
             $router->render($result);
         })->conditions((array('box' => '(in|out)', array('folder' => '\d+'))));
 
@@ -168,7 +172,10 @@ class MessageRoute implements APIPlugin
                 $this->halt(500, 'Could not create message');
             }
 
-            $router->render($router->dispatch('get', '/messages/:message_id', $message_id), 201);
+            $message = Message::load($message_id);
+            unset($message['deleted2']);
+
+            $router->render(compact('message'), 201);
         });
 
         // Load a message

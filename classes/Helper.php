@@ -7,7 +7,7 @@ namespace RestIP;
 class Helper
 {
     // TODO
-    public static function UserHasAccessToRange($range_id, $user_id)
+    public static function UserHasAccessToRange($range_id/*, $user_id*/)
     {
         $user_id = $user_id ?: $GLOBALS['user']->id;
 

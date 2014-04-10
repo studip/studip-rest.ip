@@ -74,7 +74,7 @@ require_once 'vendor/trails/trails.php';
 require_once 'app/controllers/studip_controller.php';
 
 // Local includes
-if (class_exists('StudipAutoloader')) {
+if (true || !class_exists('StudipAutoloader')) {
 #    StudipAutoloader::addAutoloadPath(__DIR__ . '/vendor/Slim/');
     require_once 'vendor/Slim/Slim/Environment.php';
     require_once 'vendor/Slim/Slim/Log.php';
@@ -86,6 +86,7 @@ if (class_exists('StudipAutoloader')) {
     require_once 'vendor/Slim/Slim/Http/Request.php';
     require_once 'vendor/Slim/Slim/Http/Response.php';
     require_once 'vendor/Slim/Slim/Http/Headers.php';
+    require_once 'vendor/Slim/Slim/Http/Util.php';
     require_once 'vendor/Slim/Slim/Middleware.php';
     require_once 'vendor/Slim/Slim/Middleware/ContentTypes.php';
     require_once 'vendor/Slim/Slim/Middleware/Flash.php';

@@ -1,7 +1,7 @@
 <?
 namespace RestIP;
 use \CalendarExport, \CalendarWriterICalendar, \Calendar, \DbCalendarEventList,
-    \SingleCalendar, \SingleDate, \Seminar;
+    \SingleCalendar, \SingleDate, \Seminar, \Issue;
 
 class EventsRoute implements \APIPlugin
 {
@@ -20,6 +20,7 @@ class EventsRoute implements \APIPlugin
         require_once $GLOBALS['RELATIVE_PATH_CALENDAR'] . '/lib/sync/CalendarWriterICalendar.class.php';
         require_once 'lib/classes/Seminar.class.php';
         require_once 'lib/raumzeit/raumzeit_functions.inc.php';
+        require_once 'lib/raumzeit/Issue.class.php';
 
         $router->get('/events', function () use ($router) {
             $start = time();
@@ -27,19 +28,21 @@ class EventsRoute implements \APIPlugin
             $list = @new DbCalendarEventList(new SingleCalendar($GLOBALS['user']->id, Calendar::PERMISSION_OWN), $start, $end, true, Calendar::getBindSeminare());
 
             $events = array();
-            while ($termin = $list->nextEvent()) {
-                $singledate = new SingleDate($termin->id);
+            if ($list->existEvent()) {
+                while ($termin = $list->nextEvent()) {
+                    $singledate = new SingleDate($termin->id);
 
-                $events[] = array(
-                    'event_id'    => $termin->id,
-                    'course_id'   => (strtolower(get_class($termin)) === 'seminarevent') ? $termin->getSeminarId() : '',
-                    'start'       => $termin->getStart(),
-                    'end'         => $termin->getEnd(),
-                    'title'       => $termin->getTitle(),
-                    'description' => $termin->getDescription() ?: '',
-                    'categories'  => $termin->toStringCategories() ?: '',
-                    'room'        => html_entity_decode(strip_tags($singledate->getRoom() ?: $singledate->getFreeRoomText() ?: '')),
-                );
+                    $events[] = array(
+                        'event_id'    => $termin->id,
+                        'course_id'   => (strtolower(get_class($termin)) === 'seminarevent') ? $termin->getSeminarId() : '',
+                        'start'       => $termin->getStart(),
+                        'end'         => $termin->getEnd(),
+                        'title'       => $termin->getTitle(),
+                        'description' => $termin->getDescription() ?: '',
+                        'categories'  => $termin->toStringCategories() ?: '',
+                        'room'        => html_entity_decode(strip_tags($singledate->getRoom() ?: $singledate->getFreeRoomText() ?: '')),
+                    );
+                }
             }
 
             $router->render(compact('events'));
@@ -70,7 +73,22 @@ class EventsRoute implements \APIPlugin
             $dates = getAllSortedSingleDates($seminar);
 
             $events = array();
+            
             foreach ($dates as $date) {
+
+                //TODO: Use more of the SingleDate-functionalities
+
+                $issues = $date->getIssueIDs();
+                $issue_titles = array();
+                $description = '';
+                if(is_array($issues)) {
+                    foreach($issues as $is) {
+                        $issue = new Issue(array('issue_id' => $is));
+                        $issue_titles[] = $issue->getTitle();
+                    }
+                }
+                
+                $description = implode(', ', $issue_titles);
                 $temp = getTemplateDataForSingleDate($date);
                 $events[] = array(
                     'event_id'    => $date->getSingleDateID(),
@@ -78,12 +96,15 @@ class EventsRoute implements \APIPlugin
                     'start'       => $date->getStartTime(),
                     'end'         => $date->getEndTime(),
                     'title'       => $temp['date'],
-                    'description' => '',
+                    'description' => $description,
                     'categories'  => $temp['art'] ?: '',
                     'room'        => html_entity_decode(strip_tags($temp['room'] ?: '')),
                 );
+                
             }
 
+            header('Cache-Control: private');
+            $router->expires('+1 day');
             $router->render(compact('events'));
         });
     }

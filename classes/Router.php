@@ -162,6 +162,8 @@ class Router
 
         header_remove('x-powered-by');
         header_remove('set-cookie');
+        header_remove('Pragma');
+        header_remove('Expires');
 
         $data = array_map_recursive('studip_utf8encode', $data);
 
@@ -254,6 +256,18 @@ class Router
             $pagination['next'] = call_user_func_array(array($this, 'url_for'), $args);
         }
         return $pagination;
+    }
+
+    public function getCurrentRouteAndMethod()
+    {
+        $routes  = $this->router()->getMatchedRoutes($this->request()->getMethod(), $this->request()->getResourceUri());
+        $route   = reset($routes);
+        $pattern = rtrim($route->getPattern(), '?');
+
+        $methods = $route->getHttpMethods();
+        $method  = strtolower(reset($methods));
+
+        return array($pattern, $method);
     }
 
 }
