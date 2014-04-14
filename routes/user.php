@@ -31,7 +31,7 @@ class UserRoute implements \APIPlugin
     public function routes(&$router)
     {
         //
-        $router->get('/user(/:user_id)', function ($user_id) use ($router)
+        $router->get('/user(/:user_id)', function ($user_id = null) use ($router)
         {
             $user_id = $user_id ?: $GLOBALS['user']->id;
 
@@ -99,6 +99,8 @@ class UserRoute implements \APIPlugin
                 $user['skype_show'] = false;
             }
 
+            header('Cache-Control: private');
+            $router->expires('+1 day');
             $router->render(compact('user'));
         });
 

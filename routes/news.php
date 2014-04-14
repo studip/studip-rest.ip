@@ -79,6 +79,8 @@ class NewsRoute implements APIPlugin
             $news->storeRanges();
             $news = $news->toArray();
 
+            header('Cache-Control: private');
+            $router->expires('+6 hours');
             $router->render(compact('news'), 201);
         })->conditions(array('range_id' => '(studip|[a-f0-9]{32})'));
 

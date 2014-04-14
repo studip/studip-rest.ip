@@ -55,14 +55,14 @@ class ApiController extends StudipController
             // Fake user identity
             $user = User::find($user_id);
 
+            $GLOBALS['user'] = new Seminar_User($user->user_id);
+
             $GLOBALS['auth'] = new Seminar_Auth();
             $GLOBALS['auth']->auth = array(
                 'uid'   => $user->user_id,
                 'uname' => $user->username,
                 'perm'  => $user->perms,
             );
-
-            $GLOBALS['user'] = new Seminar_User($user->user_id);
 
             $GLOBALS['perm'] = new Seminar_Perm();
             $GLOBALS['MAIL_VALIDATE_BOX'] = false;
@@ -91,9 +91,9 @@ class ApiController extends StudipController
         });
 
         if (Studip\ENV === 'development') {
-            error_reporting(E_ALL ^ (E_NOTICE | E_WARNING));
+            // error_reporting(E_ALL ^ (E_NOTICE | E_WARNING));
         } else {
-            error_reporting(0);
+            // error_reporting(0);
         }
 
         if (Request::option('mode', 'compact') === 'complete') {
@@ -105,13 +105,12 @@ class ApiController extends StudipController
         $env = $router->environment();
         $env['PATH_INFO']   = '/' . trim($unconsumed);
 
-        $router->hook('slim.before.dispatch', function () use ($router) {
-            $routes  = $router->router()->getMatchedRoutes();
-            $route   = reset($routes);
-            $pattern = rtrim($route->getPattern(), '?');
 
-            $methods = $route->getHttpMethods();
-            $method  = strtolower(reset($methods));
+
+        // call matched route's #before method
+        $router->hook('slim.before.dispatch', function () use ($router) {
+
+            list($pattern, $method) = $router->getCurrentRouteAndMethod();
 
             $routes  = $router->getRoutes();
             $handler = $routes[$pattern][$method];
@@ -122,8 +121,18 @@ class ApiController extends StudipController
             }
         });
 
+        // send notification before dispatching
+        $router->hook('slim.before.dispatch', function () use ($router) {
+            list($pattern, $method) = $router->getCurrentRouteAndMethod();
+            $pattern = join('-', explode('/', trim($pattern, '/?')));
+            $pattern = preg_replace('/[^\w-_]/', '', $pattern);
+            $metric_path = sprintf('restip.%s.%s', $pattern, $method);
+            \NotificationCenter::postNotification($metric_path, $router);
+        });
+
         $router->hook('slim.after.dispatch', function () use ($router) {
-            $route   = reset($router->router()->getMatchedRoutes());
+            $routes  = $router->router()->getMatchedRoutes($router->request()->getMethod(), $router->request()->getResourceUri());
+            $route   = reset($routes);
             $pattern = rtrim($route->getPattern(), '?');
             $method  = strtolower(reset($route->getHttpMethods()));
 
