@@ -14,6 +14,8 @@ use \APIPlugin, \DBManager, \PDO, \messaging, \Request, \User, \UserConfig;
  **/
 class MessageRoute implements APIPlugin
 {
+    static $settings;
+
     /**
      * Return human readable descriptions of all routes
      **/
@@ -33,6 +35,12 @@ class MessageRoute implements APIPlugin
     {
         require_once 'lib/messaging.inc.php';
         require_once 'lib/sms_functions.inc.php';
+        if (function_exists('check_messaging_default')) { // < Stud.IP 2.4
+            check_messaging_default();
+            self::$settings = $GLOBALS['my_messaging_settings'] ?: array();
+        } else {
+            self::$settings = UserConfig::get($GLOBALS['user']->id)->MESSAGING_SETTINGS ?: array();
+        }
     }
 
     /**
@@ -45,7 +53,7 @@ class MessageRoute implements APIPlugin
     // Inbox and outbox
         // List folders
         $router->get('/messages/:box', function ($box) use ($router) {
-            $settings = UserConfig::get($GLOBALS['user']->id)->MESSAGING_SETTINGS ?: array();
+            $settings = MessageRoute::$settings;
             $folders = $settings['folder'];
 
             $folders['in'][0]  = _('Posteingang');
@@ -70,7 +78,7 @@ class MessageRoute implements APIPlugin
         // Create new folder
         $router->post('/messages/:box', function ($box) use ($router) {
             $folder = trim(Request::get('folder', ''));
-            $settings = UserConfig::get($GLOBALS['user']->id)->MESSAGING_SETTINGS ?: array();
+            $settings = MessageRoute::$settings;
 
             if (empty($folder)) {
                 $router->halt(406, 'No folder name provided');
@@ -86,7 +94,11 @@ class MessageRoute implements APIPlugin
             }
 
             $settings['folder'][$box][] = $folder;
-            UserConfig::get($GLOBALS['user']->id)->store('MESSAGING_SETTINGS', $settings);
+            if (function_exists('check_messaging_default')) { // < Stud.IP 2.4
+                $GLOBALS['my_messaging_settings'] = $settings;
+            } else {
+                UserConfig::get($GLOBALS['user']->id)->store('MESSAGING_SETTINGS', $settings);
+            }
 
             $router->halt(201);
         })->conditions(array('box' => '(in|out)'));
@@ -94,8 +106,7 @@ class MessageRoute implements APIPlugin
     // Folders
         // List messages
         $router->get('/messages/:box/:folder', function ($box, $folder) use ($router) {
-            $settings = UserConfig::get($GLOBALS['user']->id)->MESSAGING_SETTINGS ?: array();
-
+            $settings = MessageRoute::$settings;
             if ($folder != 0 && !isset($settings['folder'][$box][$folder])) {
                 $router->halt(404, sprintf('Folder %s-%s not found', $box, $folder));
             }
@@ -155,7 +166,6 @@ class MessageRoute implements APIPlugin
 
             $message_id = md5(uniqid('message', true));
 
-//            check_messaging_default();
             $messaging = new messaging;
             $result = $messaging->insert_message($message, $usernames,
                                                  $GLOBALS['user']->id, time(),
@@ -229,7 +239,7 @@ class MessageRoute implements APIPlugin
 
         // Move message
         $router->put('/messages/:message_id/move/:folder', function ($folder, $message_id) use ($router) {
-            $settings = UserConfig::get($GLOBALS['user']->id)->MESSAGING_SETTINGS ?: array();
+            $settings = MessageRoute::$settings;
 
             if ($folder != 0 && !isset($settings['folder'][$box][$folder])) {
                 $router->halt(404, sprintf('Folder %s-%s not found', $box, $folder));

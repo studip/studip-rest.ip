@@ -10,7 +10,7 @@ class CreateDatabase extends DBMigration
      **/
     public function description()
     {
-        return _('Erstellt die notwendigen Datenbanktabellen und KonfigurationseintrÃ¤ge fÃ¼r OAuth');
+        return _('Erstellt die notwendigen Datenbanktabellen und Konfigurationseinträge für OAuth');
     }
 
     /**

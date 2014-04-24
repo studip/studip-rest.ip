@@ -23,6 +23,7 @@ class UserRoute implements \APIPlugin
     public static function before()
     {
         require_once 'lib/classes/UserManagement.class.php';
+        require_once 'lib/user_visible.inc.php';
     }
 
     /**
@@ -36,7 +37,8 @@ class UserRoute implements \APIPlugin
             $user_id = $user_id ?: $GLOBALS['user']->id;
 
             $user = User::find($user_id);
-            if (!$user) {
+            $is_visible = $GLOBALS['user']->id === $user_id || get_visibility_by_id($user_id);
+            if (!$user || !$is_visible) {
                 $router->halt(404, sprintf('User %s not found', $user_id));
                 return;
             }

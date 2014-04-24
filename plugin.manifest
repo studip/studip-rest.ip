@@ -1,7 +1,7 @@
 pluginname=REST.Ip
 pluginclassname=RestipPlugin
 origin=UOL
-version=0.9.4
+version=0.9.5
 description=This plugin is supposed to be a working example of a RESTful webservice implementing authentication by OAuth.
 homepage=http://studip.github.com/studip-rest.ip
 studipMinVersion=2.3

@@ -23,13 +23,21 @@ class StudipRoute implements APIPlugin
     public function routes(&$router)
     {
         $router->get('/studip/settings', function () use ($router) {
-            $sem_types = array_map(function ($item) {
-                return array(
-                    'name'  => $item['name'],
-                    'class' => $item['class'],
-                );
-            }, SemType::getTypes());
-            
+            if (class_exists('SemClass')) { //Stud.IP < 2.4
+                $sem_types = array_map(function ($item) {
+                    return array(
+                        'name'  => $item['name'],
+                        'class' => $item['class'],
+                    );
+                    }, SemType::getTypes());
+                $sem_class = array_map(function ($item) {
+                                               $item = (array)$item;
+                                               return reset($item);
+                                           }, SemClass::getClasses());
+            } else {
+                $sem_types = $GLOBALS['SEM_TYPE'];
+                $sem_class = $GLOBALS['SEM_CLASS'];
+            }
             $manifest = parse_ini_file(dirname(__FILE__) . '/../plugin.manifest');
             $API_VERSION = $manifest['version'];
 
@@ -41,10 +49,7 @@ class StudipRoute implements APIPlugin
                 'ALLOW_CHANGE_TITLE'    => $GLOBALS['ALLOW_CHANGE_TITLE'],
                 'INST_TYPE'             => $GLOBALS['INST_TYPE'],
                 'SEM_TYPE'              => $sem_types,
-                'SEM_CLASS'             => array_map(function ($item) {
-                                               $item = (array)$item;
-                                               return reset($item);
-                                           }, SemClass::getClasses()),
+                'SEM_CLASS'             => $sem_class,
                 'TERMIN_TYP'            => $GLOBALS['TERMIN_TYP'],
                 'PERS_TERMIN_KAT'       => $GLOBALS['PERS_TERMIN_KAT'],
                 'SUPPORT_EMAIL'         => $GLOBALS['UNI_CONTACT'],

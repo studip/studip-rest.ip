@@ -195,6 +195,8 @@ class AdminController extends StudipController
 
         if (Request::isPost()) {
             $this->config->store('OAUTH_ENABLED', Request::int('active', 0));
+            $this->config->store('RESTIP_AUTH_SESSION_ENABLED', Request::int('session-active', 0));
+            $this->config->store('RESTIP_AUTH_HTTP_ENABLED', Request::int('http-active', 0));
             $this->config->store('OAUTH_AUTH_PLUGIN', Request::option('auth'));
 
             PageLayout::postMessage(MessageBox::success(_('Die Einstellungen wurden gespeichert.')));
