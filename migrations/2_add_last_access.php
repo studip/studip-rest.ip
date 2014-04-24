@@ -10,7 +10,7 @@ class AddLastAccess extends DBMigration
      **/
     public function description()
     {
-        return _('FÃ¼gt ein Feld "Letzter Zugriff" beim User-Mapping hinzu');
+        return _('Fügt ein Feld "Letzter Zugriff" beim User-Mapping hinzu');
     }
 
     /**

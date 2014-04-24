@@ -36,9 +36,9 @@ class ApiController extends StudipController
                             ? null
                             : $GLOBALS['_' . $_SERVER['REQUEST_METHOD']];
                 $user_id = OAuth::verify(null, null, $parameters);
-            } elseif ($GLOBALS['user']->id !== 'nobody') {
+            } elseif (get_config('RESTIP_AUTH_SESSION_ENABLED') && $GLOBALS['user']->id !== 'nobody') {
                 $user_id = $GLOBALS['user']->id;
-            } elseif (HTTPAuth::isSigned()) {
+            } elseif (get_config('RESTIP_AUTH_HTTP_ENABLED') && HTTPAuth::isSigned()) {
                 $user_id = HTTPAuth::verify();
             }
             if (!$user_id) {
@@ -47,7 +47,9 @@ class ApiController extends StudipController
         } catch (Exception $e) {
             $status = sprintf('HTTP/1.1 %u %s', 401, 'Unauthorized');
             header($status, true, 401);
-            header("WWW-Authenticate: Basic");
+            if (get_config('RESTIP_AUTH_HTTP_ENABLED')) {
+                header("WWW-Authenticate: Basic");
+            }
             die($status);
         }
 
@@ -55,7 +57,6 @@ class ApiController extends StudipController
             // Fake user identity
             $user = User::find($user_id);
 
-            $GLOBALS['user'] = new Seminar_User($user->user_id);
 
             $GLOBALS['auth'] = new Seminar_Auth();
             $GLOBALS['auth']->auth = array(
@@ -64,8 +65,13 @@ class ApiController extends StudipController
                 'perm'  => $user->perms,
             );
 
+            $GLOBALS['user'] = new Seminar_User($user->user_id);
+            if (method_exists($GLOBALS['user'], 'start')) { //Stud.IP < 2.4
+                $GLOBALS['user']->start($user->user_id);
+            }
             $GLOBALS['perm'] = new Seminar_Perm();
             $GLOBALS['MAIL_VALIDATE_BOX'] = false;
+            $GLOBALS['sess']->delete(); //abandon session to prevent nobody entries in session table
         }
 
         setTempLanguage($GLOBALS['user']->id);
@@ -148,6 +154,7 @@ class ApiController extends StudipController
         $router->run();
 
         restoreLanguage();
+
 
         return new Trails_Response();
     }
