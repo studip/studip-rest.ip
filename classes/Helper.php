@@ -148,4 +148,11 @@ class Helper
         }
         return $value;
     }
+
+    public static function getSSOPlugins()
+    {
+        return array_filter($GLOBALS['STUDIP_AUTH_PLUGIN'], function ($provider) {
+                return \StudipAuthAbstract::GetInstance($provider) instanceof \StudipAuthSSO;
+        });
+    }
 }

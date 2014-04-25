@@ -192,12 +192,13 @@ class AdminController extends StudipController
     public function config_action()
     {
         $this->config = Config::get();
+        $this->auth_plugins = Restip\Helper::getSSOPlugins();
 
         if (Request::isPost()) {
             $this->config->store('OAUTH_ENABLED', Request::int('active', 0));
             $this->config->store('RESTIP_AUTH_SESSION_ENABLED', Request::int('session-active', 0));
             $this->config->store('RESTIP_AUTH_HTTP_ENABLED', Request::int('http-active', 0));
-            $this->config->store('OAUTH_AUTH_PLUGIN', Request::option('auth'));
+            $this->config->store('OAUTH_AUTH_PLUGIN', Request::option('auth', 'Standard'));
 
             PageLayout::postMessage(MessageBox::success(_('Die Einstellungen wurden gespeichert.')));
             $this->redirect('admin/config');

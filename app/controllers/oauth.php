@@ -44,9 +44,10 @@ class OauthController extends Trails_Controller
         global $user, $auth;
 
         $auth_plugin = Config::get()->OAUTH_AUTH_PLUGIN;
-        if ($GLOBALS['user']->id === 'nobody' && $auth_plugin !== 'Standard' && !Request::option('sso')) {
+        if ($GLOBALS['user']->id === 'nobody' && in_array($auth_plugin, Restip\Helper::getSSOPlugins()) && !Request::option('sso')) {
             $params = $_GET;
-            $params['sso'] = $auth_plugin;
+            $params['sso'] = strtolower($auth_plugin);
+            $params['cancel_login'] = 1;
             $this->redirect($this->url_for('oauth/authorize?' . http_build_query($params)));
             return;
         } else {

@@ -19,17 +19,18 @@
             <input type="hidden" name="http-active" value="0">
             <input type="checkbox" name="http-active" id="http-active" value="1" <? if ($config['RESTIP_AUTH_HTTP_ENABLED']) echo 'checked'; ?>>
         </div>
-        <div class="type-select">
-            <label for="auth"><?= _('Standard-Authentifizierung beim Login (nur SingleSignOn)') ?></label>
-            <select name="auth" id="auth">
-            <? foreach ($GLOBALS['STUDIP_AUTH_PLUGIN'] as $plugin): ?>
-                <option <? if ($config['OAUTH_AUTH_PLUGIN'] === $plugin) echo 'selected'; ?>>
-                    <?= $plugin ?>
-                </option>
-            <? endforeach; ?>
-            </select>
-        </div>
-
+        <? if (count($auth_plugins)) : ?>
+            <div class="type-select">
+                <label for="auth"><?= _('Standard-Authentifizierung beim Login (nur SingleSignOn)') ?></label>
+                <select name="auth" id="auth">
+                <? foreach (array_merge(array('Standard'),$auth_plugins) as $plugin): ?>
+                    <option <? if ($config['OAUTH_AUTH_PLUGIN'] === $plugin) echo 'selected'; ?>>
+                        <?= $plugin ?>
+                    </option>
+                <? endforeach; ?>
+                </select>
+            </div>
+        <? endif ?>
         <div class="type-button">
             <?= Button::createAccept(_('Speichern')) ?>
             <?= LinkButton::createCancel(_('Abbrechen'), $controller->url_for('admin')) ?>
