@@ -181,9 +181,10 @@ class UserRoute implements \APIPlugin
             $query = "SELECT user_id
                       FROM auth_user_md5
                       LEFT JOIN user_info USING(user_id)
-                      WHERE TRIM(CONCAT(title_front, Vorname, Nachname, title_rear)) LIKE CONCAT('%', REPLACE(:needle, ' ', ''), '%')
+                      WHERE (TRIM(CONCAT(title_front, Vorname, Nachname, title_rear)) LIKE CONCAT('%', REPLACE(:needle, ' ', ''), '%')
                          OR TRIM(CONCAT(Nachname, Vorname)) LIKE CONCAT('%', REPLACE(:needle, ' ', ''), '%')
-                         OR username = :needle
+                         OR username = :needle)
+                         AND visible != 'no'
                       ORDER BY Nachname, Vorname";
             $statement = DBManager::get()->prepare($query);
             $statement->bindValue(':needle', $needle);
