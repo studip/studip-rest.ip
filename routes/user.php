@@ -1,7 +1,7 @@
 <?php
 
 namespace RestIP;
-use \Avatar, \DBManager, \PDO, \User;
+use \Avatar, \DBManager, \PDO, \User, \Request;
 
 /**
  *
@@ -17,6 +17,7 @@ class UserRoute implements \APIPlugin
             '/user(/:user_id)'          => _('Nutzerdaten'),
             '/user/:user_id/institutes' => _('Einrichtung eines Nutzers'),
             '/user/:user_id/courses'    => _('Veranstaltungen eines Nutzers'),
+            '/users'                    => _('Nutzersuche'),
         );
     }
 
@@ -170,5 +171,32 @@ class UserRoute implements \APIPlugin
             $router->render(compact('courses'));
         });
 
+        $router->get('/users', function () use ($router) {
+            $needle = trim(Request::get('q') ?: Request::get('needle'));
+
+            if (!$needle) {
+                $router->halt(400, 'Missing needle');
+            }
+
+            $query = "SELECT user_id
+                      FROM auth_user_md5
+                      LEFT JOIN user_info USING(user_id)
+                      WHERE TRIM(CONCAT(title_front, Vorname, Nachname, title_rear)) LIKE CONCAT('%', REPLACE(:needle, ' ', ''), '%')
+                         OR TRIM(CONCAT(Nachname, Vorname)) LIKE CONCAT('%', REPLACE(:needle, ' ', ''), '%')
+                         OR username = :needle
+                      ORDER BY Nachname, Vorname";
+            $statement = DBManager::get()->prepare($query);
+            $statement->bindValue(':needle', $needle);
+            $statement->execute();
+            $ids = $statement->fetchAll(PDO::FETCH_COLUMN);
+            
+            $users = array();
+            foreach ($ids as $id) {
+                $user = reset($router->dispatch('get', '/user(/:user_id)', $id));
+                $user['name'] = trim($user['title_pre'] . ' ' . $user['forename'] . ' ' . $user['lastname'] . ' ' . $user['title_post']);
+                $users[] = $user;
+            }
+            $router->render(compact('users'));
+        });
     }
 }
