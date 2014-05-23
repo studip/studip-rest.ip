@@ -17,19 +17,19 @@ class Helper
     /**
      *
      **/
-    public static function getSemester($timestamp = null)
+    public static function getSemester($timestamp = null, $duration = 0)
     {
         static $semesters;
         if (!isset($semesters)) {
             $semesters = \SemesterData::GetSemesterArray();
         }
 
-        if (!$timestamp) {
+        if (!$timestamp || $duration == -1) {
             $timestamp = time();
         }
 
-        foreach ($semesters as $semester) {
-            if ($timestamp >= $semester['beginn'] && $timestamp <= $semester['ende']) {
+        foreach (array_reverse($semesters) as $semester) {
+            if ($timestamp >= $semester['beginn'] && ($duration == -1 || ($timestamp + $duration <= $semester['ende']))) {
                 return $semester['semester_id'];
             }
         }

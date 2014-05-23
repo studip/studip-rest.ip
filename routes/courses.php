@@ -247,7 +247,7 @@ class Course
                 $module = (bool)$module;
             }
 
-            $course['semester_id'] = Helper::getSemester($course['start_time']) ?: Helper::getSemester();
+            $course['semester_id'] = Helper::getSemester($course['start_time'], $course['duration_time']) ?: Helper::getSemester();
 
             $statement->execute(array($course['course_id'], 'dozent'));
             $course['teachers'] = $statement->fetchAll(PDO::FETCH_COLUMN) ?: array();
