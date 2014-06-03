@@ -41,7 +41,7 @@ class EventsRoute implements \APIPlugin
                         'description' => $termin->getDescription() ?: '',
                         'categories'  => $termin->toStringCategories() ?: '',
                         'room'        => html_entity_decode(strip_tags($singledate->getRoom() ?: $singledate->getFreeRoomText() ?: '')),
-						'canceled'    => $singledate->isHoliday() ? $singledate->isHoliday() : false
+                        'canceled'    => $singledate->isHoliday() ?: false
 
                     );
                 }
@@ -90,7 +90,7 @@ class EventsRoute implements \APIPlugin
                     }
                 }
                 
-				
+                
                 $description = implode(', ', $issue_titles);
                 $temp = getTemplateDataForSingleDate($date);
                 $events[] = array(
@@ -102,7 +102,7 @@ class EventsRoute implements \APIPlugin
                     'description' => $description,
                     'categories'  => $temp['art'] ?: '',
                     'room'        => html_entity_decode(strip_tags($temp['room'] ?: '')),
-					'canceled'    => $date->isHoliday() ? $date->isHoliday() : false
+                    'canceled'    => $date->isHoliday() ?: false
                 );
                 
             }
