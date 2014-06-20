@@ -173,7 +173,7 @@ class MessageRoute implements APIPlugin
                                                  $subject, Request::int('email', 0));
 
             if (Request::int('reading_confirmation')) {
-                $query = "UPDATE messages SET reading_confirmation = 1 WHERE message_id = ?";
+                $query = "UPDATE message SET reading_confirmation = 1 WHERE message_id = ?";
                 $statement = DBManager::get()->prepare($query);
                 $statement->execute(array($message_id));
             }
