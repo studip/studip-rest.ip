@@ -126,6 +126,26 @@ class Router
         return $this->descriptions;
     }
 
+    /*
+     * Sets route result
+     *
+     * @param mixed $result Route result
+     */
+    public function setRouteResult($result)
+    {
+        $this->route_result = $result;
+    }
+
+    /**
+     * Returns the route result.
+     *
+     * @return mixed
+     */
+    public function getRouteResult()
+    {
+        return $this->route_result;
+    }
+
     public function response()
     {
         return $this->router->response();
@@ -155,8 +175,8 @@ class Router
      */
     function render($data = array(), $status = 200)
     {
+        $this->setRouteResult($data);
         if ($this->internal_dispatch) {
-            $this->route_result = $data;
             return;
         }
 
@@ -166,6 +186,9 @@ class Router
         header_remove('Expires');
 
         $data = array_map_recursive('studip_utf8encode', $data);
+
+        $this->applyHook('restip.before.render');
+        $data = $this->getRouteResult();
 
         if ($data !== false) {
             $this->template->data   = $data;
