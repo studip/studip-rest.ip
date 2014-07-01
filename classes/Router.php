@@ -185,10 +185,9 @@ class Router
         header_remove('Pragma');
         header_remove('Expires');
 
-        $data = array_map_recursive('studip_utf8encode', $data);
-
         $this->applyHook('restip.before.render');
         $data = $this->getRouteResult();
+        $data = array_map_recursive('studip_utf8encode', $data);
 
         if ($data !== false) {
             $this->template->data   = $data;

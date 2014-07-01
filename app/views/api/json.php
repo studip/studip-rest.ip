@@ -1,5 +1,5 @@
 <?
-$router->contentType('application/json');
+$router->contentType('application/json;charset=utf-8');
 
 $json = json_encode($data);
 
