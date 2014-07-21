@@ -1,6 +1,7 @@
 <?php
 
 namespace RestIP;
+use \Request;
 
 /**
  *
@@ -24,12 +25,23 @@ class DiscoveryRoute implements \APIPlugin
     {
         $router->get('/discovery', function () use ($router)
         {
-            $routes      = $router->getRoutes();
+            $baseroutes  = $router->getRoutes();
             $permissions = $router->getPermissions();
+            $routes      = array();
 
-            foreach ($routes as $route => $methods) {
-                foreach (array_keys($methods) as $method) {
-                    $routes[$route][$method] = $permissions->check($route, $method);
+            if(Request::get('mode') == 'alternative'){
+                foreach($baseroutes as $route => $basemethods) {
+                    $methods = array();
+                    foreach (array_keys($basemethods) as $method) {
+                        $methods[$method] =  $permissions->check($route, $method);
+                    }
+                    $routes[] = array('route' => $route, 'methods' => $methods);
+                } 
+            } else {
+                foreach ($baseroutes as $route => $methods) {
+                    foreach (array_keys($methods) as $method) {
+                        $routes[$route][$method] = $permissions->check($route, $method);
+                    }
                 }
             }
 
