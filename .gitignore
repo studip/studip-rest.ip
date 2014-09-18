@@ -1,1 +1,3 @@
 tests/junit_log.xml
+
+*.patch
