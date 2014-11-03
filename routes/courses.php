@@ -55,7 +55,7 @@ class CoursesRoute implements \APIPlugin
             $courses  = Course::load(null, @$_REQUEST['order'] == 'name');
             $courses = array_filter($courses, function ($x) use ($semester) {
                 return $x['start_time'] <= $semester['begin']
-                    && ($x['duration_time'] == -1 || ($x['start_time'] + $x['duration_time'] >= $semester['end']));
+                    && ($x['duration_time'] == -1 || ($x['duration_time'] == 0 && $x['start_time'] == $semester['begin']) || ($x['start_time'] + $x['duration_time'] >= $semester['end']));
             });
             $courses = array_values($courses);
 
