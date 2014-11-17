@@ -3,7 +3,7 @@
 /**
  *
  **/
-class UserController extends StudipController
+class UserController extends AppController
 {
     /**
      *
@@ -14,19 +14,9 @@ class UserController extends StudipController
 
         $GLOBALS['perm']->check('autor');
 
-        $layout = $GLOBALS['template_factory']->open('layouts/base');
-        $this->set_layout($layout);
-
         Navigation::activateItem('/links/settings/oauth');
         PageLayout::setTabNavigation('/links/settings');
         PageLayout::setTitle(_('Applikationen'));
-
-        $this->store = new OAuthConsumer;
-        $this->types = array(
-            'website' => _('Website'),
-            'program' => _('Herkömmliches Desktopprogramm'),
-            'app'     => _('Mobile App')
-        );
     }
 
     /**
@@ -35,14 +25,9 @@ class UserController extends StudipController
     public function index_action()
     {
         $this->consumers = OAuthUser::getConsumers($GLOBALS['user']->id);
-        $this->types = array(
-            'website' => _('Website'),
-            'program' => _('Herkömmliches Desktopprogramm'),
-            'app'     => _('Mobile App')
-        );
 
         $this->setInfoboxImage('infobox/administration.jpg');
-        $this->addToInfobox('Informationen', _('Dies sind die Apps, die Zugriff auf Ihren Account haben.'), 'icons/16/black/info-circle.png');
+        $this->addToInfobox(_('Informationen'), _('Dies sind die Apps, die Zugriff auf Ihren Account haben.'), 'icons/16/black/info-circle.png');
     }
 
     /**

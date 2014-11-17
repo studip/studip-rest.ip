@@ -107,6 +107,7 @@ require_once 'classes/HTTPAuth.php';
 require_once 'app/models/OAuthUser.php';
 require_once 'app/models/OAuthConsumer.php';
 require_once 'app/models/Permissions.php';
+require_once 'app/controllers/app_controller.php';
 
 // Populate $_DELETE, $_HEAD, $_OPTIONS and $_PUT
 foreach (words('DELETE HEAD OPTIONS PUT') as $method) {

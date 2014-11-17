@@ -3,7 +3,7 @@
 /**
  *
  **/
-class AdminController extends StudipController
+class AdminController extends AppController
 {
     /**
      *
@@ -14,18 +14,8 @@ class AdminController extends StudipController
 
         $GLOBALS['perm']->check('root');
 
-        $layout = $GLOBALS['template_factory']->open('layouts/base');
-        $this->set_layout($layout);
-
         Navigation::activateItem('/admin/config/oauth');
         PageLayout::setTitle(_('OAuth Administration'));
-
-        $this->store = new OAuthConsumer;
-        $this->types = array(
-            'website' => _('Website'),
-            'program' => _('Herkömmliches Desktopprogramm'),
-            'app'     => _('Mobile App')
-        );
 
         // Infobox
         $this->setInfoboxImage('infobox/administration.jpg');
