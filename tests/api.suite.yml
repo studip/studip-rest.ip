@@ -1,0 +1,16 @@
+class_name: ApiGuy
+modules:
+    enabled: [PhpBrowser, REST, ApiHelper, Db]
+    config:
+        PhpBrowser:
+            url: http://localhost/...
+        REST:
+            url: http://localhost/.../plugins.php/restipplugin/api/
+        WebDriver:
+            url: http://localhost/...
+            browser: firefox
+        Db:
+            dsn: ''
+            user: ''
+            password: ''
+            dump: tests/_data/studip_restapi_plugin.sql
