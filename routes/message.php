@@ -15,6 +15,7 @@ use \APIPlugin, \DBManager, \PDO, \messaging, \Request, \User, \UserConfig;
 class MessageRoute implements APIPlugin
 {
     static $settings;
+    static $tags = false;
 
     /**
      * Return human readable descriptions of all routes
@@ -35,7 +36,13 @@ class MessageRoute implements APIPlugin
     {
         require_once 'lib/messaging.inc.php';
         require_once 'lib/sms_functions.inc.php';
-        if (function_exists('check_messaging_default')) { // < Stud.IP 2.4
+        if (class_exists('\\Message') && is_callable('\\Message::getUserTags')) { // Stud.IP >= 3.1
+            $tags    = \Message::getUserTags();
+            $tags    = array_map('ucfirst', array_map('strtolower', $tags));
+            $folders = array_merge(array('dummy'), $tags);
+            self::$settings = array('folder' => array('in' => $folders, 'out' => $folders));
+            self::$tags     = true;
+        } elseif (function_exists('check_messaging_default')) { // < Stud.IP 2.4
             check_messaging_default();
             self::$settings = $GLOBALS['my_messaging_settings'] ?: array();
         } else {
@@ -77,6 +84,10 @@ class MessageRoute implements APIPlugin
 
         // Create new folder
         $router->post('/messages/:box', function ($box) use ($router) {
+            if (MessageRoute::$tags) {
+                $router->halt(410, 'Stud.IP no longer has folders');
+            }
+
             $folder = trim(Request::get('folder', ''));
             $settings = MessageRoute::$settings;
 
@@ -111,7 +122,11 @@ class MessageRoute implements APIPlugin
                 $router->halt(404, sprintf('Folder %s-%s not found', $box, $folder));
             }
 
-            $ids = Message::folder($box == 'in' ? 'rec' : 'snd', $folder);
+            if (MessageRoute::$tags) {
+                $ids = Message::tags($box == 'in' ? 'rec' : 'snd', $folder ? $settings['folder'][$box][$folder] : false);
+            } else {
+                $ids = Message::folder($box == 'in' ? 'rec' : 'snd', $folder);
+            }
 
             $offset = Request::int('offset', 0);
             $limit  = Request::int('limit', 10) ?: 10;
@@ -241,8 +256,8 @@ class MessageRoute implements APIPlugin
         $router->put('/messages/:message_id/move/:folder', function ($folder, $message_id) use ($router) {
             $settings = MessageRoute::$settings;
 
-            if ($folder != 0 && !isset($settings['folder'][$box][$folder])) {
-                $router->halt(404, sprintf('Folder %s-%s not found', $box, $folder));
+            if ($folder != 0 && !isset($settings['folder']['in'][$folder])) {
+                $router->halt(404, sprintf('Folder %s-%s not found', 'in', $folder));
             }
 
             $message = Message::load($message_id);
@@ -250,7 +265,11 @@ class MessageRoute implements APIPlugin
                 $router->halt(404, sprintf('Message %s not found', $message_id));
             }
 
-            Message::move($message_id, $folder);
+            if (MessageRoute::$tags) {
+                \Message::find($message_id)->addTag($settings['folder']['in'][$folder]);
+            } else {
+                Message::move($message_id, $folder);
+            }
 
             $router->halt(204);
         })->conditions(array('folder' => '\d+'));
@@ -319,6 +338,30 @@ class Message
             $folder,
             $GLOBALS['user']->id,
         ));
+
+        return $statement->fetchAll(PDO::FETCH_COLUMN);
+    }
+
+    static function tags($sndrec, $tag)
+    {
+        if ($tag) {
+            $query = "SELECT message_id
+                      FROM message_user AS mu
+                      JOIN message_tags AS mt USING (message_id)
+                      WHERE snd_rec = :box AND mt.tag = :tag AND mu.user_id = :user_id AND mt.user_id = mu.user_id AND deleted = 0
+                      ORDER BY mu.mkdate DESC";
+        } else {
+            $query = "SELECT message_id
+                      FROM message_user AS mu
+                      WHERE snd_rec = :box AND mu.user_id = :user_id AND deleted = 0
+                      ORDER BY mu.mkdate DESC";
+        }
+        $statement = DBManager::get()->prepare($query);
+        $statement->bindValue(':box', $sndrec);
+        $statement->bindValue(':tag', $tag);
+        $statement->bindValue(':user_id', $GLOBALS['user']->id);
+        $statement->execute();
+
         return $statement->fetchAll(PDO::FETCH_COLUMN);
     }
 
