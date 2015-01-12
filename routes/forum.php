@@ -23,7 +23,7 @@ class ForumRoute implements APIPlugin
     {
         // Forums / Categories
         $router->get('/courses/:course_id/forum_categories', function ($course_id) use ($router) {
-            if (!\ForumPerm::has('view', $course_id)) {
+            if (!\ForumPerm::has('search', $course_id)) {
                 $this->error(401);
             }
 
@@ -70,7 +70,7 @@ class ForumRoute implements APIPlugin
             $category = $this->findCategory($category_id, $router);
             $cid = $category['seminar_id'];
 
-            if (!\ForumPerm::has('view', $cid)) {
+            if (!\ForumPerm::has('search', $cid)) {
                 $router->halt(401);
             }
 
@@ -116,7 +116,7 @@ class ForumRoute implements APIPlugin
         $router->get('/forum_category/:category_id/areas', function ($category_id) use ($router) {
             $category = $this->findCategory($category_id, $router);
 
-            if (!\ForumPerm::has('view', $category['seminar_id'])) {
+            if (!\ForumPerm::has('search', $category['seminar_id'])) {
                 $router->halt(401);
             }
 
@@ -171,7 +171,7 @@ class ForumRoute implements APIPlugin
             $entry = $this->findEntry($entry_id, $router);
             $cid   = $entry['seminar_id'];
 
-            if (!\ForumPerm::has('view', $cid)) {
+            if (!\ForumPerm::has('search', $cid)) {
                 $router->halt(401);
             }
 
