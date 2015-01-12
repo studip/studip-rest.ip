@@ -24,7 +24,7 @@ class ForumRoute implements APIPlugin
         // Forums / Categories
         $router->get('/courses/:course_id/forum_categories', function ($course_id) use ($router) {
             if (!\ForumPerm::has('search', $course_id)) {
-                $this->error(401);
+                $router->halt(401);
             }
 
             $offset = Request::int('offset', 0);
