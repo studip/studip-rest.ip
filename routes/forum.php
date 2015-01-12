@@ -61,13 +61,13 @@ class ForumRoute implements APIPlugin
                  $router->halt(500, 'Error creating the forum category.');
              }
 
-            $category = $this->findCategory($category_id, $router);
+            $category = self::findCategory($category_id, $router);
             $router->render(compact('category'), 201);
         });
 
 
         $router->get('/forum_category/:category_id', function ($category_id) use ($router) {
-            $category = $this->findCategory($category_id, $router);
+            $category = self::findCategory($category_id, $router);
             $cid = $category['seminar_id'];
 
             if (!\ForumPerm::has('search', $cid)) {
@@ -79,7 +79,7 @@ class ForumRoute implements APIPlugin
 
 
         $router->put('/forum_category/:category_id', function ($category_id) use ($router) {
-            $category = $this->findCategory($category_id, $router);
+            $category = self::findCategory($category_id, $router);
 
             if (!\ForumPerm::has("edit_category", $category['seminar_id'])) {
                 $router->halt(401);
@@ -93,13 +93,13 @@ class ForumRoute implements APIPlugin
 
             \ForumCat::setName($category_id, $name);
 
-            $category = $this->findCategory($category_id, $router);
+            $category = self::findCategory($category_id, $router);
             $router->render(compact('category'), 205);
         });
 
 
         $router->delete('/forum_category/:category_id', function ($category_id) use ($router) {
-            $category = $this->findCategory($category_id, $router);
+            $category = self::findCategory($category_id, $router);
             $cid = $category['seminar_id'];
 
             if (!\ForumPerm::has("remove_category", $cid)) {
@@ -114,7 +114,7 @@ class ForumRoute implements APIPlugin
 
         // Areas (= Bereiche)
         $router->get('/forum_category/:category_id/areas', function ($category_id) use ($router) {
-            $category = $this->findCategory($category_id, $router);
+            $category = self::findCategory($category_id, $router);
 
             if (!\ForumPerm::has('search', $category['seminar_id'])) {
                 $router->halt(401);
@@ -122,12 +122,12 @@ class ForumRoute implements APIPlugin
 
             $offset = Request::int('offset', 0);
             $limit  = Request::int('limit', 10) ?: 10;
-            $total  = $this->countAreas($category_id);
+            $total  = self::countAreas($category_id);
 
             $areas = 
 
             $result = array(
-                'areas'     => $this->getAreas($category_id, $offset, $limit),
+                'areas'     => self::getAreas($category_id, $offset, $limit),
                 'pagination' => $router->paginate($total, $offset, $limit, '/forum_category', $category_id, 'areas'),
             );
 
@@ -135,7 +135,7 @@ class ForumRoute implements APIPlugin
         });
 
         $router->post('/forum_category/:category_id/areas', function ($category_id) use ($router) {
-            $category = $this->findCategory($category_id, $router);
+            $category = self::findCategory($category_id, $router);
             $cid = $category['seminar_id'];
 
             if (!\ForumPerm::has('add_area', $cid)) {
@@ -157,18 +157,18 @@ class ForumRoute implements APIPlugin
 
             $anonymous = Request::int('anonymous', 0);
 
-            $entry_id = $this->createEntry($cid, $cid, $subject, $content, $anonymous);
+            $entry_id = self::createEntry($cid, $cid, $subject, $content, $anonymous);
 
             \ForumCat::addArea($category_id, $entry_id);
 
-            $entry = $this->findEntry($entry_id, $router);
+            $entry = self::findEntry($entry_id, $router);
             $router->render(compact('entry'), 201);
         });
 
 
         // Postings (= Themen und Postings)
         $router->get('/forum_entry/:entry_id', function($entry_id) use ($router) {
-            $entry = $this->findEntry($entry_id, $router);
+            $entry = self::findEntry($entry_id, $router);
             $cid   = $entry['seminar_id'];
 
             if (!\ForumPerm::has('search', $cid)) {
@@ -179,7 +179,7 @@ class ForumRoute implements APIPlugin
         });
 
         $router->post('/forum_entry/:entry_id', function($parent_id) use ($router) {
-            $entry = $this->findEntry($parent_id, $router);
+            $entry = self::findEntry($parent_id, $router);
             $cid = $entry['seminar_id'];
 
             $perm = self::isArea($entry) ? 'add_area' : 'add_entry';
@@ -208,14 +208,14 @@ class ForumRoute implements APIPlugin
 
             $anonymous = Request::int('anonymous', 0);
 
-            $entry_id = $this->createEntry($parent_id, $cid, $subject, $content, $anonymous);
+            $entry_id = self::createEntry($parent_id, $cid, $subject, $content, $anonymous);
 
-            $entry = $this->findEntry($entry_id, $router);
+            $entry = self::findEntry($entry_id, $router);
             $router->render(compact('entry'), 201);
         });
 
         $router->put('/forum_entry/:entry_id', function($entry_id) use ($router) {
-            $entry = $this->findEntry($entry_id, $router);
+            $entry = self::findEntry($entry_id, $router);
             $cid = $entry['seminar_id'];
 
             $perm = self::isArea($entry) ? 'edit_area' : 'edit_entry';
@@ -243,17 +243,17 @@ class ForumRoute implements APIPlugin
 
             \ForumEntry::update($entry_id, $subject, $content);
 
-            $entry = $this->findEntry($entry_id, $router);
+            $entry = self::findEntry($entry_id, $router);
             $router->render(compact('entry'), 205);
         });
 
         $router->delete('/forum_entry/:entry_id', function($entry_id) use ($router) {
 
-            $entry = $this->findEntry($entry_id, $router);
+            $entry = self::findEntry($entry_id, $router);
             $cid = $entry['seminar_id'];
 
             if (!\ForumPerm::hasEditPerms($entry_id) || !\ForumPerm::has('remove_entry', $cid)) {
-                $this->error(401);
+                self::error(401);
             }
 
             \ForumEntry::delete($entry_id);
@@ -268,14 +268,14 @@ class ForumRoute implements APIPlugin
      *********************/
 
 
-    private function findEntry($entry_id, $router)
+    private static function findEntry($entry_id, $router)
     {
         $raw = \ForumEntry::getConstraints($entry_id);
         if ($raw === false) {
             $router->halt(404);
         }
 
-        $entry = $this->convertEntry($raw);
+        $entry = self::convertEntry($raw);
 
         $children = \ForumEntry::getEntries($entry_id, \ForumEntry::WITHOUT_CHILDS, '', 'ASC', 0, false);
 
@@ -285,13 +285,13 @@ class ForumRoute implements APIPlugin
 
         $entry['children'] = array();
         foreach (array_values($children['list']) as $childentry) {
-            $entry['children'][] = $this->convertEntry($childentry);
+            $entry['children'][] = self::convertEntry($childentry);
         }
 
         return $entry;
     }
 
-    public function convertEntry($raw)
+    public static function convertEntry($raw)
     {
         $entry = array();
         foreach(words("topic_id seminar_id mkdate chdate anonymous depth") as $key) {
@@ -311,7 +311,7 @@ class ForumRoute implements APIPlugin
         return 1 === $entry['depth'];
     }
 
-    private function createEntry($parent_id, $course_id, $subject, $content, $anonymous)
+    private static function createEntry($parent_id, $course_id, $subject, $content, $anonymous)
     {
         $topic_id  = self::generateID();
 
@@ -330,7 +330,7 @@ class ForumRoute implements APIPlugin
         return $topic_id;
     }
 
-    private function findCategory($category_id, $router)
+    private static function findCategory($category_id, $router)
     {
         $result = array();
 
@@ -343,12 +343,12 @@ class ForumRoute implements APIPlugin
         return $result;
     }
 
-    private function countAreas($category_id)
+    private static function countAreas($category_id)
     {
         return sizeof(\ForumCat::getAreas($category_id));
     }
 
-    private function getAreas($category_id, $offset = 0, $limit = 10)
+    private static function getAreas($category_id, $offset = 0, $limit = 10)
     {
         $offset = (int) $offset;
         $limit  = (int) $limit;
@@ -356,7 +356,7 @@ class ForumRoute implements APIPlugin
         $areas = array();
 
         foreach (\ForumCat::getAreas($category_id, $offset, $limit) as $area) {
-            $areas[] = $this->convertEntry($area);
+            $areas[] = self::convertEntry($area);
         }
 
         return $areas;
