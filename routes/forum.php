@@ -295,7 +295,7 @@ class Forum {
         }
 
         $entry['subject']      = $raw['name'];
-        $entry['content_html'] = \ForumEntry::getContentAsHtml($raw['content']);
+        $entry['content_html'] = formatReady(\ForumEntry::parseEdit($raw['content']));
         $entry['content']      = \ForumEntry::killEdit($raw['content']);
 
         return $entry;
