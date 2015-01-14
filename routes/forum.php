@@ -338,7 +338,7 @@ class Forum {
 
     static function countAreas($category_id)
     {
-        return sizeof(\ForumCat::getAreas($category_id));
+        return sizeof(self::getCatAreas($category_id));
     }
 
     static function getAreas($category_id, $offset = 0, $limit = 10)
@@ -348,7 +348,7 @@ class Forum {
 
         $areas = array();
 
-        foreach (\ForumCat::getAreas($category_id, $offset, $limit) as $area) {
+        foreach (self::getCatAreas($category_id, $offset, $limit) as $area) {
             $areas[] = Forum::convertEntry($area);
         }
 
@@ -366,6 +366,43 @@ class Forum {
         $stmt = DBManager::get()->prepare("SELECT * FROM forum_categories
             WHERE seminar_id = ? ORDER BY pos ASC");
         $stmt->execute(array($seminar_id));
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Return the areas for the passed category_id
+     *
+     * @param type $category_id
+     * @param type $start  limit start (optional)
+     * @param type $limit  number of entries to fetch (optional, default is 20)
+     *
+     * @return array the data for the passed category_id
+     */
+    static function getCatAreas($category_id, $start = null, $num = 20)
+    {
+        $category = \ForumCat::get($category_id);
+
+        $limit = '';
+        if ($start !== null && $num) {
+            $limit = " LIMIT $start, $num";
+        }
+
+        if ($category_id == $category['seminar_id']) {
+            $stmt = DBManager::get()->prepare("SELECT fe.* FROM forum_entries AS fe
+                LEFT JOIN forum_categories_entries AS fce USING (topic_id)
+                WHERE seminar_id = ? AND depth = 1 AND (
+                    fce.category_id = ? OR fce.category_id IS NULL
+                ) ORDER BY category_id DESC, pos ASC" . $limit);
+            $stmt->execute(array($category_id, $category_id));
+        } else {
+            $stmt = DBManager::get()->prepare("SELECT forum_entries.* FROM forum_categories_entries
+                LEFT JOIN forum_entries USING(topic_id)
+                WHERE category_id = ?
+                ORDER BY pos ASC" . $limit);
+
+            $stmt->execute(array($category_id));
+        }
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
