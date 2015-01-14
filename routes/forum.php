@@ -32,7 +32,7 @@ class ForumRoute implements APIPlugin
 
             \ForumEntry::checkRootEntry($course_id);
 
-            $categories = \ForumCat::getList($course_id, false);
+            $categories = Forum::getCatList($course_id);
             $total      = sizeof($categories);
             $categories = array_splice($categories, $offset, $limit ?: 10);
 
@@ -358,5 +358,15 @@ class Forum {
     static function generateID()
     {
         return md5(uniqid(rand()));
+    }
+
+
+    static function getCatList($seminar_id)
+    {
+        $stmt = DBManager::get()->prepare("SELECT * FROM forum_categories
+            WHERE seminar_id = ? ORDER BY pos ASC");
+        $stmt->execute(array($seminar_id));
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }
