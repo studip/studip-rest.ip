@@ -61,7 +61,7 @@ $I->seeResponseCodeIs(204);
 
 
 // create a category and add an area to it
-$I->sendPOST('courses/'. $course_id .'/forum_categories', array('name' => 'Testkategorie'));
+$I->sendPOST('courses/'. $course_id .'/forum_categories', array('name' => 'Testkategorie 2'));
 $category_id = $I->grabDataFromJsonResponse('category.category_id');
 
 $I->sendPOST('forum_category/'. $category_id .'/areas', array('subject' => 'Testbereich', 'content' => 'Inhalt des Testbereichs'));
@@ -82,7 +82,7 @@ $this->assertEquals($I->grabResponse(), $area_response);
 
 
 // check getting areas is working
-$I->sendGET('forum_entry/'. $area_id);
+$I->sendGET('forum_category/'. $category_id .'/areas');
 $I->seeResponseCodeIs(200);
 $I->seeResponseIsJson();
 $I->seeResponseContains('"subject":"Testbereich"');
@@ -113,7 +113,7 @@ $this->assertEquals($I->grabResponse(), $post_response);
 
 
 // edit entry
-$I->sendPUT('forum_entry/'. $area_id, array('subject' => 'Umbenanntes Testthema', 'content' => 'Umbenannter Inhalt des Testthemas'));
+$I->sendPUT('forum_entry/'. $post_id, array('subject' => 'Umbenanntes Testthema', 'content' => 'Umbenannter Inhalt des Testthemas'));
 $I->seeResponseCodeIs(205);
 $I->seeResponseIsJson();
 $I->seeResponseContains('"subject":"Umbenanntes Testthema"');
@@ -140,7 +140,6 @@ $I->seeResponseIsJson();
 // -> check if the entry is REALLY deleted
 $I->sendGET('forum_entry/'. $post_id);
 $I->seeResponseCodeIs(404);
-
 
 
 // TODO: test retrieving children for forum_entry

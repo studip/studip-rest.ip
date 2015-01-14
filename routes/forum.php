@@ -124,8 +124,6 @@ class ForumRoute implements APIPlugin
             $limit  = Request::int('limit', 10) ?: 10;
             $total  = Forum::countAreas($category_id);
 
-            $areas = 
-
             $result = array(
                 'areas'     => Forum::getAreas($category_id, $offset, $limit),
                 'pagination' => $router->paginate($total, $offset, $limit, '/forum_category', $category_id, 'areas'),
@@ -185,7 +183,6 @@ class ForumRoute implements APIPlugin
             $perm = Forum::isArea($entry) ? 'add_area' : 'add_entry';
 
             if (!\ForumPerm::has($perm, $cid)) {
-                die;
                 $router->halt(401);
             }
 
