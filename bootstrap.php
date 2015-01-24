@@ -69,6 +69,21 @@ function indent($json) {
     return $result;
 }
 
+// Compatibility issues
+if (!function_exists('count_messages_from_user')) {
+    function count_messages_from_user($snd_rec, $where = '') {
+        if ($snd_rec === 'in') {
+            $snd_rec = 'rec';
+        } elseif ($snd_rec === 'out') {
+            $snd_rec = 'snd';
+        }
+        $condition = 'snd_rec = ? AND user_id = ? ' . $where;
+        $parameters = array($snd_rec, $GLOBALS['user']->id);
+        
+        return MessageUser::countBySql($condition, $parameters);
+    }
+}
+
 // Global includes
 require_once 'vendor/trails/trails.php';
 require_once 'app/controllers/studip_controller.php';
