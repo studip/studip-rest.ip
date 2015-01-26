@@ -290,7 +290,7 @@ class Course
             if (file_exists('assets/stylesheets/less/tables.less')) {
                 $less = file_get_contents('assets/stylesheets/less/tables.less');
 
-                $matched = preg_match_all('/\.gruppe(\d) \{ background(?:-color)?: (\#[a-f0-9]{3,6}); \}/', $less, $matches, PREG_SET_ORDER);
+                $matched = preg_match_all('/\.gruppe(\d) \{ background(?:-color)?: (\#[a-f0-9]{3,6})(?: !important)?; \}/', $less, $matches, PREG_SET_ORDER);
                 foreach ($matches as $match) {
                     if (strlen($match[2]) === 4) {
                         $match[2] = '#' . $match[2][1] . $match[2][1] . $match[2][2] . $match[2][2] . $match[2][3] . $match[2][3];
