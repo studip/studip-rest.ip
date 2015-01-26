@@ -17,6 +17,8 @@ class ForumRoute implements APIPlugin
         require_once 'public/plugins_packages/core/Forum/models/ForumCat.php';
         require_once 'public/plugins_packages/core/Forum/models/ForumEntry.php';
         require_once 'public/plugins_packages/core/Forum/models/ForumPerm.php';
+        require_once 'public/plugins_packages/core/Forum/models/ForumHelpers.php';
+        require_once 'public/plugins_packages/core/Forum/models/ForumVisit.php';
     }
 
     public function routes(&$router)
@@ -34,7 +36,7 @@ class ForumRoute implements APIPlugin
 
             $categories = Forum::getCatList($course_id);
             $total      = sizeof($categories);
-            $categories = array_splice($categories, $offset, $limit ?: 10);
+            $categories = array_splice($categories, $offset, $limit);
 
             $result = array(
                 'forums'     => $categories,
@@ -65,6 +67,30 @@ class ForumRoute implements APIPlugin
             $router->render(compact('category'), 201);
         });
 
+
+        // get 5 most recent forum-entries for passed seminar
+        $router->get('/courses/:course_id/forum_newest', function ($course_id) use ($router) {
+            if (!\ForumPerm::has('search', $course_id)) {
+                $router->halt(401);
+            }
+
+            $offset = Request::int('offset', 0);
+            $limit  = Request::int('limit', 10) ?: 10;
+
+            \ForumEntry::checkRootEntry($course_id);
+
+            $entries = array();
+
+            foreach (Forum::getLatestEntries($course_id, $limit) as $entry) {
+                $entries[] = Forum::convertEntry($entry);
+            }
+
+            $result = array(
+                'entries' => $entries,
+            );
+
+            $router->render($result);
+        });
 
         $router->get('/forum_category/:category_id', function ($category_id) use ($router) {
             $category = Forum::findCategory($category_id, $router);
@@ -291,9 +317,14 @@ class Forum {
             $entry[$key] = $raw[$key];
         }
 
+        $last_visit = \ForumVisit::getLastVisit($raw['seminar_id']);
+
         $entry['subject']      = $raw['name'];
         $entry['content_html'] = formatReady(\ForumEntry::parseEdit($raw['content']));
         $entry['content']      = \ForumEntry::killEdit($raw['content']);
+        $entry['user_id']      = $raw['user_id'];
+        $entry['new']          = ($raw['chdate'] >= $last_visit) ? true : false;
+        $entry['new_childs']   = (int)\ForumVisit::getCount($raw['topic_id'], $last_visit);
 
         return $entry;
     }
@@ -403,6 +434,18 @@ class Forum {
 
             $stmt->execute(array($category_id));
         }
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    static function getLatestEntries($course_id, $limit)
+    {
+        $stmt = DBManager::get()->prepare("SELECT * FROM forum_entries
+            WHERE seminar_id = ?
+            ORDER BY chdate DESC
+            LIMIT 0, ?");
+
+        $stmt->execute(array($course_id, $limit));
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
