@@ -304,6 +304,7 @@ class Forum {
 
         $entry['children'] = array();
         foreach (array_values($children['list']) as $childentry) {
+            $childentry['seminar_id'] = $raw['seminar_id'];
             $entry['children'][] = Forum::convertEntry($childentry);
         }
 
