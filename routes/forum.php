@@ -68,6 +68,15 @@ class ForumRoute implements APIPlugin
         });
 
 
+        $router->put('/courses/:course_id/set_forum_read', function ($course_id) use ($router) {
+            if (!\ForumPerm::has('search', $course_id)) {
+                $router->halt(401);
+            }
+
+            \ForumVisit::setVisit($course_id);
+            $router->render(null, 205);
+        });
+
         // get 5 most recent forum-entries for passed seminar
         $router->get('/courses/:course_id/forum_newest', function ($course_id) use ($router) {
             if (!\ForumPerm::has('search', $course_id)) {
@@ -323,9 +332,9 @@ class Forum {
         $entry['subject']      = $raw['name'];
         $entry['content_html'] = formatReady(\ForumEntry::parseEdit($raw['content']));
         $entry['content']      = \ForumEntry::killEdit($raw['content']);
-        $entry['user_id']      = $raw['user_id'];
-        $entry['new']          = ($raw['chdate'] >= $last_visit) ? true : false;
-        $entry['new_childs']   = (int)\ForumVisit::getCount($raw['topic_id'], $last_visit);
+        $entry['user_id']      = $raw['user_id'] ?: $raw['owner_id'];
+        $entry['new']          = ($raw['chdate'] >= $last_visit && $entry['user_id'] != $GLOBALS['user']->id) ? true : false;
+        $entry['new_children'] = (int)\ForumVisit::getCount($raw['topic_id'], $last_visit);
 
         return $entry;
     }
