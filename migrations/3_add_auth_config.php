@@ -18,16 +18,16 @@ class AddAuthConfig extends DBMigration
      **/
     public function up ()
     {
-        $query = "INSERT INTO config (config_id, field, value, is_default, type, `range`, section, mkdate, chdate, description)
-                  VALUES (MD5(?), ?, '0', 1, 'boolean', 'global', 'global', UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), ?)";
+        $query = "INSERT INTO config (config_id, field, value, is_default, type, `range`, section, mkdate, chdate, description, comment)
+                  VALUES (MD5(?), ?, '0', 1, 'boolean', 'global', 'global', UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), ?, '')";
         $statement = DBManager::get()->prepare($query);
         $statement->execute(array(
             'RESTIP_AUTH_SESSION_ENABLED',
             'RESTIP_AUTH_SESSION_ENABLED',
             'Schaltet die REST.IP Authentifizierung über Stud.IP Session ein',
         ));
-        $query = "INSERT INTO config (config_id, field, value, is_default, type, `range`, section, mkdate, chdate, description)
-                  VALUES (MD5(?), ?, '0', 1, 'boolean', 'global', 'global', UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), ?)";
+        $query = "INSERT INTO config (config_id, field, value, is_default, type, `range`, section, mkdate, chdate, description, comment)
+                  VALUES (MD5(?), ?, '0', 1, 'boolean', 'global', 'global', UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), ?, '')";
         $statement = DBManager::get()->prepare($query);
         $statement->execute(array(
             'RESTIP_AUTH_HTTP_ENABLED',
