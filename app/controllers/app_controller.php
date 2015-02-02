@@ -6,7 +6,7 @@ class AppController extends StudipController
         parent::before_filter($action, $args);
         
         if (Request::isXhr()) {
-            $this->response->add_header('Content-Type: text/html;charset=windows-1252');
+            $this->response->add_header('Content-Type', 'text/html;charset=windows-1252');
         } else {
             $this->set_layout($GLOBALS['template_factory']->open('layouts/base.php'));
         }
