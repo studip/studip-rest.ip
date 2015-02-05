@@ -291,6 +291,28 @@ class ForumRoute implements APIPlugin
             \ForumEntry::delete($entry_id);
             $router->render(null, 204);
         });
+
+        $router->get('/forum_entry/:entry_id/children', function($entry_id) use ($router) {
+            $entry = Forum::findEntry($entry_id, $router);
+            $cid   = $entry['seminar_id'];
+
+            if (!\ForumPerm::has('search', $cid)) {
+                $router->halt(401);
+            }
+
+            $offset = Request::int('offset', 0);
+            $limit  = Request::int('limit', 10) ?: 10;
+
+            $entries = Forum::getChildren($entry_id, $offset, $limit, $cid);
+            $total   = sizeof($entries);
+
+            $result = array(
+                'entries'    => $entries,
+                'pagination' => $router->paginate($total, $offset, $limit, '/forum_entry', $cid, 'children'),
+            );
+
+            $router->render($result);
+        });
     }
 }
 
@@ -303,21 +325,23 @@ class Forum {
             $router->halt(404);
         }
 
-        $entry = Forum::convertEntry($raw);
+        return Forum::convertEntry($raw);
+    }
 
-        $children = \ForumEntry::getEntries($entry_id, \ForumEntry::WITHOUT_CHILDS, '', 'ASC', 0, false);
+    static function getChildren($entry_id, $start, $limit, $seminar_id) {
+        $children = \ForumEntry::getEntries($entry_id, \ForumEntry::WITHOUT_CHILDS, '', 'ASC', $start ?: 0, $limit);
 
         if (isset($children['list'][$entry_id])) {
             unset($children['list'][$entry_id]);
         }
 
-        $entry['children'] = array();
+        $return_children = array();
         foreach (array_values($children['list']) as $childentry) {
-            $childentry['seminar_id'] = $raw['seminar_id'];
-            $entry['children'][] = Forum::convertEntry($childentry);
+            $childentry['seminar_id'] = $seminar_id;
+            $return_children[] = Forum::convertEntry($childentry);
         }
 
-        return $entry;
+        return $return_children;
     }
 
     public static function convertEntry($raw)

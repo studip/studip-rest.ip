@@ -5,11 +5,12 @@
 /* * * * * * * * * * * * * * * * * * * * * * * */
 
 // ID der Standard Testveranstaltung
-$course_id = 'a07535cf2f8a72df33c12ddfa4b53dde';
+require_once rtrim(shell_exec('pwd'), "\r\n") .'/tests/api/forumcept_config.php';
+$course_id = $config['cid'];
 
 $I = new ApiGuy($scenario);
 $I->wantTo('check if the forum services are working');
-$I->amHttpAuthenticated('test_dozent', 'testing');
+$I->amHttpAuthenticated($config['user'], $config['pass']);
 $I->sendGET('discovery');
 $I->seeResponseCodeIs(200);
 $I->seeResponseIsJson();
@@ -23,7 +24,7 @@ $I->seeResponseContains('"course_id":"'. $course_id .'"');
 
 
 // get the forum categories
-$I->sendGET('courses/'. $course_id .'/forum_categories');
+$I->sendGET('courses/'. $course_id .'/forum_categories?limit=1000');
 $I->seeResponseCodeIs(200);
 $I->seeResponseIsJson();
 $I->seeResponseContains('"entry_name":"Allgemein"');
@@ -132,6 +133,14 @@ $I->seeResponseIsJson();
 $I->seeResponseContains('"content":"Inhalt des Testpostings"');
 
 
+$I->sendGET('forum_entry/'. $area_id .'/children');
+$I->grabDataFromJsonResponse('pagination.offset');
+$I->grabDataFromJsonResponse('pagination.limit');
+$I->grabDataFromJsonResponse('pagination.total');
+
+$I->seeResponseContains('"subject":"Umbenanntes Testthema"');
+$I->seeResponseContains('"content":"Umbenannter Inhalt des Testthemas"');
+
 // delete entry
 $I->sendDELETE('forum_entry/'. $post_id);
 $I->seeResponseCodeIs(204);
@@ -140,6 +149,3 @@ $I->seeResponseIsJson();
 // -> check if the entry is REALLY deleted
 $I->sendGET('forum_entry/'. $post_id);
 $I->seeResponseCodeIs(404);
-
-
-// TODO: test retrieving children for forum_entry
