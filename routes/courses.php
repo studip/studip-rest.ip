@@ -17,7 +17,7 @@ class CoursesRoute implements \APIPlugin
             '/courses/:course_id'            => _('Veranstaltungsinformationen'),
             '/courses/semester'              => _('Belegte Semester'),
             '/courses/semester/:semester_id' => _('Veranstaltungen eines Semesters'),
-            '/courses/overview'              => _('Ãœbersicht Veranstaltungsinhalte'),
+            '/courses/overview'              => _('Übersicht Veranstaltungsinhalte'),
         );
     }
 
@@ -93,6 +93,13 @@ class CoursesRoute implements \APIPlugin
         $router->get('/courses/overview', function () use ($router)
         {
             require_once 'lib/meine_seminare_func.inc.php';
+            
+            $realm = false;
+            if (file_exists($GLOBALS['STUDIP_BASE_PATH'] . '/app/models/my_realm.php')) {
+                $realm = true;
+                include $GLOBALS['STUDIP_BASE_PATH'] . '/app/models/my_realm.php';
+            }
+            
             $courses = Course::load(null, @$_REQUEST['order'] == 'name');
             $my_sem = array();
             foreach($courses as $course) {
@@ -106,13 +113,14 @@ class CoursesRoute implements \APIPlugin
                     'modules'    => $course['modules'],
                     'visitdate'  => $course['visitdate'],
                     'status'     => $course['status'],
-                    'obj_type'   => 'sem');
+                    'obj_type'   => 'sem',
+                );
             }
             \get_my_obj_values($my_sem, $GLOBALS['user']->id);
             $slot_mapper = array(
-                    'files' => "documents",
-                    'elearning' => "elearning_interface"
-                );
+                'files'     => 'documents',
+                'elearning' => 'elearning_interface'
+            );
             foreach($courses as $course_key => $course) {
                 unset($courses[$course_key]['teachers']);
                 unset($courses[$course_key]['tutors']);
@@ -122,7 +130,12 @@ class CoursesRoute implements \APIPlugin
                 $active_modules = array();
                 if (function_exists('getPluginNavigationForSeminar')) { //since 2.4
                     $sem_class = $GLOBALS['SEM_CLASS'][$GLOBALS['SEM_TYPE'][$course['status']]['class']];
-                    $plugin_navigation = getPluginNavigationForSeminar($course['course_id'], $course['visitdate']);
+                    if ($realm) {
+                        $plugin_navigation = \MyRealmModel::getAdditionalNavigations($course['course_id'], $course, $sem_class, $GLOBALS['user']->id);
+                    } else {
+                        $plugin_navigation = getPluginNavigationForSeminar($course['course_id'], $course['visitdate']);
+                    }
+
                     foreach (words('forum participants files news scm schedule wiki vote literature elearning') as $key) {
                         if ($sem_class) {
                             $slot = isset($slot_mapper[$key]) ? $slot_mapper[$key] : $key;
@@ -131,14 +144,13 @@ class CoursesRoute implements \APIPlugin
                                 $navigation[$key] = $plugin_navigation[get_class($module)];
                                 unset($plugin_navigation[get_class($module)]);
                             } else {
-                                $navigation[$key] = $my_obj_values[$key];
+                                $navigation[$key] = $my_sem[$course['course_id']][$key];
                             }
                         } else {
-                            $navigation[$key] = $my_obj_values[$key];
+                            $navigation[$key] = $my_sem[$course['course_id']][$key];
                         }
                     }
                     $navigation = array_merge($navigation, $plugin_navigation);
-
                 } else {
                     foreach (words('forum participants files news scm schedule wiki vote literature elearning') as $key) {
                         $navigation[$key] = $my_sem[$course['course_id']][$key];
@@ -217,7 +229,10 @@ class Course
             }
             $semester_old = Semester::findByTimestamp(time() - 365 * 24 * 60 * 60);
 
-            $query .= " WHERE su.user_id IS NOT NULL AND start_time <= ? AND (? <= start_time + duration_time OR duration_time = -1) ORDER BY title ASC";
+            $query .= " WHERE su.user_id IS NOT NULL
+                          AND start_time <= IFNULL(?, UNIX_TIMESTAMP())
+                          AND (? <= start_time + duration_time OR duration_time = -1)
+                        ORDER BY title ASC";
             $parameters[] = $semester_cur->beginn;
             $parameters[] = $semester_old->beginn;
         }
