@@ -74,7 +74,7 @@ class ForumRoute implements APIPlugin
             }
 
             \ForumVisit::setVisit($course_id);
-            $router->render(null, 205);
+            $router->halt(204);
         });
 
         // get 5 most recent forum-entries for passed seminar
@@ -143,7 +143,7 @@ class ForumRoute implements APIPlugin
 
             \ForumCat::remove($category_id, $cid);
 
-            $router->render(null, 204);
+            $router->halt(204);
         });
 
 
@@ -289,7 +289,7 @@ class ForumRoute implements APIPlugin
             }
 
             \ForumEntry::delete($entry_id);
-            $router->render(null, 204);
+            $router->halt(204);
         });
 
         $router->get('/forum_entry/:entry_id/children', function($entry_id) use ($router) {
@@ -302,8 +302,9 @@ class ForumRoute implements APIPlugin
 
             $offset = Request::int('offset', 0);
             $limit  = Request::int('limit', 10) ?: 10;
+            $sort_ascending = Request::get('sort_ascending') ? true : false;
 
-            $entries = Forum::getChildren($entry_id, $offset, $limit, $cid);
+            $entries = Forum::getChildren($entry_id, $offset, $limit, $cid, $sort_ascending);
             $total   = sizeof($entries);
 
             $result = array(
@@ -328,8 +329,8 @@ class Forum {
         return Forum::convertEntry($raw);
     }
 
-    static function getChildren($entry_id, $start, $limit, $seminar_id) {
-        $children = \ForumEntry::getEntries($entry_id, \ForumEntry::WITHOUT_CHILDS, '', 'ASC', $start ?: 0, $limit);
+    static function getChildren($entry_id, $start, $limit, $seminar_id, $sort_ascending = false) {
+        $children = \ForumEntry::getEntries($entry_id, \ForumEntry::WITHOUT_CHILDS, '', $sort_ascending ? 'ASC' : 'DESC', $start ?: 0, $limit);
 
         if (isset($children['list'][$entry_id])) {
             unset($children['list'][$entry_id]);
