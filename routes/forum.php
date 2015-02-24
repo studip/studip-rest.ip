@@ -73,6 +73,8 @@ class ForumRoute implements APIPlugin
                 $router->halt(401);
             }
 
+            // do this twice, to set them REALLY as visited, without storing the previous visitdate
+            \ForumVisit::setVisit($course_id);
             \ForumVisit::setVisit($course_id);
             $router->halt(204);
         });
