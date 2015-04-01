@@ -84,8 +84,9 @@ class OauthController extends Trails_Controller
         }
 
         PageLayout::disableHeader();
-        $this->set_layout($GLOBALS['template_factory']->open('layouts/base_without_infobox'));
+        $this->set_layout($GLOBALS['template_factory']->open('layouts/base.php'));
         $this->rs = $rs;
+        $this->oauth_callback = Request::get('oauth_callback');
     }
 
     /**
