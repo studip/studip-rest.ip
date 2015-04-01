@@ -208,7 +208,7 @@ class Course
                          duration_time, VeranstaltungsNummer AS `number`,
                          Name AS title, Untertitel AS subtitle, sem.status AS type, modules,
                          Beschreibung AS description, Ort AS location, gruppe,
-                         IFNULL(visitdate, 0) AS visitdate, su.status
+                         IFNULL(visitdate, 0) AS visitdate, su.status, sem.visible
                   FROM seminare AS sem
                   LEFT JOIN seminar_user AS su ON (sem.Seminar_id = su.seminar_id AND su.user_id = ?)
                   LEFT JOIN object_user_visits ouv ON (ouv.object_id = su.seminar_id AND ouv.user_id = su.user_id AND ouv.type = 'sem')";
