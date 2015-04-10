@@ -187,7 +187,7 @@ class Router
 
         $this->applyHook('restip.before.render');
         $data = $this->getRouteResult();
-        $data = array_map_recursive('studip_utf8encode', $data);
+        $data = studip_utf8encode($data);
 
         if ($data !== false) {
             $this->template->data   = $data;
