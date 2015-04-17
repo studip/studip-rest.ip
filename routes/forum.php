@@ -177,13 +177,13 @@ class ForumRoute implements APIPlugin
                 $router->halt(401);
             }
 
-            $subject = Request::get('subject');
+            $subject = Helper::Sanitize(Request::get('subject'));
 
             if (!strlen($subject = trim($subject))) {
                 $router->halt(400, 'Subject required.');
             }
 
-            $content = Request::get('content');
+            $content = Helper::Sanitize(Request::get('content'));
 
             if (!strlen($content)) {
                 $router->halt(400, 'Content required.');
@@ -223,8 +223,8 @@ class ForumRoute implements APIPlugin
                 $router->halt(401);
             }
 
-            $subject = (string)trim(Request::get('subject'));
-            $content = (string)trim(Request::get('content'));
+            $subject = (string)trim(Helper::Sanitize(Request::get('subject')));
+            $content = (string)trim(Helper::Sanitize(Request::get('content')));
 
             // areas and threads need a subject, postings do not
             if ($entry['depth'] < 2 && !$subject) {
