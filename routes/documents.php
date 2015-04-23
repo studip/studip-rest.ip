@@ -73,16 +73,10 @@ class DocumentsRoute implements APIPlugin
                 $router->halt(403, sprintf('User may not access course %s', $course_id));
             }
 
-            $query = "SELECT dokument_id AS document_id, range_id AS folder_id user_id, name,
-                             IFNULL(description, '') AS description, mkdate, chdate, filename,
-							 filesize, downloads, protected
-                      FROM dokumente
-                      WHERE seminar_id = ? AND chdate >= ?";
+            $documents = Document::loadNewFiles($course_id, $timestamp);
 
-            $stmt = DBManager::get()->prepare($query);
-            $stmt->execute(array($course_id, $timestamp));
-            $documents = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
+            header('Cache-Control: private');
+            $router->expires('+10 minutes');
             $router->render(compact('documents'));
         });
 
@@ -265,7 +259,7 @@ class Document
         }
         $statement = DBManager::get()->prepare($query);
         $statement->execute(array($id));
-        $files =  $statement->fetchAll(PDO::FETCH_ASSOC);
+        $files = $statement->fetchAll(PDO::FETCH_ASSOC);
 
         foreach ($files as &$file) {
             $file['protected'] = !empty($file['protected']);
@@ -274,5 +268,26 @@ class Document
         }
 
         return ($type !== 'folder' && !is_array($id)) ? reset($files) : $files;
+    }
+
+    static function loadNewFiles($course_id, $timestamp)
+    {
+        $query = "SELECT dokument_id AS document_id, range_id AS folder_id, user_id, name,
+                         IFNULL(description, '') AS description,
+                         mkdate, chdate, filename, filesize, downloads,
+                         protected
+                  FROM dokumente
+                  WHERE seminar_id = ? AND chdate >= ?";
+        $statement = DBManager::get()->prepare($query);
+        $statement->execute(array($course_id, $timestamp));
+        $files = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($files as &$file) {
+            $file['protected'] = !empty($file['protected']);
+            $file['mime_type'] = get_mime_type($file['filename']);
+            $file['icon']      = Assets::image_path(GetFileIcon(getFileExtension($file['filename'])));
+        }
+
+        return $files;
     }
 }
