@@ -9,6 +9,7 @@ class DocumentsRoute implements APIPlugin
         return array(
             '/documents/:range_id/folder(/:folder_id)' => _('Dateiordner'),
             '/documents/:document_id'                  => _('Dateien'),
+            '/documents/:course_id/new(/:timestamp)'   => _('Neue Dateien'),
             '/documents/:document_id/download'         => _('Dateidownloads'),
         );
     }
@@ -62,6 +63,21 @@ class DocumentsRoute implements APIPlugin
             header('Cache-Control: private');
             $router->expires('+10 minutes');
             $router->render(compact('folders', 'documents', 'users'));
+        });
+
+        $router->get('/documents/:course_id/new(/:timestamp)', function($course_id, $timestamp = 0) use ($router) {
+            if (!Document::isActivated($course_id)) {
+                $router->halt(400, sprintf('Course %s has no documents', $course_id));
+            }
+            if (!Helper::UserHasAccessToRange($course_id)) {
+                $router->halt(403, sprintf('User may not access course %s', $course_id));
+            }
+
+            $documents = Document::loadNewFiles($course_id, $timestamp);
+
+            header('Cache-Control: private');
+            $router->expires('+10 minutes');
+            $router->render(compact('documents'));
         });
 
         $router->get('/documents/:document_id', function($document_id) use ($router) {
@@ -243,7 +259,7 @@ class Document
         }
         $statement = DBManager::get()->prepare($query);
         $statement->execute(array($id));
-        $files =  $statement->fetchAll(PDO::FETCH_ASSOC);
+        $files = $statement->fetchAll(PDO::FETCH_ASSOC);
 
         foreach ($files as &$file) {
             $file['protected'] = !empty($file['protected']);
@@ -252,5 +268,26 @@ class Document
         }
 
         return ($type !== 'folder' && !is_array($id)) ? reset($files) : $files;
+    }
+
+    static function loadNewFiles($course_id, $timestamp)
+    {
+        $query = "SELECT dokument_id AS document_id, range_id AS folder_id, user_id, name,
+                         IFNULL(description, '') AS description,
+                         mkdate, chdate, filename, filesize, downloads,
+                         protected
+                  FROM dokumente
+                  WHERE seminar_id = ? AND chdate >= ?";
+        $statement = DBManager::get()->prepare($query);
+        $statement->execute(array($course_id, $timestamp));
+        $files = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($files as &$file) {
+            $file['protected'] = !empty($file['protected']);
+            $file['mime_type'] = get_mime_type($file['filename']);
+            $file['icon']      = Assets::image_path(GetFileIcon(getFileExtension($file['filename'])));
+        }
+
+        return $files;
     }
 }
