@@ -39,8 +39,9 @@ class DocumentsRoute implements APIPlugin
                 $router->halt(404, sprintf('No folder %s for range %s', $folder_id, $range_id));
             }
 
+            $last_visit = object_get_visit($range_id, "documents");
             $folders   = Document::loadFolders($folder_id);
-            $documents = Document::loadFiles($folder_id, 'folder');
+            $documents = Document::loadFiles($folder_id, 'folder', $last_visit);
 
             if ($router->compact()) {
                 $router->render(compact('folders', 'documents'));
@@ -238,7 +239,7 @@ class Document
         return $folders;
     }
 
-    static function loadFiles($id, $type = 'file')
+    static function loadFiles($id, $type = 'file', $last_visit = 7776000)
     {
         if ($type === 'folder') {
             $query = "SELECT dokument_id AS document_id, user_id, name,
@@ -265,6 +266,7 @@ class Document
             $file['protected'] = !empty($file['protected']);
             $file['mime_type'] = get_mime_type($file['filename']);
             $file['icon']      = Assets::image_path(GetFileIcon(getFileExtension($file['filename'])));
+            $file['new'] = ($file['chdate'] >= $last_visit) ? true : false;
         }
 
         return ($type !== 'folder' && !is_array($id)) ? reset($files) : $files;
