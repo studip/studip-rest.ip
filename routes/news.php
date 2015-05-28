@@ -223,8 +223,8 @@ class News
         $result = $statement->fetchAll(PDO::FETCH_ASSOC);
 
         foreach($result as $ne) {
-            $ne['new'] = ($ne['chdate'] >= $last_visit) ? true : false;
-            $news[] = $ne;
+            $ne['new'] = $ne['chdate'] >= $last_visit;
+            $news[]    = $ne;
         }
         $news = array_map('self::adjust', $news);
 

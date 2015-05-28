@@ -266,7 +266,7 @@ class Document
             $file['protected'] = !empty($file['protected']);
             $file['mime_type'] = get_mime_type($file['filename']);
             $file['icon']      = Assets::image_path(GetFileIcon(getFileExtension($file['filename'])));
-            $file['new'] = ($file['chdate'] >= $last_visit) ? true : false;
+            $file['new']       = $file['chdate'] >= $last_visit;
         }
 
         return ($type !== 'folder' && !is_array($id)) ? reset($files) : $files;
