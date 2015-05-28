@@ -207,6 +207,7 @@ class News
     {
         $offset = (int) $offset;
         $limit  = (int) $limit;
+        $news = array();
 
         $query = "SELECT news_id, topic, body, `date`, user_id, expire,
                          allow_comments, chdate, chdate_uid, mkdate
