@@ -190,7 +190,7 @@ class UserRoute implements \APIPlugin
             $statement->bindValue(':needle', $needle);
             $statement->execute();
             $ids = $statement->fetchAll(PDO::FETCH_COLUMN);
-            
+
             $users = array();
             foreach ($ids as $id) {
                 $user = reset($router->dispatch('get', '/user(/:user_id)', $id));

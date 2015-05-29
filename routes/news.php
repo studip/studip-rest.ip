@@ -20,7 +20,7 @@ class NewsRoute implements APIPlugin
 
     public static function before()
     {
-        require_once 'lib/classes/StudipNews.class.php';
+        class_exists('StudipNews') or require_once 'lib/classes/StudipNews.class.php';
     }
 
     /**

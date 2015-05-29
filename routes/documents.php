@@ -20,7 +20,6 @@ class DocumentsRoute implements APIPlugin
     public static function before()
     {
         require_once 'lib/datei.inc.php';
-        require_once 'lib/classes/StudipDocument.class.php';
     }
 
     function routes(&$router)

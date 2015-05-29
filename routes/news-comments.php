@@ -21,8 +21,10 @@ class NewsCommentsRoute implements APIPlugin
 
     public static function before()
     {
-        require_once 'lib/classes/StudipNews.class.php';
-        require_once 'lib/classes/StudipComments.class.php';
+        class_exists('StudipNews') or require_once 'lib/classes/StudipNews.class.php';
+        if (!class_exists('StudipComment')) {
+            require_once 'lib/classes/StudipComments.class.php';
+        }
     }
 
     /**
@@ -61,7 +63,7 @@ class NewsCommentsRoute implements APIPlugin
                 $router->halt(404, sprintf('News "%s" not found', $news_id));
             }
 
-            $comment = new StudipComments();
+            $comment = class_exists('StudipComment') ? new StudipComment() : new StudipComments();
             $comment->object_id = $news_id;
             $comment->user_id   = $GLOBALS['user']->id;
             $comment->content   = Helper::Sanitize(Request::get('content'));
@@ -101,7 +103,7 @@ class NewsCommentsRoute implements APIPlugin
                 $router->halt(404, 'News "%s" not found', $news_id);
             }
 
-            $comment = StudipComments::find($comment_id);
+            $comment = class_exists('StudipComment') ? StudipComment::find($comment_id) : StudipComments::find($comment_id);
             if (!$comment) {
                 $router->halt(404, 'Comment "%s" for news "%s" not found', $comment_id, $news_id);
             }
