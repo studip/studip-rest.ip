@@ -38,9 +38,9 @@ class NewsRoute implements APIPlugin
             if (!Helper::UserHasAccessToRange($range_id)) {
                 $router->halt(403, sprintf('User may not access range "%s"', $range_id));
             }
-
+            $last_visit = object_get_visit($range_id, "news");
             $result = array(
-                'news'       => News::loadRange($range_id, $offset, $limit),
+                'news'       => News::loadRange($range_id, $offset, $limit, $last_visit),
                 'pagination' => $router->paginate($total, $offset, $limit, '/news/range', $range_id),
             );
 
@@ -203,10 +203,11 @@ class News
         return $statement->fetchColumn();
     }
 
-    public static function loadRange($range_id, $offset = 0, $limit = 10)
+    public static function loadRange($range_id, $offset = 0, $limit = 10, $last_visit = 7776000)
     {
         $offset = (int) $offset;
         $limit  = (int) $limit;
+        $news = array();
 
         $query = "SELECT news_id, topic, body, `date`, user_id, expire,
                          allow_comments, chdate, chdate_uid, mkdate
@@ -220,7 +221,12 @@ class News
         $statement->bindValue(':range_id', $range_id);
         $statement->execute();
 
-        $news = $statement->fetchAll(PDO::FETCH_ASSOC);
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach($result as $ne) {
+            $ne['new'] = $ne['chdate'] >= $last_visit;
+            $news[]    = $ne;
+        }
         $news = array_map('self::adjust', $news);
 
         return $news;
