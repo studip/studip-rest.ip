@@ -13,7 +13,7 @@ class ContactsRoute implements \APIPlugin
 
     public static function before()
     {
-        require_once 'lib/contact.inc.php';
+        @include_once 'lib/contact.inc.php';
     }
 
     public function routes(&$router)
@@ -48,7 +48,7 @@ class ContactsRoute implements \APIPlugin
                 $router->halt(406, 'User "%s" is already a contact', $user_id);
             }
 
-            AddNewContact($user_id);
+            Contacts::add($user_id);
 
             $router->render($router->dispatch('get', '/contacts'));
         });
@@ -64,7 +64,7 @@ class ContactsRoute implements \APIPlugin
             if (!$contact_id) {
                 $router->halt(406, 'User "%s" is not a contact', $user_id);
             }
-            DeleteContact($contact_id);
+            Contacts::delete($contact_id);
 
             $router->halt(200, 'Contact "%s" has been removed', $user_id);
         });
@@ -75,12 +75,13 @@ class Contacts
 {
     static function locate($user_id, $contact_id)
     {
-        $query = "SELECT contact_id
+        $query = "SELECT *
                   FROM contact
                   WHERE owner_id = ? AND user_id = ?";
         $statement = DBManager::get()->prepare($query);
         $statement->execute(array($user_id, $contact_id));
-        return $statement->fetchColumn();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return @$result['contact_id'] ?: $result['user_id'];
     }
 
     static function load($user_id)
@@ -93,5 +94,32 @@ class Contacts
         $statement = DBManager::get()->prepare($query);
         $statement->execute(array($user_id));
         return $statement->fetchAll(PDO::FETCH_COLUMN);
+    }
+
+    static function add($user_id)
+    {
+        if (function_exists('AddNewContact')) {
+            AddNewContact($user_id);
+        } else {
+            $user_to_add = \User::find($user_id);
+            if ($user_to_add) {
+                $new_contact = array(
+                    'owner_id' => \User::findCurrent()->id,
+                    'user_id'  => $user_to_add->id);
+                \Contact::import($new_contact)->store();
+            }
+        }
+    }
+
+    static function delete($contact_id)
+    {
+        if (function_exists('DeleteContact')) {
+            DeleteContact($contact_id);
+        } else {
+            $contact = \Contact::find(array(\User::findCurrent()->id, $contact_id));
+            if ($contact) {
+                $contact->delete();
+            }
+        }
     }
 }
