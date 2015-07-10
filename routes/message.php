@@ -36,7 +36,7 @@ class MessageRoute implements APIPlugin
     {
         require_once 'lib/messaging.inc.php';
         require_once 'lib/sms_functions.inc.php';
-        if (class_exists('\\Message') && is_callable('\\Message::getUserTags')) { // Stud.IP >= 3.1
+        if (class_exists('\\Message') && method_exists(new \Message(), 'getUserTags')) { // Stud.IP >= 3.1
             $tags    = \Message::getUserTags();
             $tags    = array_map('ucfirst', array_map('strtolower', $tags));
             $folders = array_merge(array('dummy'), $tags);
