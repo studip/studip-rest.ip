@@ -172,16 +172,18 @@ class EventsRoute implements \APIPlugin
             foreach ($entries as $number_of_day => $schedule_of_day) {
                 $entries = array();
                 foreach ($schedule_of_day->entries as $entry) {
-                    $entries[$entry['id']] = self::entryToJson($entry);
+                    $entries[$entry['id']] = EventsRoute::entryToJson($entry);
                 }
                 $schedule[$number_of_day + 1] = $entries;
             }
 
             $router->render(compact(schedule));
         });
+
+
     }
 
-    private static function entryToJson($entry)
+    public static function entryToJson($entry)
     {
         $json = array();
 
