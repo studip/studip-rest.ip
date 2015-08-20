@@ -142,5 +142,54 @@ class EventsRoute implements \APIPlugin
             $router->expires('+1 day');
             $router->render(compact('events'));
         });
+
+        $router->get('/schedule(/:semester)', function ($semester_id = NULL) use ($router) {
+
+
+            $semdata = new \SemesterData();
+            $user_id = $GLOBALS['user']->id;
+
+            $current_semester = isset($semester_id)
+                ? $semdata->getSemesterData($semester_id)
+                : $semdata->getCurrentSemesterData();
+
+            if (!$current_semester) {
+                $router->halt(404, sprintf('Semester %s not found', $semester_id));
+            }
+
+            $schedule_settings = \UserConfig::get($user_id)->SCHEDULE_SETTINGS;
+            $days = $schedule_settings['glb_days'];
+
+
+            $entries = \CalendarScheduleModel::getEntries(
+                $user_id, $current_semester,
+                $schedule_settings['glb_start_time'], $schedule_settings['glb_end_time'],
+                $days,
+                $visible = false);
+
+
+            $schedule = array();
+            foreach ($entries as $number_of_day => $schedule_of_day) {
+                $entries = array();
+                foreach ($schedule_of_day->entries as $entry) {
+                    $entries[$entry['id']] = self::entryToJson($entry);
+                }
+                $schedule[$number_of_day + 1] = $entries;
+            }
+
+            $router->render(compact(schedule));
+        });
     }
+
+    private static function entryToJson($entry)
+    {
+        $json = array();
+
+        foreach (words("start end content title color type") as $key) {
+            $json[$key] = $entry[$key];
+        }
+
+        return $json;
+    }
+
 }
