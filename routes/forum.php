@@ -357,6 +357,7 @@ class Forum {
         $last_visit = \ForumVisit::getLastVisit($raw['seminar_id']);
 
         $entry['subject']      = $raw['name'];
+        $entry['subject_raw']      = $raw['name_raw'];
         $entry['content_html'] = formatReady(\ForumEntry::parseEdit($raw['content']));
         $entry['content']      = \ForumEntry::killEdit($raw['content']);
         $entry['user_id']      = $raw['user_id'] ?: $raw['owner_id'];
