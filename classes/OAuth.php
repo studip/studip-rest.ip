@@ -1,4 +1,9 @@
 <?php
+namespace RestIP;
+
+use DBManager;
+use Exception;
+use OAuthRequestVerifier;
 
 /**
  *

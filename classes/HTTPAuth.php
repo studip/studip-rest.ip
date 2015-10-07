@@ -1,4 +1,9 @@
-<?
+<?php
+namespace RestIP;
+
+use Exception;
+use StudipAuthAbstract;
+
 class HTTPAuth
 {
     public static function isSigned()

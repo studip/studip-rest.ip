@@ -1,4 +1,14 @@
 <?php
+namespace RestIP;
+
+use Assets;
+use LinkElement;
+use OAuthConsumer;
+use RestIP;
+use Sidebar;
+use StudipController;
+use WidgetElement;
+
 class AppController extends StudipController
 {
     public function before_filter(&$action, &$args)

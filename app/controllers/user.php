@@ -3,7 +3,7 @@
 /**
  *
  **/
-class UserController extends AppController
+class UserController extends RestIP\AppController
 {
     /**
      *

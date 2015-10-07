@@ -3,7 +3,7 @@
 /**
  *
  **/
-class AdminController extends AppController
+class AdminController extends RestIP\AppController
 {
     /**
      *

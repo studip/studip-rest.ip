@@ -31,15 +31,15 @@ class ApiController extends StudipController
         }
         // Get id from authorisation (either OAuth or standard)
         try {
-            if (OAuth::isSigned()) {
+            if (RestIP\OAuth::isSigned()) {
                 $parameters = (in_array($_SERVER['REQUEST_METHOD'], array('GET', 'POST')))
                             ? null
                             : $GLOBALS['_' . $_SERVER['REQUEST_METHOD']];
-                $user_id = OAuth::verify(null, null, $parameters);
+                $user_id = RestIP\OAuth::verify(null, null, $parameters);
             } elseif (get_config('RESTIP_AUTH_SESSION_ENABLED') && $GLOBALS['user']->id !== 'nobody') {
                 $user_id = $GLOBALS['user']->id;
-            } elseif (get_config('RESTIP_AUTH_HTTP_ENABLED') && HTTPAuth::isSigned()) {
-                $user_id = HTTPAuth::verify();
+            } elseif (get_config('RESTIP_AUTH_HTTP_ENABLED') && RestIP\HTTPAuth::isSigned()) {
+                $user_id = RestIP\HTTPAuth::verify();
             }
             if (!$user_id) {
                 throw new Exception('Unauthorized', 401);
@@ -89,7 +89,7 @@ class ApiController extends StudipController
 
         $router = RestIP\Router::getInstance(null, $template);
         $router->error(function (Exception $e) use ($router) {
-            if ($e instanceof APIException) {
+            if ($e instanceof RestIP\APIException) {
                 $router->halt($e->getCode(), $e->getMessage());
             } else {
                 $router->halt(500, $e->getMessage());
