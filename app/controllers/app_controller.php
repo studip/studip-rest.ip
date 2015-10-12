@@ -4,6 +4,7 @@ namespace RestIP;
 use Assets;
 use LinkElement;
 use OAuthConsumer;
+use Request;
 use RestIP;
 use Sidebar;
 use StudipController;
@@ -28,12 +29,19 @@ class AppController extends StudipController
             'app'     => _('Mobile App')
         );
     }
-    
+
+    public function setInfoboxImage($image)
+    {
+        if (!class_exists('\\Sidebar')) {
+            return parente::setInfoboxImage($image);
+        }
+    }
+
     public function addToInfobox($category, $text, $icon = 'blank.gif')
     {
         static $widgets = array();
-        
-        if (!class_exists('Sidebar')) {
+
+        if (!class_exists('\\Sidebar')) {
             return parent::addToInfobox($category, $text, $icon);
         }
         
