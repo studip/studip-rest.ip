@@ -183,7 +183,8 @@ class UserRoute implements \APIPlugin
                       LEFT JOIN user_info USING(user_id)
                       WHERE (TRIM(CONCAT(title_front, Vorname, Nachname, title_rear)) LIKE CONCAT('%', REPLACE(:needle, ' ', ''), '%')
                          OR TRIM(CONCAT(Nachname, Vorname)) LIKE CONCAT('%', REPLACE(:needle, ' ', ''), '%')
-                         OR username = :needle)
+                         OR username = :needle
+                         OR Email = :needle)
                          AND visible != 'no'
                       ORDER BY Nachname, Vorname";
             $statement = DBManager::get()->prepare($query);
