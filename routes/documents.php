@@ -214,8 +214,11 @@ class Document
                            folder.mkdate, folder.chdate, folder.permission,
                            IFNULL(folder.description, '') AS description
                     FROM statusgruppen sg
+                    LEFT JOIN seminar_user AS su
+                        ON (su.user_id = :user_id AND su.seminar_id = :folder_id)
                     INNER JOIN statusgruppe_user AS sgu
-                       ON (sg.statusgruppe_id = sgu.statusgruppe_id AND sgu.user_id = :user_id)
+                       ON (sg.statusgruppe_id = sgu.statusgruppe_id
+                               AND (sgu.user_id = :user_id OR su.status NOT IN ('autor', 'user')))
                     INNER JOIN folder ON (sgu.statusgruppe_id = folder.range_id)
                     WHERE sg.range_id = :folder_id AND folder.permission > 0
                   ) AS folders ORDER BY name ASC";
