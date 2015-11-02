@@ -30,15 +30,19 @@ class RestipPlugin extends StudIPPlugin implements SystemPlugin, HomepagePlugin
         if ($GLOBALS['perm']->have_perm('autor')) {
             $navigation = new AutoNavigation(_('Apps'));
             $navigation->setURL(PluginEngine::getLink('restipplugin/user'));
-            Navigation::addItem('/links/settings/oauth', $navigation);
-        }
 
+            if (Navigation::hasItem('/links/settings')) {
+                Navigation::addItem('/links/settings/oauth', $navigation);
+            } elseif (Navigation::hasItem('/settings')) {
+                Navigation::addItem('/settings/oauth', $navigation);
+            }
+        }
     }
 
     /**
      *
      **/
-    public function initialize()
+    public function perform ($unconsumed_path)
     {
         require_once 'config_plugin.inc.php';
         require_once 'bootstrap.php';
@@ -51,13 +55,7 @@ class RestipPlugin extends StudIPPlugin implements SystemPlugin, HomepagePlugin
             PageLayout::addStylesheet($this->getPluginURL() . '/assets/oauth.css');
         }
         PageLayout::addScript($this->getPluginURL() . '/assets/oauth.js');
-    }
 
-    /**
-     *
-     **/
-    public function perform ($unconsumed_path)
-    {
         $dispatcher = new Trails_Dispatcher(
             $this->getPluginPath() . DIRECTORY_SEPARATOR . 'app',
             rtrim(PluginEngine::getLink($this, array(), null), '/'),
