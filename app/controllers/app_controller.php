@@ -33,7 +33,7 @@ class AppController extends StudipController
     public function setInfoboxImage($image)
     {
         if (!class_exists('\\Sidebar')) {
-            return parente::setInfoboxImage($image);
+            return parent::setInfoboxImage($image);
         }
     }
 
