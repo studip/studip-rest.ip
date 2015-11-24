@@ -10,7 +10,7 @@ class CreateDatabase extends DBMigration
      **/
     public function description()
     {
-        return _('Erstellt die notwendigen Datenbanktabellen und Konfigurationseinträge für OAuth');
+        return _('Erstellt die notwendigen Datenbanktabellen und KonfigurationseintrÃ¤ge fÃ¼r OAuth');
     }
 
     /**
@@ -182,6 +182,13 @@ class CreateDatabase extends DBMigration
      **/
     public function down()
     {
+        // Delete config entry
+        DBManager::get()->exec("DELETE FROM config WHERE field = 'OAUTH_ENABLED'");
+
+        // Since the core API uses all the same tables as Rest.IP, we should not
+        // remove the oauth_* tables.
+        return;
+        
         // Delete all tables that belong to oauth
         $tables = DBManager::get()
             ->query("SHOW TABLES LIKE 'oauth_%'")
@@ -190,8 +197,5 @@ class CreateDatabase extends DBMigration
         foreach ($tables as $table) {
             DBManager::get()->exec("DROP TABLE " . $table);
         }
-
-        // Delete config entry
-        DBManager::get()->exec("DELETE FROM config WHERE field = 'OAUTH_ENABLED'");
     }
 }
