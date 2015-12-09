@@ -20,7 +20,7 @@ class UserLocation extends DBMigration
     {
         $query = "CREATE TABLE  IF NOT EXISTS `restip_user_location` (
                     `user_id` varchar(32) NOT NULL,
-                    `ressource_id` varchar(32) NOT NULL,
+                    `resource_id` varchar(32) NOT NULL,
                     `geoLocation` text NOT NULL,
                     `mkdate` int(20) NOT NULL,
                     `chdate` int(20) NOT NULL,
