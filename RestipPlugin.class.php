@@ -33,8 +33,8 @@ class RestipPlugin extends StudIPPlugin implements SystemPlugin, HomepagePlugin
 
             if (Navigation::hasItem('/links/settings')) {
                 Navigation::addItem('/links/settings/oauth', $navigation);
-            } elseif (Navigation::hasItem('/settings')) {
-                Navigation::addItem('/settings/oauth', $navigation);
+            } elseif (Navigation::hasItem('/profile/settings')) {
+                Navigation::addItem('/profile/settings/oauth', $navigation);
             }
         }
     }
@@ -84,7 +84,7 @@ class RestipPlugin extends StudIPPlugin implements SystemPlugin, HomepagePlugin
         $role_names       = array_map(function ($role) { return $role->getRolename(); }, $plugin_roles);
 
         if (!in_array('Nobody', $role_names)) {
-            $message   = _('Das OAuth-Plugin ist aktiviert, aber nicht für die Rolle "Nobody" freigegeben.');
+            $message   = _('Das OAuth-Plugin ist aktiviert, aber nicht fÃ¼r die Rolle "Nobody" freigegeben.');
             $details   = array();
             $details[] = _('Dies behindert die Kommunikation externer Applikationen mit dem System.');
             $details[] = sprintf(_('Klicken Sie <a href="%s">hier</a>, um die Rollenzuweisung zu bearbeiten.'),
