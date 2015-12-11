@@ -151,7 +151,8 @@ class UserRoute implements \APIPlugin
             $query = "SELECT Seminar_id AS course_id, su.status AS perms,
                              Veranstaltungsnummer AS event_number,
                              s.Name AS name, Untertitel AS subtitle,
-                             sd.semester_id, sd.name AS semester_name
+                             sd.semester_id, sd.name AS semester_name,
+                             s.visible
                       FROM seminar_user AS su
                       JOIN seminare AS s USING (Seminar_id)
                       LEFT JOIN semester_data AS sd ON (s.start_time BETWEEN sd.beginn AND sd.ende)
