@@ -14,12 +14,12 @@ class UserController extends RestIP\AppController
 
         $GLOBALS['perm']->check('autor');
 
-        try {
-            Navigation::activateItem('/settings/oauth');
-            PageLayout::setTabNavigation('/settings');
-        } catch (Exception $e) {
+        if (Navigation::hasItem('/links/settings/oauth')) {
             Navigation::activateItem('/links/settings/oauth');
             PageLayout::setTabNavigation('/links/settings');
+        } elseif (Navigation::hasItem('/profile/settings/oauth')) {
+            Navigation::activateItem('/profile/settings/oauth');
+            PageLayout::setTabNavigation('/profile/settings');
         }
         PageLayout::setTitle(_('Applikationen'));
     }
