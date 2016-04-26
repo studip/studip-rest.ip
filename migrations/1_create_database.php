@@ -158,7 +158,7 @@ class CreateDatabase extends DBMigration
         ");
 
         // Create config entries
-        $query = "INSERT INTO config (config_id, field, value, is_default, type, `range`, section, mkdate, chdate, description, comment)
+        $query = "INSERT IGNORE INTO config (config_id, field, value, is_default, type, `range`, section, mkdate, chdate, description, comment)
                   VALUES (MD5(?), ?, '1', 1, 'boolean', 'global', 'global', UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), ?, '')";
         $statement = DBManager::get()->prepare($query);
         $statement->execute(array(
@@ -167,7 +167,7 @@ class CreateDatabase extends DBMigration
             'Schaltet die OAuth-Schnittstelle ein',
         ));
 
-        $query = "INSERT INTO config (config_id, field, value, is_default, type, `range`, section, mkdate, chdate, description, comment)
+        $query = "INSERT IGNORE INTO config (config_id, field, value, is_default, type, `range`, section, mkdate, chdate, description, comment)
                   VALUES (MD5(?), ?, 'Standard', 1, 'string', 'global', 'global', UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), ?, '')";
         $statement = DBManager::get()->prepare($query);
         $statement->execute(array(
