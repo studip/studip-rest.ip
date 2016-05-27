@@ -13,7 +13,7 @@ class ResourcesRoute implements APIPlugin
     public function describeRoutes()
     {
         return array(
-            '/resource/:geo_location' => _('Resourceninformation zu einer gegebenen Geo-Location'),
+            '/resource/:resource_id' => _('Resourceninformation zu einer gegebenen Geo-Location'),
             '/resource/user/:resource_id' => _('Speichert Resourceninformation zu einem Nutzer'),
             '/user/resource(/:user_id)' => _('Liefert Resourceninformation zu einem Nutzer')
         );
@@ -33,18 +33,11 @@ class ResourcesRoute implements APIPlugin
     public function routes(&$router)
     {
 
-        $router->get('/resource/:geo_location', function ($geo_location) use ($router) {
-            if($ri = ResourceHelper::getResourceIdForGeoLocation($geo_location)) {
-                $resource_id = $ri['resource_id'];
-                if($resource = ResourceHelper::getResourceInfo($resource_id)){
-
-                    $router->render($resource);
-                } else {
-                    $router->halt(404, sprintf('There is no resource of the category room for given identifier "%s"', $resource_id));
-                }
+        $router->get('/resource/:resource_id', function ($resource_id) use ($router) {
+            if($resource = ResourceHelper::getResourceInfo($resource_id)){
+                $router->render($resource);
             } else {
-                $router->halt(404, sprintf('There is no resource information for given geo Location "%s"', $geo_location));
-                return;
+                $router->halt(404, sprintf('There is no resource of the category room for given identifier "%s"', $resource_id));
             }
         });
 
@@ -58,8 +51,9 @@ class ResourcesRoute implements APIPlugin
                 $router->halt(404, sprintf('There is no resource of the category room for given identifier "%s"', $resource_id));
             }
 
-            $geoid = ResourceHelper::getGeoLocationForResource($resource_id);
-    
+            $geoid = '';
+            //$geoid = ResourceHelper::getGeoLocationForResource($resource_id);
+
 
             ResourceHelper::setResourceForUser($user_id, $ro->getId(), $geoid);
             $router->render(201);
