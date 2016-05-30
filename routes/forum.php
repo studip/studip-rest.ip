@@ -363,6 +363,8 @@ class Forum {
         $entry['user_id']      = $raw['user_id'] ?: $raw['owner_id'];
         $entry['new']          = ($raw['chdate'] >= $last_visit && $entry['user_id'] != $GLOBALS['user']->id) ? true : false;
         $entry['new_children'] = (int)\ForumVisit::getCount($raw['topic_id'], $last_visit);
+        $entry['mkdate_iso']   = date('Y-m-d\TH:i:s', $entry['mkdate']);
+        $entry['chdate_iso']   = date('Y-m-d\TH:i:s', $entry['chdate']);
 
         return $entry;
     }

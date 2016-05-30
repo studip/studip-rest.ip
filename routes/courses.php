@@ -288,6 +288,11 @@ class Course
             unset($course['gruppe']);
 
             $course['location'] = strip_tags($course['location']);
+
+            $course['iso_chdate']     = date('Y-m-d\TH:i:s',  $course['chdate']);
+            $course['iso_start_time'] = date('Y-m-d\TH:i:s',  $course['start_time']);
+            $course['iso_visitdate']  = date('Y-m-d\TH:i:s',  $course['visitdate']);
+            
         }
 
         return (func_num_args() === 0 || is_array($ids) || $ids === null)

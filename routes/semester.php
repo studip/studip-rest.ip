@@ -50,15 +50,18 @@ class SemesterRoute implements \APIPlugin
             }
             
             $semester = array(
-                'semester_id'    => $temp['semester_id'],
-                'title'          => $temp['name'],
-                'description'    => $temp['description'],
-                'begin'          => $temp['beginn'],
-                'end'            => $temp['ende'],
-                'seminars_begin' => $temp['vorles_beginn'],
-                'seminars_end'   => $temp['vorles_ende'],
+                'semester_id'        => $temp['semester_id'],
+                'title'              => $temp['name'],
+                'description'        => $temp['description'],
+                'begin'              => $temp['beginn'],
+                'end'                => $temp['ende'],
+                'seminars_begin'     => $temp['vorles_beginn'],
+                'seminars_end'       => $temp['vorles_ende'],
+                'begin_iso'          => date('Y-m-d\TH:i:s',  $temp['beginn']),
+                'end_iso'            => date('Y-m-d\TH:i:s',  $temp['ende']),
+                'seminars_begin_iso' => date('Y-m-d\TH:i:s',  $temp['vorles_beginn']),
+                'seminars_end_iso'   => date('Y-m-d\TH:i:s',  $temp['vorles_ende']),
             );
-
             $router->render(compact('semester'));
         });
     }
