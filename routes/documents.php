@@ -235,8 +235,8 @@ class Document
                 'readable'   => (bool)($folder['permission'] & 4),
                 'extendable' => (bool)($folder['permission'] & 8),
             );
-            $folder['iso_mkdate'] = date('Y-m-d\TH:i:s',  $folder['mkdate']);
-            $folder['iso_chdate'] = date('Y-m-d\TH:i:s',  $folder['chdate']);
+            $folder['iso_mkdate'] = date('c',  $folder['mkdate']);
+            $folder['iso_chdate'] = date('c',  $folder['chdate']);
             unset($folder['permission']);
         }
 
@@ -271,8 +271,8 @@ class Document
             $file['mime_type'] = get_mime_type($file['filename']);
             $file['icon']      = Assets::image_path(GetFileIcon(getFileExtension($file['filename'])));
             $file['new']       = $file['chdate'] >= $last_visit;
-            $file['iso_mkdate'] = date('Y-m-d\TH:i:s',  $file['mkdate']);
-            $file['iso_chdate'] = date('Y-m-d\TH:i:s',  $file['chdate']);
+            $file['iso_mkdate'] = date('c',  $file['mkdate']);
+            $file['iso_chdate'] = date('c',  $file['chdate']);
         }
 
         return ($type !== 'folder' && !is_array($id)) ? reset($files) : $files;
@@ -294,8 +294,8 @@ class Document
             $file['protected']  = !empty($file['protected']);
             $file['mime_type']  = get_mime_type($file['filename']);
             $file['icon']       = Assets::image_path(GetFileIcon(getFileExtension($file['filename'])));
-            $file['iso_mkdate'] = date('Y-m-d\TH:i:s',  $file['mkdate']);
-            $file['iso_chdate'] = date('Y-m-d\TH:i:s',  $file['chdate']);
+            $file['iso_mkdate'] = date('c',  $file['mkdate']);
+            $file['iso_chdate'] = date('c',  $file['chdate']);
         }
 
         return $files;

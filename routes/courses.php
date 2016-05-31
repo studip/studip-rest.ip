@@ -289,9 +289,9 @@ class Course
 
             $course['location'] = strip_tags($course['location']);
 
-            $course['iso_chdate']     = date('Y-m-d\TH:i:s',  $course['chdate']);
-            $course['iso_start_time'] = date('Y-m-d\TH:i:s',  $course['start_time']);
-            $course['iso_visitdate']  = date('Y-m-d\TH:i:s',  $course['visitdate']);
+            $course['iso_chdate']     = date('c',  $course['chdate']);
+            $course['iso_start_time'] = date('c',  $course['start_time']);
+            $course['iso_visitdate']  = date('c',  $course['visitdate']);
             
         }
 

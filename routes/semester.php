@@ -57,10 +57,10 @@ class SemesterRoute implements \APIPlugin
                 'end'                => $temp['ende'],
                 'seminars_begin'     => $temp['vorles_beginn'],
                 'seminars_end'       => $temp['vorles_ende'],
-                'begin_iso'          => date('Y-m-d\TH:i:s',  $temp['beginn']),
-                'end_iso'            => date('Y-m-d\TH:i:s',  $temp['ende']),
-                'seminars_begin_iso' => date('Y-m-d\TH:i:s',  $temp['vorles_beginn']),
-                'seminars_end_iso'   => date('Y-m-d\TH:i:s',  $temp['vorles_ende']),
+                'begin_iso'          => date('c',  $temp['beginn']),
+                'end_iso'            => date('c',  $temp['ende']),
+                'seminars_begin_iso' => date('c',  $temp['vorles_beginn']),
+                'seminars_end_iso'   => date('c',  $temp['vorles_ende']),
             );
             $router->render(compact('semester'));
         });

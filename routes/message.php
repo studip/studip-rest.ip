@@ -309,7 +309,7 @@ class Message
             $message['message_original'] = $message['message'] ?: '';
             $message['message']          = formatReady($message['message']) ?: '';
             $message['attachments']      = Message::loadAttachments($message['message_id']);
-            $message['iso_mkdate']       = date('Y-m-d\TH:i:s',  $message['mkdate']);;
+            $message['iso_mkdate']       = date('c',  $message['mkdate']);
         });
 
         return is_array($ids) ? $messages : reset($messages);

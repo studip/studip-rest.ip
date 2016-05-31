@@ -225,8 +225,8 @@ class News
 
         foreach($result as $ne) {
             $ne['new'] = $ne['chdate'] >= $last_visit;
-            $ne['iso_mkdate'] = date('Y-m-d\TH:i:s',  $ne['mkdate']);
-            $ne['iso_chdate'] = date('Y-m-d\TH:i:s',  $ne['mkdate']);
+            $ne['iso_mkdate'] = date('c',  $ne['mkdate']);
+            $ne['iso_chdate'] = date('c',  $ne['mkdate']);
             $news[]    = $ne;
         }
         $news = array_map('self::adjust', $news);
