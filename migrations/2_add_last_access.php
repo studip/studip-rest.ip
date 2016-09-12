@@ -3,7 +3,7 @@
 /**
  *
  **/
-class AddLastAccess extends DBMigration
+class AddLastAccess extends Migration
 {
     /**
      *

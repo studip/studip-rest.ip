@@ -3,7 +3,7 @@
 /**
  *
  **/
-class CreateDatabase extends DBMigration
+class CreateDatabase extends Migration
 {
     /**
      *

@@ -3,7 +3,7 @@
 /**
  *
  **/
-class AddAuthConfig extends DBMigration
+class AddAuthConfig extends Migration
 {
     /**
      *
