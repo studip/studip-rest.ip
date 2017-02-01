@@ -1,5 +1,5 @@
 jQuery(function($) {
-  $('[data-behaviour~=modal]').live('click', function(event) {
+  $(document).on('click', '[data-behaviour~=modal]', function(event) {
     var href, title;
     href = $(this).attr('href');
     title = $(this).attr('title');
@@ -17,11 +17,13 @@ jQuery(function($) {
     });
     return event.preventDefault();
   });
-  return $('[data-behaviour~=confirm]').live('click', function(event) {
+  return $(document).on('click', '[data-behaviour~=confirm]', function(event) {
     var message, title;
     title = $(this).attr('title') || $(this).val() || $(this).text();
     message = 'Wollen Sie die folgende Aktion wirklich ausführen?'.toLocaleString();
     message += "\n\n\"" + title + "\"";
-    if (!confirm(message)) return event.preventDefault();
+    if (!confirm(message)) {
+      return event.preventDefault();
+    }
   });
 });

@@ -5,5 +5,5 @@ version=0.9.9.17
 description=This plugin is supposed to be a working example of a RESTful webservice implementing authentication by OAuth.
 homepage=http://studip.github.com/studip-rest.ip
 studipMinVersion=2.3
-studipMaxVersion=3.4.99
+studipMaxVersion=3.5.99
 

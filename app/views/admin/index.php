@@ -36,7 +36,7 @@
                 </a>
             </td>
             <td><?= Assets::img('icons/16/blue/checkbox-' . ($consumer['application_commercial'] ? '' : 'un') . 'checked') ?></td>
-            <td align="right">
+            <td class="actions">
                 <a href="<?= $controller->url_for('admin/keys', $consumer['consumer_key']) ?>"
                    data-behaviour="modal"
                    title="<?= htmlReady(sprintf(_('Schlüssel anzeigen für Applikation "%s"'), $consumer['application_title'])) ?>">

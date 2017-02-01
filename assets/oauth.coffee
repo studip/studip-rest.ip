@@ -1,5 +1,5 @@
 jQuery ($) ->
-    $('[data-behaviour~=modal]').live 'click', (event) ->
+    $(document).on 'click', '[data-behaviour~=modal]', (event) ->
         href  = $(@).attr 'href'
         title = $(@).attr 'title'
         $('<div/>').load href, ->
@@ -12,7 +12,7 @@ jQuery ($) ->
                         $(@).dialog('close')
         event.preventDefault()
 
-    $('[data-behaviour~=confirm]').live 'click', (event) ->
+    $(document).on 'click', '[data-behaviour~=confirm]', (event) ->
         title = $(@).attr('title') || $(@).val() || $(@).text()
         message = 'Wollen Sie die folgende Aktion wirklich ausführen?'.toLocaleString()
         message += "\n\n\"" + title + "\""
