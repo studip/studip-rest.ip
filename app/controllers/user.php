@@ -19,7 +19,6 @@ class UserController extends RestIP\AppController
             PageLayout::setTabNavigation('/links/settings');
         } elseif (Navigation::hasItem('/profile/settings/oauth')) {
             Navigation::activateItem('/profile/settings/oauth');
-            PageLayout::setTabNavigation('/profile/settings');
         }
         PageLayout::setTitle(_('Applikationen'));
     }
