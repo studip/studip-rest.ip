@@ -20,6 +20,11 @@ class DocumentsRoute implements APIPlugin
     public static function before()
     {
         require_once 'lib/datei.inc.php';
+        require_once 'lib/classes/Modules.class.php';
+
+        if (!class_exists('RestIP\\Course')) {
+            require_once __DIR__ . '/courses.php';
+        }
     }
 
     function routes(&$router)
@@ -153,11 +158,9 @@ class Document
 {
     static function isActivated($range_id)
     {
-        // Documents is 2nd bit (0-based indexed!) in modules flag
-        $query = "SELECT modules & (1 << 1) != 0 FROM seminare WHERE Seminar_id = ?";
-        $statement = DBManager::get()->prepare($query);
-        $statement->execute(array($range_id));
-        return $statement->fetchColumn();
+        $course = Course::load($range_id);
+        return isset($course['modules'])
+            && !empty($course['modules']['documents']);
     }
 
     static function folderBelongsToRange($range_id, $folder_id)
