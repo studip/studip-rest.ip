@@ -2,7 +2,7 @@
 
 ## DEPRECATED
 
-Please be aware that Rest.IP has been deprecated for a while and will not be usable in Stud.IP as of version 4.0. Please refer to core API which can completely replace everything that Rest.IP does.
+Please be aware that Rest.IP has been deprecated for a while and will not be usable in Stud.IP as of version 4.0. Please refer to the [Stud.IP core API](http://docs.studip.de/develop/Entwickler/RESTAPI) which can completely replace everything that Rest.IP does.
 
 ## Description
 
